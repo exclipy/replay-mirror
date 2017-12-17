@@ -23,10 +23,10 @@ export class AppComponent {
 
   ngOnInit() {
     this.start();
-    this.video = document.querySelector('#video') as HTMLVideoElement;
   }
 
   start() {
+    this.video = document.querySelector('#video') as HTMLVideoElement;
     if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       navigator.mediaDevices.getUserMedia({ video: true }).then((mediaStream) => {
         this.mediaStream = mediaStream;
@@ -51,6 +51,13 @@ export class AppComponent {
       });
     }
 
+    document.addEventListener('visibilitychange', () =>
+      {
+        if (document.visibilityState === 'visible') {
+          this.changeDelay(0);
+        }
+      });
+
     this.adjustIntervalId = window.setInterval(() => {
       if (!this.skip && this.video.currentTime !== undefined && this.video.buffered.length > 0) {
         console.log('currentTime: ', this.video.currentTime,
@@ -58,15 +65,28 @@ export class AppComponent {
             'delay: ', this.delayMs,
             'delta: ', this.target - this.delayMs);
 
-        let rate = Math.pow(1.5, (this.delayMs - this.target)/1000);
-        if (Math.abs(rate - 1) < 0.01) {
-          rate = 1;
+        if (Math.abs(this.target - this.delayMs) > 500) {
+          this.showDelay();
+          this.changeDelay(0);
+        } else {
+          let rate = Math.pow(1.5, (this.delayMs - this.target)/1000);
+          if (Math.abs(rate - 1) < 0.01) {
+            rate = 1;
+          }
+          this.video.playbackRate = rate;
+          console.log('playback rate: ', rate);
+          this.showDelay();
         }
-        this.video.playbackRate = rate;
-        console.log('playback rate: ', rate);
-        this.showDelay();
       }
     }, 1000);
+  }
+
+  less() {
+    this.changeDelay(-5000);
+  }
+
+  more() {
+    this.changeDelay(5000);
   }
 
   stop() {
@@ -85,24 +105,20 @@ export class AppComponent {
     this.target = Math.max(this.target + ms, 0);
     const headroom = this.video.buffered.end(0) * 1000 - this.target;
     if (headroom < 0) {
-      const waitS = Math.floor(-headroom / 1000);
-      const waitMs = -headroom % 1000;
+//      const waitS = Math.floor(-headroom / 1000);
+//      const waitMs = -headroom % 1000;
       this.video.pause();
-      window.setTimeout(() => {
-        window.setInterval(() => {
-
-        }, waitS * 1000);
-      }, waitMs);
       window.setTimeout(() => {
         this.video.currentTime = 0;
         this.video.play();
         this.showDelay();
+        this.skip = false;
       }, this.target - this.delayMs);
     } else {
       this.video.currentTime = this.video.buffered.end(0) - this.target / 1000;
       this.showDelay();
+      this.skip = false;
     }
-    this.skip = false;
   }
 
   get delayMs() {
