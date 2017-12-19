@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
+import * as Rx from 'rxjs/Rx';
 
 declare var MediaRecorder: any;
+
+type Action = 'more' | 'less' | 'stop';
 
 @Component({
   selector: 'app-root',
@@ -13,6 +16,8 @@ export class AppComponent {
   private mediaStream: MediaStream;
   private adjustIntervalId: number|null;
   private video: HTMLVideoElement;
+
+  private userActions = new Rx.Subject<Action>();
 
   constructor() {
     this.target = 5000;
@@ -46,6 +51,9 @@ export class AppComponent {
           recorder.requestData();
           window.setInterval(() => recorder.requestData(), 1000);
           this.video.play();
+          this.userActions.subscribe((action) => {
+            this.executeUserAction(action);
+          });
         });
         this.video.src = window.URL.createObjectURL(source);
       });
@@ -82,21 +90,37 @@ export class AppComponent {
   }
 
   less() {
-    this.changeDelay(-5000);
+    this.userActions.next('less');
   }
 
   more() {
-    this.changeDelay(5000);
+    this.userActions.next('more');
   }
 
   stop() {
-    if (this.mediaStream) {
-      for (const mediaStreamTrack of this.mediaStream.getTracks()) {
-        mediaStreamTrack.stop();
-      }
-    }
-    if (this.adjustIntervalId) {
-      window.clearInterval(this.adjustIntervalId);
+    this.userActions.next('stop');
+  }
+
+  executeUserAction(action: Action) {
+    switch (action) {
+      case 'less':
+        this.changeDelay(-5000);
+        break;
+      case 'more':
+        this.changeDelay(5000);
+        break;
+      case 'stop':
+        if (this.mediaStream) {
+          for (const mediaStreamTrack of this.mediaStream.getTracks()) {
+            mediaStreamTrack.stop();
+          }
+        }
+        if (this.adjustIntervalId) {
+          window.clearInterval(this.adjustIntervalId);
+        }
+        break;
+      default:
+        const checkExhaustive : never = action;
     }
   }
 
@@ -105,8 +129,6 @@ export class AppComponent {
     this.target = Math.max(this.target + ms, 0);
     const headroom = this.video.buffered.end(0) * 1000 - this.target;
     if (headroom < 0) {
-//      const waitS = Math.floor(-headroom / 1000);
-//      const waitMs = -headroom % 1000;
       this.video.pause();
       window.setTimeout(() => {
         this.video.currentTime = 0;
