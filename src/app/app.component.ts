@@ -239,6 +239,7 @@ export class AppComponent {
         break;
       case 'Stop':
         console.log('stopping');
+        this.showPreview = false;
         if (this.mediaStream) {
           for (const mediaStreamTrack of this.mediaStream.getTracks()) {
             mediaStreamTrack.stop();
