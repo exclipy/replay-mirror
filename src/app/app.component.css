@@ -33,6 +33,18 @@ video {
   padding: 5px;
 }
 
+#controls button {
+  position: relative;
+}
+
+#controls #preview {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  border: 1px solid white;
+  background: #333;
+}
+
 #waitTime {
   background: black;
   color: white;

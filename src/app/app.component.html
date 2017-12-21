@@ -3,6 +3,8 @@
   <video id="live" [hidden]="!isLive"></video>
   <video id="video" [hidden]="isLive"></video>
   <div id="controls">
+    <video id="preview" width="320" height="240" [hidden]="!showPreview"></video>
+    <button (click)="togglePreview()" [hidden]="isLive">{{showPreview ? 'close' : 'preview'}}</button>
     <div class="flex-spacer"></div>
     <div style="display: none">Current: <span id="currentTime"></span></div>
     <div style="display: none">Total: <span id="total"></span></div>
@@ -15,3 +17,4 @@
   </div>
   <div class="flex-spacer"></div>
 </div>
+

@@ -31,12 +31,14 @@ export class AppComponent {
   private adjustIntervalId: number|null;
   private video: HTMLVideoElement;
   private liveVideo: HTMLVideoElement;
+  private preview: HTMLVideoElement;
   private lastRequested: Date|null = null;
   private bufferSource = new MediaSource();
   private sourceBuffer: SourceBuffer|null;
   private isLive = true;
   displayedDelay = 0;
   waitTime = 0;
+  showPreview = false;
 
   private userActions = new Rx.Subject<UserAction>();
   private playerActions: Rx.Observable<PlayerAction>;
@@ -58,6 +60,7 @@ export class AppComponent {
   ngOnInit() {
     this.video = document.querySelector('#video') as HTMLVideoElement;
     this.liveVideo = document.querySelector('#live') as HTMLVideoElement;
+    this.preview = document.querySelector('#preview') as HTMLVideoElement;
 
     this.start();
   }
@@ -90,6 +93,7 @@ export class AppComponent {
         this.video.src = window.URL.createObjectURL(this.bufferSource);
         this.liveVideo.src = window.URL.createObjectURL(this.mediaStream);
         this.liveVideo.play();
+        this.preview.src = window.URL.createObjectURL(this.mediaStream);
       });
     }
 
@@ -133,6 +137,10 @@ export class AppComponent {
 
   stop() {
     this.userActions.next('stop');
+  }
+
+  togglePreview() {
+    this.showPreview = !this.showPreview;
   }
 
   executeUserAction(action: UserAction): Rx.Observable<PlayerAction> {
@@ -199,6 +207,7 @@ export class AppComponent {
     switch (action.kind) {
       case 'SetLive':
         if (!this.isLive) {
+          this.showPreview = false;
           this.liveVideo.play();
           this.video.pause();
           this.isLive = true;
