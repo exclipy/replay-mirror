@@ -38,7 +38,7 @@ export class AppComponent {
   private isLive = true;
   displayedDelay = 0;
   waitTime = 0;
-  showPreview = false;
+  showPreview_ = false;
 
   private userActions = new Rx.Subject<UserAction>();
   private playerActions: Rx.Observable<PlayerAction>;
@@ -91,9 +91,11 @@ export class AppComponent {
         });
         this.isLive = true;
         this.video.src = window.URL.createObjectURL(this.bufferSource);
+        this.video.pause();
         this.liveVideo.src = window.URL.createObjectURL(this.mediaStream);
         this.liveVideo.play();
         this.preview.src = window.URL.createObjectURL(this.mediaStream);
+        this.preview.pause();
       });
     }
 
@@ -141,6 +143,21 @@ export class AppComponent {
 
   togglePreview() {
     this.showPreview = !this.showPreview;
+  }
+
+  set showPreview(value) {
+    if (this.preview) {
+      if (value) {
+        this.preview.play();
+      } else {
+        this.preview.pause();
+      }
+    }
+    this.showPreview_ = value;
+  }
+
+  get showPreview() {
+    return this.showPreview_;
   }
 
   executeUserAction(action: UserAction): Rx.Observable<PlayerAction> {

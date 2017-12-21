@@ -11,8 +11,8 @@
     <div [hidden]="isWaiting" id="waitTime"><div>{{waitTime}}</div></div>
     <span>Target: {{(target / 1000) | number:'1.0-1'}}</span>
     <span>Delay: {{displayedDelay | number:'1.0-1'}}</span>
-    <button (click)="less()">-5s</button>
     <button (click)="more()">+5s</button>
+    <button (click)="less()">-5s</button>
     <button (click)="stop()">stop</button>
   </div>
   <div class="flex-spacer"></div>
