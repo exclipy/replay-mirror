@@ -69,3 +69,12 @@ video {
   margin-top: -50px;
   line-height: 1;
 }
+
+.error {
+  font-family: sans-serif;
+  text-align: center;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 50%;
+}

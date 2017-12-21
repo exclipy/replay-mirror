@@ -36,6 +36,10 @@ export class AppComponent {
   private bufferSource = new MediaSource();
   private sourceBuffer: SourceBuffer|null;
   private isLive = true;
+  isInitialized = false;
+  isUnsupportedBrowser = false;
+  isPermissionDeniedError = false;
+  isNotFoundError = false;
   displayedDelay = 0;
   waitTime = 0;
   showPreview_ = false;
@@ -65,39 +69,60 @@ export class AppComponent {
     this.start();
   }
 
-  start() {
-    if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      navigator.mediaDevices.getUserMedia({ video: true }).then((mediaStream) => {
-        this.mediaStream = mediaStream;
-        const recorder = new MediaRecorder(mediaStream, {mimeType: 'video/webm; codecs=vp9'}) as any;
-        this.bufferSource.addEventListener('sourceopen', () => {
-          console.log('sourceopen');
-          this.sourceBuffer = this.bufferSource.addSourceBuffer('video/webm; codecs=vp9');
-
-          recorder.ondataavailable = (e) => {
-            const fileReader = new FileReader();
-            fileReader.onload = (f) => {
-              this.sourceBuffer.appendBuffer((f.target as any).result);
-            };
-            fileReader.readAsArrayBuffer(e.data);
-          }
-          recorder.start();
-          recorder.requestData();
-          Rx.Observable.interval(1000)
-            .subscribe(() => {
-              recorder.requestData();
-              this.lastRequested = new Date();
-            })
-        });
-        this.isLive = true;
-        this.video.src = window.URL.createObjectURL(this.bufferSource);
-        this.video.pause();
-        this.liveVideo.src = window.URL.createObjectURL(this.mediaStream);
-        this.liveVideo.play();
-        this.preview.src = window.URL.createObjectURL(this.mediaStream);
-        this.preview.pause();
-      });
+  getMimeType(): string|undefined {
+    try {
+      return ['video/webm\;codecs=vp9', 'video/webm\;codecs=vp8'].find(
+        (mimeType) => MediaRecorder.isTypeSupported(mimeType));
+    } catch (e) {
+      return undefined;
     }
+  }
+
+  start() {
+    const mimeType = this.getMimeType();
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !mimeType) {
+      this.isUnsupportedBrowser = true;
+      return;
+    }
+
+    navigator.mediaDevices.getUserMedia({ video: true }).then((mediaStream) => {
+      this.mediaStream = mediaStream;
+      const recorder = new MediaRecorder(mediaStream, {mimeType: mimeType}) as any;
+      this.bufferSource.addEventListener('sourceopen', () => {
+        this.sourceBuffer = this.bufferSource.addSourceBuffer(mimeType);
+
+        recorder.ondataavailable = (e) => {
+          const fileReader = new FileReader();
+          fileReader.onload = (f) => {
+            this.sourceBuffer.appendBuffer((f.target as any).result);
+          };
+          fileReader.readAsArrayBuffer(e.data);
+        }
+        recorder.start();
+        recorder.requestData();
+        Rx.Observable.interval(1000)
+          .subscribe(() => {
+            recorder.requestData();
+            this.lastRequested = new Date();
+          })
+        this.isInitialized = true;
+      });
+      this.isLive = true;
+      this.video.src = window.URL.createObjectURL(this.bufferSource);
+      this.video.pause();
+      this.liveVideo.src = window.URL.createObjectURL(this.mediaStream);
+      this.liveVideo.play();
+      this.preview.src = window.URL.createObjectURL(this.mediaStream);
+      this.preview.pause();
+    }).catch((e) => {
+      if (
+        e.name === 'PermissionDeniedError' || // Chrome
+        e.name === 'NotAllowedError') { // Firefox
+        this.isPermissionDeniedError = true;
+      } else if (e.name === 'NotFoundError') {
+        this.isNotFoundError = true;
+      }
+    });
 
     //    document.addEventListener('visibilitychange', () =>
     //      {
@@ -160,16 +185,17 @@ export class AppComponent {
     return this.showPreview_;
   }
 
+  get isError() {
+    return this.isNotFoundError || this.isPermissionDeniedError || this.isUnsupportedBrowser;
+  }
+
   executeUserAction(action: UserAction): Rx.Observable<PlayerAction> {
     switch (action) {
       case 'less':
-        console.log('less');
         return this.changeDelay(-5000);
       case 'more':
-        console.log('more');
         return this.changeDelay(5000);
       case 'stop':
-        console.log('stop');
         return Rx.Observable.from([{kind: 'Stop' as 'Stop'}]);
       default:
         const checkExhaustive : never = action;
@@ -181,10 +207,8 @@ export class AppComponent {
     this.target = Math.max(this.target + ms, 0);
     const headroom = this.absoluteEndMs - this.target;
     if (headroom < 0) {
-      console.log('a ---->', (-headroom) % 1000, Math.floor(-headroom / 1000) + 1)
       const periods = Math.floor(-headroom / 1000) + 1;
       const x = new Date();
-      console.log(-1, x.getSeconds(), x.getMilliseconds());
       return Rx.Observable.from([
         {kind: 'Pause' as 'Pause'},
         {kind: ('SetTime' as 'SetTime'), timeS: 0},
@@ -194,7 +218,6 @@ export class AppComponent {
             .take(periods)
             .switchMap((i: number): Rx.Observable<PlayerAction> => {
               const x = new Date();
-              console.log(i, x.getSeconds(), x.getMilliseconds());
               if (i < periods - 1) {
                 return Rx.Observable.from([
                   {
@@ -206,7 +229,6 @@ export class AppComponent {
               }
             }));
     } else {
-      console.log('b');
       if (this.target === 0) {
         return Rx.Observable.from([{kind: ('SetLive' as 'SetLive')}]);
       }
@@ -223,6 +245,7 @@ export class AppComponent {
   executePlayerAction(action: PlayerAction) {
     switch (action.kind) {
       case 'SetLive':
+        console.log('set live');
         if (!this.isLive) {
           this.showPreview = false;
           this.liveVideo.play();
@@ -281,7 +304,6 @@ export class AppComponent {
 
   get absoluteEndMs() {
     if (!this.lastRequested || this.sourceBuffer.buffered.length === 0) {
-      console.log('absoluteEnd is zero');
       return 0;
     }
     const now = new Date().getTime();
