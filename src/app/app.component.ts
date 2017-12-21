@@ -96,7 +96,7 @@ export class AppComponent {
       return;
     }
 
-    navigator.mediaDevices.getUserMedia({video: true, facingMode: 'user'})
+    navigator.mediaDevices.getUserMedia({video: true})
         .then((mediaStream) => {
           this.mediaStream = mediaStream;
           const recorder =
@@ -113,11 +113,11 @@ export class AppComponent {
             };
             recorder.start();
             recorder.requestData();
-            Rx.Observable.interval(1000)
-                .subscribe(() => {
-                  recorder.requestData();
-                  this.lastRequested = new Date();
-                }) this.isInitialized = true;
+            Rx.Observable.interval(1000).subscribe(() => {
+              recorder.requestData();
+              this.lastRequested = new Date();
+            });
+            this.isInitialized = true;
           });
           this.isLive = true;
           this.video.src = window.URL.createObjectURL(this.bufferSource);
