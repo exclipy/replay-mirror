@@ -1,23 +1,33 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import * as Rx from 'rxjs/Rx';
 
 declare var MediaRecorder: any;
 
 type UserAction = 'more' | 'less' | 'stop';
 
-type PauseAction = { kind: 'Pause' };
-type PlayAction = { kind: 'Play' };
-type StopAction = { kind: 'Stop' };
-type SetLiveAction = { kind: 'SetLive' };
-type SetTimeAction = { kind: 'SetTime', timeS: number };
-type SetWaitingAction = { kind: 'SetWaiting', timeS: number };
+type PauseAction = {
+  kind: 'Pause'
+};
+type PlayAction = {
+  kind: 'Play'
+};
+type StopAction = {
+  kind: 'Stop'
+};
+type SetLiveAction = {
+  kind: 'SetLive'
+};
+type SetTimeAction = {
+  kind: 'SetTime',
+  timeS: number
+};
+type SetWaitingAction = {
+  kind: 'SetWaiting',
+  timeS: number
+};
 
-type PlayerAction = PauseAction |
-  PlayAction |
-  StopAction |
-  SetTimeAction |
-  SetLiveAction |
-  SetWaitingAction;
+type PlayerAction = PauseAction | PlayAction | StopAction | SetTimeAction |
+    SetLiveAction | SetWaitingAction;
 
 @Component({
   selector: 'app-root',
@@ -54,11 +64,10 @@ export class AppComponent {
     this.mediaStream = null;
     this.adjustIntervalId = null;
 
-    this.playerActions = this.userActions.switchMap((userAction) =>
-        this.executeUserAction(userAction));
-    this.playerActions.subscribe((action) => {
-      this.executePlayerAction(action);
-    });
+    this.playerActions = this.userActions.switchMap(
+        (userAction) => this.executeUserAction(userAction));
+    this.playerActions.subscribe(
+        (action) => { this.executePlayerAction(action); });
     Rx.Observable.interval(200).subscribe(() => this.showDelay());
   }
 
@@ -73,7 +82,7 @@ export class AppComponent {
   getMimeType(): string|undefined {
     try {
       return ['video/webm\;codecs=vp9', 'video/webm\;codecs=vp8'].find(
-        (mimeType) => MediaRecorder.isTypeSupported(mimeType));
+          (mimeType) => MediaRecorder.isTypeSupported(mimeType));
     } catch (e) {
       return undefined;
     }
@@ -81,52 +90,53 @@ export class AppComponent {
 
   start() {
     const mimeType = this.getMimeType();
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !mimeType) {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia ||
+        !mimeType) {
       this.isUnsupportedBrowser = true;
       return;
     }
 
-    navigator.mediaDevices.getUserMedia({ video: true, facingMode: 'user' })
+    navigator.mediaDevices.getUserMedia({video: true, facingMode: 'user'})
         .then((mediaStream) => {
-      this.mediaStream = mediaStream;
-      const recorder = new MediaRecorder(mediaStream, {mimeType: mimeType}) as any;
-      this.bufferSource.addEventListener('sourceopen', () => {
-        this.sourceBuffer = this.bufferSource.addSourceBuffer(mimeType);
+          this.mediaStream = mediaStream;
+          const recorder =
+              new MediaRecorder(mediaStream, {mimeType: mimeType}) as any;
+          this.bufferSource.addEventListener('sourceopen', () => {
+            this.sourceBuffer = this.bufferSource.addSourceBuffer(mimeType);
 
-        recorder.ondataavailable = (e) => {
-          const fileReader = new FileReader();
-          fileReader.onload = (f) => {
-            this.sourceBuffer.appendBuffer((f.target as any).result);
-          };
-          fileReader.readAsArrayBuffer(e.data);
-        }
-        recorder.start();
-        recorder.requestData();
-        Rx.Observable.interval(1000)
-          .subscribe(() => {
+            recorder.ondataavailable = (e) => {
+              const fileReader = new FileReader();
+              fileReader.onload = (f) => {
+                this.sourceBuffer.appendBuffer((f.target as any).result);
+              };
+              fileReader.readAsArrayBuffer(e.data);
+            };
+            recorder.start();
             recorder.requestData();
-            this.lastRequested = new Date();
-          })
-        this.isInitialized = true;
-      });
-      this.isLive = true;
-      this.video.src = window.URL.createObjectURL(this.bufferSource);
-      this.video.pause();
-      this.liveVideo.src = window.URL.createObjectURL(this.mediaStream);
-      this.liveVideo.play();
-      this.preview.src = window.URL.createObjectURL(this.mediaStream);
-      this.preview.pause();
-    }).catch((e) => {
-      if (
-        e.name === 'PermissionDeniedError' || // Chrome
-        e.name === 'NotAllowedError') { // Firefox
-        this.isPermissionDeniedError = true;
-      } else if (e.name === 'NotFoundError') {
-        this.isNotFoundError = true;
-      } else {
-        this.isUnknownError = true;
-      }
-    });
+            Rx.Observable.interval(1000)
+                .subscribe(() => {
+                  recorder.requestData();
+                  this.lastRequested = new Date();
+                }) this.isInitialized = true;
+          });
+          this.isLive = true;
+          this.video.src = window.URL.createObjectURL(this.bufferSource);
+          this.video.pause();
+          this.liveVideo.src = window.URL.createObjectURL(this.mediaStream);
+          this.liveVideo.play();
+          this.preview.src = window.URL.createObjectURL(this.mediaStream);
+          this.preview.pause();
+        })
+        .catch((e) => {
+          if (e.name === 'PermissionDeniedError' ||  // Chrome
+              e.name === 'NotAllowedError') {        // Firefox
+            this.isPermissionDeniedError = true;
+          } else if (e.name === 'NotFoundError') {
+            this.isNotFoundError = true;
+          } else {
+            this.isUnknownError = true;
+          }
+        });
 
     //    document.addEventListener('visibilitychange', () =>
     //      {
@@ -136,7 +146,8 @@ export class AppComponent {
     //      });
     //
     //    this.adjustIntervalId = window.setInterval(() => {
-    //      if (!this.skip && this.video.currentTime !== undefined && this.video.buffered.length > 0) {
+    //      if (!this.skip && this.video.currentTime !== undefined &&
+    //      this.video.buffered.length > 0) {
     //        console.log('currentTime: ', this.video.currentTime,
     //            'buffer end: ', this.video.buffered.end(0),
     //            'delay: ', this.delayMs,
@@ -158,21 +169,13 @@ export class AppComponent {
     //    }, 1000);
   }
 
-  less() {
-    this.userActions.next('less');
-  }
+  less() { this.userActions.next('less'); }
 
-  more() {
-    this.userActions.next('more');
-  }
+  more() { this.userActions.next('more'); }
 
-  stop() {
-    this.userActions.next('stop');
-  }
+  stop() { this.userActions.next('stop'); }
 
-  togglePreview() {
-    this.showPreview = !this.showPreview;
-  }
+  togglePreview() { this.showPreview = !this.showPreview; }
 
   set showPreview(value) {
     if (this.preview) {
@@ -185,12 +188,11 @@ export class AppComponent {
     this.showPreview_ = value;
   }
 
-  get showPreview() {
-    return this.showPreview_;
-  }
+  get showPreview() { return this.showPreview_; }
 
   get isError() {
-    return this.isNotFoundError || this.isPermissionDeniedError || this.isUnsupportedBrowser;
+    return this.isNotFoundError || this.isPermissionDeniedError ||
+        this.isUnsupportedBrowser;
   }
 
   executeUserAction(action: UserAction): Rx.Observable<PlayerAction> {
@@ -202,7 +204,7 @@ export class AppComponent {
       case 'stop':
         return Rx.Observable.from([{kind: 'Stop' as 'Stop'}]);
       default:
-        const checkExhaustive : never = action;
+        const checkExhaustive: never = action;
     }
   }
 
@@ -213,25 +215,26 @@ export class AppComponent {
     if (headroom < 0) {
       const periods = Math.floor(-headroom / 1000) + 1;
       const x = new Date();
-      return Rx.Observable.from([
-        {kind: 'Pause' as 'Pause'},
-        {kind: ('SetTime' as 'SetTime'), timeS: 0},
-        {kind: ('SetWaiting' as 'SetWaiting'), timeS: periods},
-      ]).concat(
-        Rx.Observable.timer((-headroom) % 1000, 1000)
-            .take(periods)
-            .switchMap((i: number): Rx.Observable<PlayerAction> => {
-              const x = new Date();
-              if (i < periods - 1) {
-                return Rx.Observable.from([
-                  {
-                    kind: ('SetWaiting' as 'SetWaiting'),
-                    timeS: periods - 1 - i
-                  }]);
-              } else {
-                return Rx.Observable.from([{kind: ('Play' as 'Play')}]);
-              }
-            }));
+      return Rx.Observable
+          .from([
+            {kind: 'Pause' as 'Pause'},
+            {kind: ('SetTime' as 'SetTime'), timeS: 0},
+            {kind: ('SetWaiting' as 'SetWaiting'), timeS: periods},
+          ])
+          .concat(Rx.Observable.timer((-headroom) % 1000, 1000)
+                      .take(periods)
+                      .switchMap((i: number): Rx.Observable<PlayerAction> => {
+                        const x = new Date();
+                        if (i < periods - 1) {
+                          return Rx.Observable.from([{
+                            kind: ('SetWaiting' as 'SetWaiting'),
+                            timeS: periods - 1 - i
+                          }]);
+                        } else {
+                          return Rx.Observable.from(
+                              [{kind: ('Play' as 'Play')}]);
+                        }
+                      }));
     } else {
       if (this.targetMs === 0) {
         return Rx.Observable.from([{kind: ('SetLive' as 'SetLive')}]);
@@ -294,7 +297,7 @@ export class AppComponent {
         }
         break;
       default:
-        const checkExhaustive : never = action;
+        const checkExhaustive: never = action;
     }
   }
 
@@ -323,11 +326,7 @@ export class AppComponent {
     }
   }
 
-  get isWaiting() {
-    return this.waitTime <= 0;
-  }
+  get isWaiting() { return this.waitTime <= 0; }
 
-  showDelay() {
-    this.displayedDelay = this.delayMs / 1000;
-  }
+  showDelay() { this.displayedDelay = this.delayMs / 1000; }
 }
