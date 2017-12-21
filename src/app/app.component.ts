@@ -28,7 +28,7 @@ export class AppComponent {
   private playerActions: Rx.Observable<PlayerAction>;
 
   constructor() {
-    this.target = 5000;
+    this.target = 0;
     this.skip = false;
     this.mediaStream = null;
     this.adjustIntervalId = null;
