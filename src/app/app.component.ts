@@ -229,7 +229,6 @@ export class AppComponent {
       const total = this.video.buffered.end(0);
       const currentTime = this.video.currentTime;
       this.displayedDelay = total - this.video.currentTime;
-      document.getElementById('target').innerHTML = (this.target / 1000).toPrecision(2) + 's';
       document.getElementById('currentTime').innerHTML = this.video.currentTime.toPrecision(2) + 's';
       document.getElementById('total').innerHTML = total.toPrecision(2) + 's';
     }
