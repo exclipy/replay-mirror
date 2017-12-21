@@ -140,14 +140,20 @@ export class AppComponent {
     this.target = Math.max(this.target + ms, 0);
     const headroom = this.video.buffered.end(0) * 1000 - this.target;
     if (headroom < 0) {
-      console.log('a', -headroom % 1000, Math.floor(-headroom / 1000) + 1)
+      console.log('a ---->', -headroom % 1000, Math.floor(-headroom / 1000) + 1)
       const periods = Math.floor(-headroom / 1000) + 1;
-      return Rx.Observable.from([{kind: 'Pause' as 'Pause'}]).concat(
+      const x = new Date();
+      console.log(-1, x.getSeconds(), x.getMilliseconds());
+      return Rx.Observable.from([
+        {kind: 'Pause' as 'Pause'},
+        {kind: ('SetWaiting' as 'SetWaiting'), timeS: periods},
+      ]).concat(
         Rx.Observable.timer(-headroom % 1000, 1000)
-            .take(Math.floor(-headroom / 1000) + 1)
+            .take(periods)
             .switchMap((i: number) => {
+              const x = new Date();
+              console.log(i, x.getSeconds(), x.getMilliseconds());
               if (i < periods - 1) {
-                console.log({kind: ('SetWaiting' as 'SetWaiting'), timeS: periods - 1 - i});
                 return Rx.Observable.from([
                   {kind: ('SetWaiting' as 'SetWaiting'), timeS: periods - 1 - i},
               } else {
@@ -189,6 +195,7 @@ export class AppComponent {
         console.log('setting waiting', action);
         this.video.currentTime = 0;
         this.waitTime = action.timeS;
+        this.showDelay();
         break;
       case 'Stop':
         console.log('stopping');
