@@ -40,6 +40,7 @@ export class AppComponent {
   isUnsupportedBrowser = false;
   isPermissionDeniedError = false;
   isNotFoundError = false;
+  isUnknownError = false;
   displayedDelay = 0;
   waitTime = 0;
   showPreview_ = false;
@@ -85,7 +86,8 @@ export class AppComponent {
       return;
     }
 
-    navigator.mediaDevices.getUserMedia({ video: true }).then((mediaStream) => {
+    navigator.mediaDevices.getUserMedia({ video: true, facingMode: 'user' })
+        .then((mediaStream) => {
       this.mediaStream = mediaStream;
       const recorder = new MediaRecorder(mediaStream, {mimeType: mimeType}) as any;
       this.bufferSource.addEventListener('sourceopen', () => {
@@ -121,6 +123,8 @@ export class AppComponent {
         this.isPermissionDeniedError = true;
       } else if (e.name === 'NotFoundError') {
         this.isNotFoundError = true;
+      } else {
+        this.isUnknownError = true;
       }
     });
 

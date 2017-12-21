@@ -25,3 +25,9 @@
 <div class="error" *ngIf="isPermissionDeniedError">
   Please reload and give the camera permission.
 </div>
+<div class="error" *ngIf="isNotFoundError">
+  Looks like you don't have a webcam.
+</div>
+<div class="error" *ngIf="isUnknownError">
+  Something went wrong.  That's all we know.
+</div>
