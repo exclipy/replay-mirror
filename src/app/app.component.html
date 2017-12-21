@@ -5,7 +5,7 @@
   <div>Delay: <span id="delay">{{displayedDelay}}</span></div>
   <div style="display: none">Current: <span id="currentTime"></span></div>
   <div style="display: none">Total: <span id="total"></span></div>
-  <div [hidden]="isWaiting">{{waitTime}} s</div>
+  <div [hidden]="isWaiting" id="waitTime"><div>{{waitTime}}</div></div>
   <button (click)="less()">-5s</button>
   <button (click)="more()">+5s</button>
   <button (click)="stop()">stop</button>

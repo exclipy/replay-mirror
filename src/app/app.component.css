@@ -1,5 +1,5 @@
 video {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
@@ -11,4 +11,30 @@ video {
   position: absolute;
   top: 0;
   left: 0;
+}
+
+#waitTime {
+  font-family: sans-serif;
+  background: black;
+  color: white;
+  opacity: 0.5;
+  font-size: 100px;
+  text-align: center;
+  position: fixed;
+  height: 300px;
+  width: 300px;
+  top: 50%;
+  left: 50%;
+  margin-left: -150px;
+  margin-top: -150px;
+  border-radius: 150px;
+}
+
+#waitTime div {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  margin-top: -50px;
+  line-height: 1;
 }

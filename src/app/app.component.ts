@@ -152,7 +152,6 @@ export class AppComponent {
                   {kind: ('SetWaiting' as 'SetWaiting'), timeS: periods - 1 - i},
               } else {
                 return Rx.Observable.from([
-                  {kind: ('SetWaiting' as 'SetWaiting'), timeS: 0},
                   {kind: ('Play' as 'Play')},
                   {kind: ('SetTime' as 'SetTime'), timeS: 0}]);
               }
@@ -172,6 +171,7 @@ export class AppComponent {
     switch (action.kind) {
       case 'Play':
         console.log('playing');
+        this.waitTime = 0;
         this.video.play();
         this.showDelay();
         break;
@@ -187,6 +187,7 @@ export class AppComponent {
         break;
       case 'SetWaiting':
         console.log('setting waiting', action);
+        this.video.currentTime = 0;
         this.waitTime = action.timeS;
         break;
       case 'Stop':
