@@ -9,8 +9,13 @@ type PauseAction = { kind: 'Pause' };
 type PlayAction = { kind: 'Play' };
 type StopAction = { kind: 'Stop' };
 type SetTimeAction = { kind: 'SetTime', timeS: number };
+type SetWaitingAction = { kind: 'SetWaiting', timeS: number };
 
-type PlayerAction = PauseAction | PlayAction | StopAction | SetTimeAction;
+type PlayerAction = PauseAction |
+  PlayAction |
+  StopAction |
+  SetTimeAction |
+  SetWaitingAction;
 
 @Component({
   selector: 'app-root',
@@ -18,12 +23,13 @@ type PlayerAction = PauseAction | PlayAction | StopAction | SetTimeAction;
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  private target: number;
-  private skip: boolean;
+  private target = 0;
+  private skip = false;
   private mediaStream: MediaStream;
   private adjustIntervalId: number|null;
   private video: HTMLVideoElement;
   displayedDelay: string;
+  waitTime = 0;
 
   private userActions = new Rx.Subject<UserAction>();
   private playerActions: Rx.Observable<PlayerAction>;
@@ -134,14 +140,22 @@ export class AppComponent {
     this.target = Math.max(this.target + ms, 0);
     const headroom = this.video.buffered.end(0) * 1000 - this.target;
     if (headroom < 0) {
-      console.log('a', -headroom)
+      console.log('a', -headroom % 1000, Math.floor(-headroom / 1000) + 1)
+      const periods = Math.floor(-headroom / 1000) + 1;
       return Rx.Observable.from([{kind: 'Pause' as 'Pause'}]).concat(
-        Rx.Observable.interval(-headroom)
-            .take(1)
-            .switchMap(() => {
-              return Rx.Observable.from([
-                {kind: ('Play' as 'Play')},
-                {kind: ('SetTime' as 'SetTime'), timeS: 0}]);
+        Rx.Observable.timer(-headroom % 1000, 1000)
+            .take(Math.floor(-headroom / 1000) + 1)
+            .switchMap((i: number) => {
+              if (i < periods - 1) {
+                console.log({kind: ('SetWaiting' as 'SetWaiting'), timeS: periods - 1 - i});
+                return Rx.Observable.from([
+                  {kind: ('SetWaiting' as 'SetWaiting'), timeS: periods - 1 - i},
+              } else {
+                return Rx.Observable.from([
+                  {kind: ('SetWaiting' as 'SetWaiting'), timeS: 0},
+                  {kind: ('Play' as 'Play')},
+                  {kind: ('SetTime' as 'SetTime'), timeS: 0}]);
+              }
             }));
     } else {
       console.log('b');
@@ -171,6 +185,10 @@ export class AppComponent {
         this.video.currentTime = action.timeS;
         this.showDelay();
         break;
+      case 'SetWaiting':
+        console.log('setting waiting', action);
+        this.waitTime = action.timeS;
+        break;
       case 'Stop':
         console.log('stopping');
         if (this.mediaStream) {
@@ -189,6 +207,10 @@ export class AppComponent {
 
   get delayMs() {
     return 1000 * (this.video.buffered.end(0) - this.video.currentTime);
+  }
+
+  get isWaiting() {
+    return this.waitTime <= 0;
   }
 
   showDelay() {
