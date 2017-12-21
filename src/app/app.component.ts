@@ -25,7 +25,7 @@ type PlayerAction = PauseAction |
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  private target = 0;
+  targetMs = 0;
   private skip = false;
   private mediaStream: MediaStream|null;
   private adjustIntervalId: number|null;
@@ -35,7 +35,7 @@ export class AppComponent {
   private lastRequested: Date|null = null;
   private bufferSource = new MediaSource();
   private sourceBuffer: SourceBuffer|null;
-  private isLive = true;
+  isLive = true;
   isInitialized = false;
   isUnsupportedBrowser = false;
   isPermissionDeniedError = false;
@@ -48,7 +48,7 @@ export class AppComponent {
   private playerActions: Rx.Observable<PlayerAction>;
 
   constructor() {
-    this.target = 0;
+    this.targetMs = 0;
     this.skip = false;
     this.mediaStream = null;
     this.adjustIntervalId = null;
@@ -204,8 +204,8 @@ export class AppComponent {
 
   changeDelay(ms): Rx.Observable<PlayerAction> {
     this.skip = true;
-    this.target = Math.max(this.target + ms, 0);
-    const headroom = this.absoluteEndMs - this.target;
+    this.targetMs = Math.max(this.targetMs + ms, 0);
+    const headroom = this.absoluteEndMs - this.targetMs;
     if (headroom < 0) {
       const periods = Math.floor(-headroom / 1000) + 1;
       const x = new Date();
@@ -229,13 +229,13 @@ export class AppComponent {
               }
             }));
     } else {
-      if (this.target === 0) {
+      if (this.targetMs === 0) {
         return Rx.Observable.from([{kind: ('SetLive' as 'SetLive')}]);
       }
       return Rx.Observable.from([
         {
           kind: 'SetTime' as 'SetTime',
-          timeS: (this.absoluteEndMs - this.target) / 1000
+          timeS: (this.absoluteEndMs - this.targetMs) / 1000
         },
         {kind: ('Play' as 'Play')}
       ]);
