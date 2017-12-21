@@ -28,6 +28,7 @@ export class AppComponent {
   private mediaStream: MediaStream;
   private adjustIntervalId: number|null;
   private video: HTMLVideoElement;
+  private lastRequested: Date|null = null;
   displayedDelay = 0;
   waitTime = 0;
 
@@ -45,6 +46,7 @@ export class AppComponent {
     this.playerActions.subscribe((action) => {
       this.executePlayerAction(action);
     });
+    Rx.Observable.interval(200).subscribe(() => this.showDelay());
   }
 
   ngOnInit() {
@@ -70,7 +72,11 @@ export class AppComponent {
           }
           recorder.start();
           recorder.requestData();
-          window.setInterval(() => recorder.requestData(), 1000);
+          Rx.Observable.interval(1000)
+            .subscribe(() => {
+              recorder.requestData();
+              this.lastRequested = new Date();
+            })
           this.video.play();
         });
         this.video.src = window.URL.createObjectURL(source);
@@ -138,9 +144,9 @@ export class AppComponent {
   changeDelay(ms): Rx.Observable<PlayerAction> {
     this.skip = true;
     this.target = Math.max(this.target + ms, 0);
-    const headroom = this.video.buffered.end(0) * 1000 - this.target;
+    const headroom = this.absoluteEndMs - this.target;
     if (headroom < 0) {
-      console.log('a ---->', -headroom % 1000, Math.floor(-headroom / 1000) + 1)
+      console.log('a ---->', (-headroom) % 1000, Math.floor(-headroom / 1000) + 1)
       const periods = Math.floor(-headroom / 1000) + 1;
       const x = new Date();
       console.log(-1, x.getSeconds(), x.getMilliseconds());
@@ -148,7 +154,7 @@ export class AppComponent {
         {kind: 'Pause' as 'Pause'},
         {kind: ('SetWaiting' as 'SetWaiting'), timeS: periods},
       ]).concat(
-        Rx.Observable.timer(-headroom % 1000, 1000)
+        Rx.Observable.timer((-headroom) % 1000, 1000)
             .take(periods)
             .switchMap((i: number): Rx.Observable<PlayerAction> => {
               const x = new Date();
@@ -171,7 +177,7 @@ export class AppComponent {
         {kind: ('Play' as 'Play')},
         {
           kind: 'SetTime' as 'SetTime',
-          timeS: this.video.buffered.end(0) - this.target / 1000
+          timeS: (this.absoluteEndMs - this.target) / 1000
         }]);
     }
   }
@@ -216,8 +222,14 @@ export class AppComponent {
     }
   }
 
+  get absoluteEndMs() {
+    const now = new Date().getTime();
+    const timeSinceLastRequestMs = now - this.lastRequested.getTime();
+    return 1000 * this.video.buffered.end(0) + timeSinceLastRequestMs;
+  }
+
   get delayMs() {
-    return 1000 * (this.video.buffered.end(0) - this.video.currentTime);
+    return this.absoluteEndMs - this.video.currentTime * 1000;
   }
 
   get isWaiting() {
@@ -226,11 +238,7 @@ export class AppComponent {
 
   showDelay() {
     if (this.video.currentTime !== undefined && this.video.buffered.length > 0) {
-      const total = this.video.buffered.end(0);
-      const currentTime = this.video.currentTime;
-      this.displayedDelay = total - this.video.currentTime;
-      document.getElementById('currentTime').innerHTML = this.video.currentTime.toPrecision(2) + 's';
-      document.getElementById('total').innerHTML = total.toPrecision(2) + 's';
+      this.displayedDelay = this.delayMs / 1000;
     }
   }
 }
