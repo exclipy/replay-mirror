@@ -1,20 +1,35 @@
-video {
+#player {
+  font-family: sans-serif;
+  display: flex;
+  flex-direction: column;
   position: fixed;
   top: 0;
+  bottom: 0;
   left: 0;
+  right: 0;
+}
+
+.flex-spacer {
+  flex: 1 1 0;
+}
+
+video {
+  flex: 0 0 auto;
   width: 100%;
   height: auto;
-  max-height: 100%;
+  max-height: 95%;
 }
 
 #controls {
-  position: absolute;
-  top: 0;
-  left: 0;
+  flex: 0 0 auto;
+  display: flex;
+}
+
+#controls * {
+  padding: 5px;
 }
 
 #waitTime {
-  font-family: sans-serif;
   background: black;
   color: white;
   opacity: 0.5;

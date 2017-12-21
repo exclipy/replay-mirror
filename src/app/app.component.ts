@@ -28,7 +28,7 @@ export class AppComponent {
   private mediaStream: MediaStream;
   private adjustIntervalId: number|null;
   private video: HTMLVideoElement;
-  displayedDelay: string;
+  displayedDelay = 0;
   waitTime = 0;
 
   private userActions = new Rx.Subject<UserAction>();
@@ -150,12 +150,15 @@ export class AppComponent {
       ]).concat(
         Rx.Observable.timer(-headroom % 1000, 1000)
             .take(periods)
-            .switchMap((i: number) => {
+            .switchMap((i: number): Rx.Observable<PlayerAction> => {
               const x = new Date();
               console.log(i, x.getSeconds(), x.getMilliseconds());
               if (i < periods - 1) {
                 return Rx.Observable.from([
-                  {kind: ('SetWaiting' as 'SetWaiting'), timeS: periods - 1 - i},
+                  {
+                    kind: ('SetWaiting' as 'SetWaiting'),
+                    timeS: periods - 1 - i
+                  }]);
               } else {
                 return Rx.Observable.from([
                   {kind: ('Play' as 'Play')},
@@ -225,9 +228,8 @@ export class AppComponent {
     if (this.video.currentTime !== undefined && this.video.buffered.length > 0) {
       const total = this.video.buffered.end(0);
       const currentTime = this.video.currentTime;
-      const delay = total - this.video.currentTime;
+      this.displayedDelay = total - this.video.currentTime;
       document.getElementById('target').innerHTML = (this.target / 1000).toPrecision(2) + 's';
-      this.displayedDelay = delay.toPrecision(2) + 's';
       document.getElementById('currentTime').innerHTML = this.video.currentTime.toPrecision(2) + 's';
       document.getElementById('total').innerHTML = total.toPrecision(2) + 's';
     }
