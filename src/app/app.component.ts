@@ -23,6 +23,7 @@ export class AppComponent {
   private mediaStream: MediaStream;
   private adjustIntervalId: number|null;
   private video: HTMLVideoElement;
+  displayedDelay: string;
 
   private userActions = new Rx.Subject<UserAction>();
   private playerActions: Rx.Observable<PlayerAction>;
@@ -196,7 +197,7 @@ export class AppComponent {
       const currentTime = this.video.currentTime;
       const delay = total - this.video.currentTime;
       document.getElementById('target').innerHTML = (this.target / 1000).toPrecision(2) + 's';
-      document.getElementById('delay').innerHTML = delay.toPrecision(2) + 's';
+      this.displayedDelay = delay.toPrecision(2) + 's';
       document.getElementById('currentTime').innerHTML = this.video.currentTime.toPrecision(2) + 's';
       document.getElementById('total').innerHTML = total.toPrecision(2) + 's';
     }
