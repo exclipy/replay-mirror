@@ -8,6 +8,7 @@ type UserAction = 'more' | 'less' | 'stop';
 type PauseAction = { kind: 'Pause' };
 type PlayAction = { kind: 'Play' };
 type StopAction = { kind: 'Stop' };
+type SetLiveAction = { kind: 'SetLive' };
 type SetTimeAction = { kind: 'SetTime', timeS: number };
 type SetWaitingAction = { kind: 'SetWaiting', timeS: number };
 
@@ -15,6 +16,7 @@ type PlayerAction = PauseAction |
   PlayAction |
   StopAction |
   SetTimeAction |
+  SetLiveAction |
   SetWaitingAction;
 
 @Component({
@@ -25,10 +27,14 @@ type PlayerAction = PauseAction |
 export class AppComponent {
   private target = 0;
   private skip = false;
-  private mediaStream: MediaStream;
+  private mediaStream: MediaStream|null;
   private adjustIntervalId: number|null;
   private video: HTMLVideoElement;
+  private liveVideo: HTMLVideoElement;
   private lastRequested: Date|null = null;
+  private bufferSource = new MediaSource();
+  private sourceBuffer: SourceBuffer|null;
+  private isLive = true;
   displayedDelay = 0;
   waitTime = 0;
 
@@ -50,23 +56,25 @@ export class AppComponent {
   }
 
   ngOnInit() {
+    this.video = document.querySelector('#video') as HTMLVideoElement;
+    this.liveVideo = document.querySelector('#live') as HTMLVideoElement;
+
     this.start();
   }
 
   start() {
-    this.video = document.querySelector('#video') as HTMLVideoElement;
     if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       navigator.mediaDevices.getUserMedia({ video: true }).then((mediaStream) => {
         this.mediaStream = mediaStream;
         const recorder = new MediaRecorder(mediaStream, {mimeType: 'video/webm; codecs=vp9'}) as any;
-        const source = new MediaSource();
-        source.addEventListener('sourceopen', () => {
-          const sourceBuffer = source.addSourceBuffer('video/webm; codecs=vp9');
+        this.bufferSource.addEventListener('sourceopen', () => {
+          console.log('sourceopen');
+          this.sourceBuffer = this.bufferSource.addSourceBuffer('video/webm; codecs=vp9');
 
           recorder.ondataavailable = (e) => {
             const fileReader = new FileReader();
             fileReader.onload = (f) => {
-              sourceBuffer.appendBuffer((f.target as any).result);
+              this.sourceBuffer.appendBuffer((f.target as any).result);
             };
             fileReader.readAsArrayBuffer(e.data);
           }
@@ -77,9 +85,11 @@ export class AppComponent {
               recorder.requestData();
               this.lastRequested = new Date();
             })
-          this.video.play();
         });
-        this.video.src = window.URL.createObjectURL(source);
+        this.isLive = true;
+        this.video.src = window.URL.createObjectURL(this.bufferSource);
+        this.liveVideo.src = window.URL.createObjectURL(this.mediaStream);
+        this.liveVideo.play();
       });
     }
 
@@ -152,6 +162,7 @@ export class AppComponent {
       console.log(-1, x.getSeconds(), x.getMilliseconds());
       return Rx.Observable.from([
         {kind: 'Pause' as 'Pause'},
+        {kind: ('SetTime' as 'SetTime'), timeS: 0},
         {kind: ('SetWaiting' as 'SetWaiting'), timeS: periods},
       ]).concat(
         Rx.Observable.timer((-headroom) % 1000, 1000)
@@ -166,32 +177,43 @@ export class AppComponent {
                     timeS: periods - 1 - i
                   }]);
               } else {
-                return Rx.Observable.from([
-                  {kind: ('Play' as 'Play')},
-                  {kind: ('SetTime' as 'SetTime'), timeS: 0}]);
+                return Rx.Observable.from([{kind: ('Play' as 'Play')}]);
               }
             }));
     } else {
       console.log('b');
+      if (this.target === 0) {
+        return Rx.Observable.from([{kind: ('SetLive' as 'SetLive')}]);
+      }
       return Rx.Observable.from([
-        {kind: ('Play' as 'Play')},
         {
           kind: 'SetTime' as 'SetTime',
           timeS: (this.absoluteEndMs - this.target) / 1000
-        }]);
+        },
+        {kind: ('Play' as 'Play')}
+      ]);
     }
   }
 
   executePlayerAction(action: PlayerAction) {
     switch (action.kind) {
+      case 'SetLive':
+        if (!this.isLive) {
+          this.liveVideo.play();
+          this.video.pause();
+          this.isLive = true;
+        }
+        break;
       case 'Play':
         console.log('playing');
+        this.switchToDelayed();
         this.waitTime = 0;
         this.video.play();
         this.showDelay();
         break;
       case 'Pause':
         console.log('pausing');
+        this.switchToDelayed();
         this.video.pause();
         this.showDelay();
         break;
@@ -222,14 +244,30 @@ export class AppComponent {
     }
   }
 
+  switchToDelayed() {
+    if (this.isLive) {
+      this.liveVideo.pause();
+      this.video.play();
+      this.isLive = false;
+    }
+  }
+
   get absoluteEndMs() {
+    if (!this.lastRequested || this.sourceBuffer.buffered.length === 0) {
+      console.log('absoluteEnd is zero');
+      return 0;
+    }
     const now = new Date().getTime();
     const timeSinceLastRequestMs = now - this.lastRequested.getTime();
-    return 1000 * this.video.buffered.end(0) + timeSinceLastRequestMs;
+    return 1000 * this.sourceBuffer.buffered.end(0) + timeSinceLastRequestMs;
   }
 
   get delayMs() {
-    return this.absoluteEndMs - this.video.currentTime * 1000;
+    if (this.isLive) {
+      return 0;
+    } else {
+      return this.absoluteEndMs - this.video.currentTime * 1000;
+    }
   }
 
   get isWaiting() {
@@ -237,8 +275,6 @@ export class AppComponent {
   }
 
   showDelay() {
-    if (this.video.currentTime !== undefined && this.video.buffered.length > 0) {
-      this.displayedDelay = this.delayMs / 1000;
-    }
+    this.displayedDelay = this.delayMs / 1000;
   }
 }

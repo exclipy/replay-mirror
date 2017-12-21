@@ -1,7 +1,7 @@
 <div id="player">
   <div class="flex-spacer"></div>
-  <video id="video" width="640" height="480" style="transform: scale(-1, 1)">
-  </video>
+  <video id="live" [hidden]="!isLive"></video>
+  <video id="video" [hidden]="isLive"></video>
   <div id="controls">
     <div class="flex-spacer"></div>
     <div style="display: none">Current: <span id="currentTime"></span></div>
