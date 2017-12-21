@@ -144,9 +144,12 @@ export class AppComponent {
             }));
     } else {
       console.log('b');
-      return Rx.Observable.from([{
-        kind: 'SetTime' as 'SetTime',
-        timeS: this.video.buffered.end(0) - this.target / 1000}]);
+      return Rx.Observable.from([
+        {kind: ('Play' as 'Play')},
+        {
+          kind: 'SetTime' as 'SetTime',
+          timeS: this.video.buffered.end(0) - this.target / 1000
+        }]);
     }
   }
 
