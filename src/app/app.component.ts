@@ -34,8 +34,8 @@ type SetWaitingAction = {
   timeS: number
 };
 
-type PlayerAction = PauseAction | PlayAction | StopRecordAction | SetTimeAction |
-    SetLiveAction | SetWaitingAction;
+type PlayerAction = PauseAction | PlayAction | StopRecordAction |
+    SetTimeAction | SetLiveAction | SetWaitingAction;
 
 @Component({
   selector: 'app-root',
@@ -46,15 +46,17 @@ export class AppComponent {
   targetMs = 0;
   private skip = false;
   private mediaStream: MediaStream|null;
+  private mediaRecorder: MediaRecorder|null;
   private adjustIntervalId: number|null;
   private video: HTMLVideoElement;
   private liveVideo: HTMLVideoElement;
   private preview: HTMLVideoElement;
-  private lastRequested: Date|null = null;
+  private lastReceived: Date|null = null;
   private bufferSource = new MediaSource();
   private sourceBuffer: SourceBuffer|null;
   isEnded = false;
   isStopped = false;
+  isStalled = false;
   isLive = true;
   isInitialized = false;
   isUnsupportedBrowser = false;
@@ -85,8 +87,10 @@ export class AppComponent {
     this.video = document.querySelector('#video') as HTMLVideoElement;
     this.liveVideo = document.querySelector('#live') as HTMLVideoElement;
     this.preview = document.querySelector('#preview') as HTMLVideoElement;
+    this.video
+        .addEventListener('stalled', () => { this.isStalled = true; })
 
-    this.start();
+            this.start();
   }
 
   getMimeType(): string|undefined {
@@ -109,23 +113,29 @@ export class AppComponent {
     navigator.mediaDevices.getUserMedia({video: true})
         .then((mediaStream) => {
           this.mediaStream = mediaStream;
-          const recorder =
+          this.mediaRecorder =
               new MediaRecorder(mediaStream, {mimeType: mimeType}) as any;
           this.bufferSource.addEventListener('sourceopen', () => {
             this.sourceBuffer = this.bufferSource.addSourceBuffer(mimeType);
 
-            recorder.ondataavailable = (e) => {
-              this.lastRequested = new Date();
+            this.mediaRecorder.ondataavailable = (e) => {
+              if (this.isEnded) {
+                return;
+              }
+              this.lastReceived = new Date();
               const fileReader = new FileReader();
               fileReader.onload = (f) => {
                 this.sourceBuffer.appendBuffer((f.target as any).result);
               };
               fileReader.readAsArrayBuffer(e.data);
             };
-            recorder.start();
-            recorder.requestData();
-            Observable.interval(1000).subscribe(
-                () => { recorder.requestData(); });
+            this.mediaRecorder.start();
+            this.mediaRecorder.requestData();
+            Observable.interval(1000).subscribe(() => {
+              if (!this.isEnded) {
+                this.mediaRecorder.requestData();
+              }
+            });
             this.isInitialized = true;
           });
           this.isLive = true;
@@ -183,7 +193,10 @@ export class AppComponent {
 
   more() { this.userActions.next('more'); }
 
-  stop() { this.video.pause(); this.isStopped = true; }
+  stop() {
+    this.video.pause();
+    this.isStopped = true;
+  }
 
   stopRecord() { this.userActions.next('stopRecord'); }
 
@@ -214,8 +227,8 @@ export class AppComponent {
       case 'more':
         return this.changeDelay(5000);
       case 'stopRecord':
-        return Observable.from(
-            [{kind: 'StopRecord' as 'StopRecord'}]).concat(this.changeDelay(0, true));
+        return Observable.from([{kind: 'StopRecord' as 'StopRecord'}])
+            .concat(this.changeDelay(0, true));
       default:
         const checkExhaustive: never = action;
     }
@@ -223,7 +236,9 @@ export class AppComponent {
 
   changeDelay(ms, noWait = false): Observable<PlayerAction> {
     this.skip = true;
-    this.targetMs = Math.max(this.targetMs + ms, 0);
+    this.targetMs = this.isEnded ?
+        Math.max(this.delayMs + ms, this.timeSinceLastReceivedMs) :
+        Math.max(this.targetMs + ms, 0);
     if (noWait || this.isEnded) {
       console.log('stopping', this.targetMs);
       this.targetMs = Math.min(this.targetMs, this.absoluteEndMs);
@@ -252,7 +267,7 @@ export class AppComponent {
                         }
                       }));
     } else {
-      if (this.targetMs === 0) {
+      if (this.timeSinceLastReceivedMs > this.targetMs) {
         return Observable.from([{kind: ('SetLive' as 'SetLive')}]);
       }
       return Observable.from([
@@ -280,7 +295,7 @@ export class AppComponent {
         console.log('playing');
         this.switchToDelayed();
         this.waitTime = 0;
-        this.video.play();
+        this.isStalled = false;
         this.showDelay();
         break;
       case 'Pause':
@@ -304,10 +319,14 @@ export class AppComponent {
         console.log('stopping');
         this.isEnded = true;
         this.showPreview = false;
+        this.switchToDelayed();
         if (this.mediaStream) {
           for (const mediaStreamTrack of this.mediaStream.getTracks()) {
             mediaStreamTrack.stop();
           }
+        }
+        if (this.mediaRecorder) {
+          this.mediaRecorder.stop();
         }
         if (this.adjustIntervalId) {
           window.clearInterval(this.adjustIntervalId);
@@ -326,17 +345,24 @@ export class AppComponent {
     }
   }
 
+  get isAtEnd() {
+    return this.isLive || this.isStalled;
+  }
+
+  get timeSinceLastReceivedMs() {
+    const now = new Date().getTime();
+    return now - this.lastReceived.getTime();
+  }
+
   get absoluteEndMs() {
-    if (!this.lastRequested || this.sourceBuffer.buffered.length === 0) {
+    if (!this.lastReceived || this.sourceBuffer.buffered.length === 0) {
       return 0;
     }
     const result = 1000 * this.sourceBuffer.buffered.end(0);
-    if (this.isEnded) {
-      return result;
-    }
-    const now = new Date().getTime();
-    const timeSinceLastRequestMs = now - this.lastRequested.getTime();
-    return result + timeSinceLastRequestMs;
+    //    if (this.isEnded) {
+    //      return result;
+    //    }
+    return result + this.timeSinceLastReceivedMs;
   }
 
   get delayMs() {

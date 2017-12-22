@@ -48,6 +48,9 @@ video {
   text-align: center;
   font-size: 32px;
   border: 0;
+}
+
+#controls button:enabled {
   cursor: pointer;
 }
 
