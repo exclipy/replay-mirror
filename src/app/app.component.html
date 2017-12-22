@@ -13,7 +13,7 @@
     <div [hidden]="isStopped">Target: {{(targetMs / 1000) | number:'1.0-1'}}</div>
     <div [hidden]="isStopped">Delay: {{displayedDelay | number:'1.0-1'}}</div>
     <button (click)="more()" class="skip" [hidden]="isStopped"><app-icon pic="back5"></app-icon></button>
-    <button (click)="less()" class="skip" [hidden]="isStopped"><app-icon pic="skip5"></app-icon></button>
+    <button (click)="less()" class="skip" [hidden]="isStopped" [disabled]="isLive"><app-icon pic="skip5"></app-icon></button>
     <button (click)="stopRecord()" [hidden]="isEnded"><app-icon pic="stoprecord"></app-icon></button>
     <button (click)="stop()" [hidden]="!isEnded || isStopped"><app-icon pic="stop"></app-icon></button>
   </div>

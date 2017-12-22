@@ -58,14 +58,18 @@ video {
   min-width: 64px;
 }
 
-#controls button:hover,
+#controls button:enabled:hover,
 #controls button:focus {
   z-index: 10;
   box-shadow: 2px 2px 4px #111;
 }
 
-#controls button:hover {
+#controls button:enabled:hover {
   background-color: #444;
+}
+
+#controls button:disabled {
+  opacity: 0.5;
 }
 
 #controls button:focus {
