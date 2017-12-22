@@ -53,6 +53,7 @@ export class AppComponent {
   private lastRequested: Date|null = null;
   private bufferSource = new MediaSource();
   private sourceBuffer: SourceBuffer|null;
+  isEnded = false;
   isLive = true;
   isInitialized = false;
   isUnsupportedBrowser = false;
@@ -113,6 +114,7 @@ export class AppComponent {
             this.sourceBuffer = this.bufferSource.addSourceBuffer(mimeType);
 
             recorder.ondataavailable = (e) => {
+              this.lastRequested = new Date();
               const fileReader = new FileReader();
               fileReader.onload = (f) => {
                 this.sourceBuffer.appendBuffer((f.target as any).result);
@@ -121,10 +123,8 @@ export class AppComponent {
             };
             recorder.start();
             recorder.requestData();
-            Observable.interval(1000).subscribe(() => {
-              recorder.requestData();
-              this.lastRequested = new Date();
-            });
+            Observable.interval(1000).subscribe(
+                () => { recorder.requestData(); });
             this.isInitialized = true;
           });
           this.isLive = true;
@@ -211,15 +211,20 @@ export class AppComponent {
       case 'more':
         return this.changeDelay(5000);
       case 'stop':
-        return Observable.from([{kind: 'Stop' as 'Stop'}]);
+        return Observable.from(
+            [{kind: 'Stop' as 'Stop'}]).concat(this.changeDelay(0, true)]);
       default:
         const checkExhaustive: never = action;
     }
   }
 
-  changeDelay(ms): Observable<PlayerAction> {
+  changeDelay(ms, noWait = false): Observable<PlayerAction> {
     this.skip = true;
     this.targetMs = Math.max(this.targetMs + ms, 0);
+    if (noWait || this.isEnded) {
+      console.log('stopping', this.targetMs);
+      this.targetMs = Math.min(this.targetMs, this.absoluteEndMs);
+    }
     const headroom = this.absoluteEndMs - this.targetMs;
     if (headroom < 0) {
       const periods = Math.floor(-headroom / 1000) + 1;
@@ -294,6 +299,7 @@ export class AppComponent {
         break;
       case 'Stop':
         console.log('stopping');
+        this.isEnded = true;
         this.showPreview = false;
         if (this.mediaStream) {
           for (const mediaStreamTrack of this.mediaStream.getTracks()) {
@@ -321,9 +327,13 @@ export class AppComponent {
     if (!this.lastRequested || this.sourceBuffer.buffered.length === 0) {
       return 0;
     }
+    const result = 1000 * this.sourceBuffer.buffered.end(0);
+    if (this.isEnded) {
+      return result;
+    }
     const now = new Date().getTime();
     const timeSinceLastRequestMs = now - this.lastRequested.getTime();
-    return 1000 * this.sourceBuffer.buffered.end(0) + timeSinceLastRequestMs;
+    return result + timeSinceLastRequestMs;
   }
 
   get delayMs() {
