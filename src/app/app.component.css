@@ -67,7 +67,19 @@ video {
 }
 
 #controls button.skip span {
-  margin-top: -4px;
+  margin: -4px 0 0 -3px;
+  font-size: 24px;
+}
+
+#controls button.skip::after {
+  content: '5';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  line-height: 32px;
+  font-size: 8px;
 }
 
 #controls button#preview-button {
