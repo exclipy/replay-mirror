@@ -4,16 +4,16 @@
   <video id="video" [hidden]="isLive"></video>
   <div id="controls" [style.visibility]="isInitialized ? 'visible' : 'hidden'">
     <video id="preview" width="320" height="240" [hidden]="!showPreview"></video>
-    <button (click)="togglePreview()" [hidden]="isLive">{{showPreview ? 'close' : 'preview'}}</button>
+    <button (click)="togglePreview()" [hidden]="isLive" id="preview-button"><span>{{showPreview ? '✕' : '◱'}}</span></button>
     <div class="flex-spacer"></div>
     <div style="display: none">Current: <span id="currentTime"></span></div>
     <div style="display: none">Total: <span id="total"></span></div>
     <div [hidden]="isWaiting" id="waitTime"><div>{{waitTime}}</div></div>
-    <span>Target: {{(targetMs / 1000) | number:'1.0-1'}}</span>
-    <span>Delay: {{displayedDelay | number:'1.0-1'}}</span>
-    <button (click)="more()">+5s</button>
-    <button (click)="less()">-5s</button>
-    <button (click)="stop()">stop</button>
+    <div>Target: {{(targetMs / 1000) | number:'1.0-1'}}</div>
+    <div>Delay: {{displayedDelay | number:'1.0-1'}}</div>
+    <button (click)="more()" class="skip"><span>⟲</span></button>
+    <button (click)="less()" class="skip"><span>⟳</span></button>
+    <button (click)="stop()"><span>■</span></button>
   </div>
   <div class="flex-spacer"></div>
 </div>

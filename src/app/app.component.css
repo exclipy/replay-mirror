@@ -27,14 +27,51 @@ video {
 #controls {
   flex: 0 0 auto;
   display: flex;
-}
-
-#controls * {
-  padding: 5px;
+  background: #333;
 }
 
 #controls button {
   position: relative;
+  width: 32px;
+  height: 32px;
+  line-height: 1;
+  text-align: center;
+  font-size: 16px;
+  border: 0;
+  cursor: pointer;
+}
+
+#controls div {
+  padding: 0 5px;
+  line-height: 32px;
+  font-size: 13px;
+  min-width: 64px;
+}
+
+#controls button:hover,
+#controls button:focus {
+  z-index: 10;
+  box-shadow: 4px 4px 4px #2f2f2f;
+}
+
+#controls button:hover {
+  background-color: #444;
+}
+
+#controls button:focus {
+  outline: 1px solid #666;
+}
+
+#controls button span {
+  display: block;
+}
+
+#controls button.skip span {
+  margin-top: -4px;
+}
+
+#controls button#preview-button {
+  font-size: 20px;
 }
 
 #controls #preview {
@@ -45,11 +82,9 @@ video {
   background: #333;
 }
 
-#waitTime {
-  background: black;
+#controls #waitTime {
+  background: rgba(0, 0, 0, 0.5);
   color: white;
-  opacity: 0.5;
-  font-size: 100px;
   text-align: center;
   position: fixed;
   height: 300px;
@@ -61,7 +96,8 @@ video {
   border-radius: 150px;
 }
 
-#waitTime div {
+#controls #waitTime div {
+  font-size: 100px;
   position: absolute;
   left: 0;
   right: 0;
