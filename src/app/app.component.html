@@ -1,7 +1,8 @@
 <div id="player" [style.visibility]="isError ? 'hidden' : 'visible'">
-  <div class="flex-spacer"></div>
-  <video id="live" [hidden]="!isLive"></video>
-  <video id="video" [hidden]="isLive"></video>
+  <div id="video-container">
+    <video id="live" [hidden]="!isLive"></video>
+    <video id="video" [hidden]="isLive"></video>
+  </div>
   <div id="controls" [style.visibility]="isInitialized ? 'visible' : 'hidden'">
     <video id="preview" width="320" height="240" [hidden]="!showPreview"></video>
     <button (click)="togglePreview()" [hidden]="isLive" id="preview-button"><span>{{showPreview ? '✕' : '◱'}}</span></button>
@@ -15,7 +16,6 @@
     <button (click)="less()" class="skip"><app-icon pic="skip5"></app-icon></button>
     <button (click)="stop()"><app-icon pic="stoprecord"></app-icon></button>
   </div>
-  <div class="flex-spacer"></div>
 </div>
 
 <div class="error" *ngIf="isUnsupportedBrowser">
