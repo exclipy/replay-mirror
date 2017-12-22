@@ -143,6 +143,7 @@ export class AppComponent {
             this.isNotFoundError = true;
           } else {
             this.isUnknownError = true;
+            console.log(e);
           }
         });
 

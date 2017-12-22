@@ -32,18 +32,18 @@ video {
 
 #controls button {
   position: relative;
-  width: 32px;
-  height: 32px;
+  width: 48px;
+  height: 48px;
   line-height: 1;
   text-align: center;
-  font-size: 16px;
+  font-size: 32px;
   border: 0;
   cursor: pointer;
 }
 
 #controls div {
   padding: 0 5px;
-  line-height: 32px;
+  line-height: 48px;
   font-size: 13px;
   min-width: 64px;
 }
@@ -51,7 +51,7 @@ video {
 #controls button:hover,
 #controls button:focus {
   z-index: 10;
-  box-shadow: 4px 4px 4px #2f2f2f;
+  box-shadow: 2px 2px 4px #111;
 }
 
 #controls button:hover {
@@ -64,26 +64,6 @@ video {
 
 #controls button span {
   display: block;
-}
-
-#controls button.skip span {
-  margin: -4px 0 0 -3px;
-  font-size: 24px;
-}
-
-#controls button.skip::after {
-  content: '5';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  line-height: 32px;
-  font-size: 8px;
-}
-
-#controls button#preview-button {
-  font-size: 20px;
 }
 
 #controls #preview {
