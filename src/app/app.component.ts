@@ -1,5 +1,13 @@
+import 'rxjs/add/observable/interval';
+import 'rxjs/add/observable/from';
+import 'rxjs/add/observable/timer';
+import 'rxjs/add/operator/take';
+import 'rxjs/add/operator/concat';
+import 'rxjs/add/operator/switchMap';
+
 import {Component} from '@angular/core';
-import * as Rx from 'rxjs/Rx';
+import {Observable} from 'rxjs/Observable';
+import {Subject} from 'rxjs/Subject';
 
 declare var MediaRecorder: any;
 
@@ -55,8 +63,8 @@ export class AppComponent {
   waitTime = 0;
   showPreview_ = false;
 
-  private userActions = new Rx.Subject<UserAction>();
-  private playerActions: Rx.Observable<PlayerAction>;
+  private userActions = new Subject<UserAction>();
+  private playerActions: Observable<PlayerAction>;
 
   constructor() {
     this.targetMs = 0;
@@ -68,7 +76,7 @@ export class AppComponent {
         (userAction) => this.executeUserAction(userAction));
     this.playerActions.subscribe(
         (action) => { this.executePlayerAction(action); });
-    Rx.Observable.interval(200).subscribe(() => this.showDelay());
+    Observable.interval(200).subscribe(() => this.showDelay());
   }
 
   ngOnInit() {
@@ -113,7 +121,7 @@ export class AppComponent {
             };
             recorder.start();
             recorder.requestData();
-            Rx.Observable.interval(1000).subscribe(() => {
+            Observable.interval(1000).subscribe(() => {
               recorder.requestData();
               this.lastRequested = new Date();
             });
@@ -195,51 +203,50 @@ export class AppComponent {
         this.isUnsupportedBrowser;
   }
 
-  executeUserAction(action: UserAction): Rx.Observable<PlayerAction> {
+  executeUserAction(action: UserAction): Observable<PlayerAction> {
     switch (action) {
       case 'less':
         return this.changeDelay(-5000);
       case 'more':
         return this.changeDelay(5000);
       case 'stop':
-        return Rx.Observable.from([{kind: 'Stop' as 'Stop'}]);
+        return Observable.from([{kind: 'Stop' as 'Stop'}]);
       default:
         const checkExhaustive: never = action;
     }
   }
 
-  changeDelay(ms): Rx.Observable<PlayerAction> {
+  changeDelay(ms): Observable<PlayerAction> {
     this.skip = true;
     this.targetMs = Math.max(this.targetMs + ms, 0);
     const headroom = this.absoluteEndMs - this.targetMs;
     if (headroom < 0) {
       const periods = Math.floor(-headroom / 1000) + 1;
       const x = new Date();
-      return Rx.Observable
+      return Observable
           .from([
             {kind: 'Pause' as 'Pause'},
             {kind: ('SetTime' as 'SetTime'), timeS: 0},
             {kind: ('SetWaiting' as 'SetWaiting'), timeS: periods},
           ])
-          .concat(Rx.Observable.timer((-headroom) % 1000, 1000)
+          .concat(Observable.timer((-headroom) % 1000, 1000)
                       .take(periods)
-                      .switchMap((i: number): Rx.Observable<PlayerAction> => {
+                      .switchMap((i: number): Observable<PlayerAction> => {
                         const x = new Date();
                         if (i < periods - 1) {
-                          return Rx.Observable.from([{
+                          return Observable.from([{
                             kind: ('SetWaiting' as 'SetWaiting'),
                             timeS: periods - 1 - i
                           }]);
                         } else {
-                          return Rx.Observable.from(
-                              [{kind: ('Play' as 'Play')}]);
+                          return Observable.from([{kind: ('Play' as 'Play')}]);
                         }
                       }));
     } else {
       if (this.targetMs === 0) {
-        return Rx.Observable.from([{kind: ('SetLive' as 'SetLive')}]);
+        return Observable.from([{kind: ('SetLive' as 'SetLive')}]);
       }
-      return Rx.Observable.from([
+      return Observable.from([
         {
           kind: 'SetTime' as 'SetTime',
           timeS: (this.absoluteEndMs - this.targetMs) / 1000
