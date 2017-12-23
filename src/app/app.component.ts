@@ -11,7 +11,7 @@ import {Subject} from 'rxjs/Subject';
 
 declare var MediaRecorder: any;
 
-type UserAction = 'more' | 'less' | 'stopRecord';
+type UserAction = 'more' | 'less' | 'stopRecord' | 'stop';
 
 type PauseAction = {
   kind: 'Pause'
@@ -21,6 +21,9 @@ type PlayAction = {
 };
 type StopRecordAction = {
   kind: 'StopRecord'
+};
+type StopAction = {
+  kind: 'Stop'
 };
 type SetLiveAction = {
   kind: 'SetLive'
@@ -226,6 +229,8 @@ export class AppComponent {
       case 'stopRecord':
         return Observable.from([{kind: 'StopRecord' as 'StopRecord'}])
             .concat(this.changeDelay(0, true));
+      case 'stop':
+        return Observable.from([{kind: 'Stop'}]);
       default:
         const checkExhaustive: never = action;
     }
@@ -312,8 +317,13 @@ export class AppComponent {
         this.waitTime = action.timeS;
         this.showDelay();
         break;
-      case 'StopRecord':
+      case 'Stop':
         console.log('stopping');
+        this.video.pause();
+        this.isStopped = true;
+        break;
+      case 'StopRecord':
+        console.log('stop recording');
         this.isEnded = true;
         this.showPreview = false;
         this.switchToDelayed();
