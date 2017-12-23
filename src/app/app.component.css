@@ -54,11 +54,11 @@ video {
   cursor: pointer;
 }
 
-#controls div {
+#controls div.info {
   padding: 0 5px;
   line-height: 48px;
   font-size: 13px;
-  min-width: 64px;
+  min-width: 96px;
 }
 
 #controls button:enabled:hover,

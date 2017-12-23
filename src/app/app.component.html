@@ -1,7 +1,10 @@
 <div id="player" [style.visibility]="isError ? 'hidden' : 'visible'">
   <div id="video-container">
     <video id="live" [hidden]="!isLive"></video>
-    <video id="video" [hidden]="isLive || isStopped" (stalled)="stalled()"></video>
+    <video id="video"
+           [hidden]="isLive || isStopped"
+           (stalled)="stalled()"
+           (timeupdate)="showDelay()"></video>
   </div>
 
   <div id="controls" [style.visibility]="isInitialized ? 'visible' : 'hidden'">
@@ -10,11 +13,11 @@
       <span>{{isPreviewShown ? '✕' : '◱'}}</span>
     </button>
     <div class="flex-spacer"></div>
-    <div hidden="true">Current: <span id="currentTime"></span></div>
-    <div hidden="true">Total: <span id="total"></span></div>
+    <div class="info">Current: {{currentTime | number:'1.0-1'}}</div>
+    <div class="info">Total: {{totalTime | number:'1.0-1'}}</div>
     <div [hidden]="isWaiting" id="waitTime"><div>{{waitTime}}</div></div>
-    <div [hidden]="isStopped">Target: {{(targetMs / 1000) | number:'1.0-1'}}</div>
-    <div [hidden]="isStopped">Delay: {{displayedDelay | number:'1.0-1'}}</div>
+    <div class="info" [hidden]="isStopped">Target: {{(targetMs / 1000) | number:'1.0-1'}}</div>
+    <div class="info" [hidden]="isStopped">Delay: {{displayedDelay | number:'1.0-1'}}</div>
     <button (click)="more()" class="skip" [hidden]="isStopped">
       <app-icon pic="back5"></app-icon>
     </button>

@@ -67,6 +67,8 @@ export class AppComponent {
   isPermissionDeniedError = false;
   isNotFoundError = false;
   isUnknownError = false;
+  currentTime = 0;
+  totalTime = 0;
   displayedDelay = 0;
   waitTime = 0;
   showPreview_ = false;
@@ -84,7 +86,6 @@ export class AppComponent {
         (userAction) => this.executeUserAction(userAction));
     this.playerActions.subscribe(
         (action) => { this.executePlayerAction(action); });
-    Observable.interval(200).subscribe(() => this.showDelay());
   }
 
   ngOnInit() {
@@ -123,6 +124,7 @@ export class AppComponent {
               if (this.isEnded) {
                 return;
               }
+              this.showDelay();
               this.lastReceived = new Date();
               const fileReader = new FileReader();
               fileReader.onload = (f) => {
@@ -299,26 +301,23 @@ export class AppComponent {
       case 'Play':
         console.log('playing');
         this.switchToDelayed();
+        this.video.play();
         this.waitTime = 0;
         this.isStalled = false;
-        this.showDelay();
         break;
       case 'Pause':
         console.log('pausing');
         this.switchToDelayed();
         this.video.pause();
-        this.showDelay();
         break;
       case 'SetTime':
         console.log('setting time', action);
         this.video.currentTime = action.timeS;
-        this.showDelay();
         break;
       case 'SetWaiting':
         console.log('setting waiting', action);
         this.video.currentTime = 0;
         this.waitTime = action.timeS;
-        this.showDelay();
         break;
       case 'Stop':
         console.log('stopping');
@@ -383,5 +382,11 @@ export class AppComponent {
 
   get isWaiting() { return this.waitTime <= 0; }
 
-  showDelay() { this.displayedDelay = this.delayMs / 1000; }
+  showDelay() {
+    this.totalTime = this.sourceBuffer.buffered.length ?
+        this.sourceBuffer.buffered.end(0) :
+        0;
+    this.currentTime = this.isLive ? this.totalTime : this.video.currentTime;
+    this.displayedDelay = this.delayMs / 1000;
+  }
 }
