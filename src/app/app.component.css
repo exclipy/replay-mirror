@@ -91,7 +91,7 @@ video {
   background: #333;
 }
 
-#controls #waitTime {
+#waitTime {
   background: rgba(0, 0, 0, 0.5);
   color: white;
   text-align: center;
@@ -105,7 +105,7 @@ video {
   border-radius: 150px;
 }
 
-#controls #waitTime div {
+#waitTime div {
   font-size: 100px;
   position: absolute;
   left: 0;

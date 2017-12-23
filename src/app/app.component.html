@@ -7,15 +7,16 @@
            (timeupdate)="showDelay()"></video>
   </div>
 
+  <div [hidden]="isWaiting" id="waitTime"><div>{{waitTime}}</div></div>
+
   <div id="controls" [style.visibility]="isInitialized ? 'visible' : 'hidden'">
     <video id="preview" width="320" height="240" [hidden]="!isPreviewShown"></video>
     <button (click)="togglePreview()" [hidden]="isLive || isEnded" id="preview-button">
       <span>{{isPreviewShown ? '✕' : '◱'}}</span>
     </button>
     <div class="flex-spacer"></div>
-    <div class="info">Current: {{currentTime | number:'1.0-1'}}</div>
-    <div class="info">Total: {{totalTime | number:'1.0-1'}}</div>
-    <div [hidden]="isWaiting" id="waitTime"><div>{{waitTime}}</div></div>
+    <div class="info" [hidden]="isStopped">Current: {{currentTime | number:'1.0-1'}}</div>
+    <div class="info" [hidden]="isStopped">Total: {{totalTime | number:'1.0-1'}}</div>
     <div class="info" [hidden]="isStopped">Target: {{(targetMs / 1000) | number:'1.0-1'}}</div>
     <div class="info" [hidden]="isStopped">Delay: {{displayedDelay | number:'1.0-1'}}</div>
     <button (click)="more()" class="skip" [hidden]="isStopped">
