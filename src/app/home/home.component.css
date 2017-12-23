@@ -1,0 +1,12 @@
+#info {
+  font-family: sans-serif;
+  text-align: left;
+  width: 50%;
+  max-width: 800px;
+  margin: 300px auto 0;
+}
+
+.action {
+  margin: 48px 0;
+  text-align: center;
+}

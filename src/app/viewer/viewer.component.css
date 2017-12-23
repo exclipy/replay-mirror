@@ -44,14 +44,19 @@ video {
   position: relative;
   width: 48px;
   height: 48px;
-  line-height: 1;
-  text-align: center;
-  font-size: 32px;
-  border: 0;
+  padding: 0;
 }
 
-#controls button:enabled {
-  cursor: pointer;
+app-icon {
+  display: block;
+  width: 24px;
+  height: 24px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto auto;
 }
 
 #controls div.info {
@@ -59,24 +64,6 @@ video {
   line-height: 48px;
   font-size: 13px;
   min-width: 96px;
-}
-
-#controls button:enabled:hover,
-#controls button:focus {
-  z-index: 10;
-  box-shadow: 2px 2px 4px #111;
-}
-
-#controls button:enabled:hover {
-  background-color: #444;
-}
-
-#controls button:disabled {
-  opacity: 0.5;
-}
-
-#controls button:focus {
-  outline: 1px solid #666;
 }
 
 #controls button span {

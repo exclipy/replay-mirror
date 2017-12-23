@@ -4,7 +4,45 @@ body {
   color: white;
 }
 
-button {
+button, a.button {
+  line-height: 48px;
+  text-decoration: none;
+  text-align: center;
+  border: 0;
   background-color: #333;
   color: white;
+  height: 48px;
+  padding: 0 32px;
+  font-size: 24px;
+  outline: none;
+}
+
+a.button {
+  display: inline-block;
+}
+
+button:enabled {
+  cursor: pointer;
+}
+
+button:enabled:hover,
+button:focus,
+a.button:hover,
+a.button:focus {
+  z-index: 10;
+  box-shadow: 2px 2px 4px #111;
+}
+
+button:enabled:hover,
+a:hover {
+  background-color: #444;
+}
+
+button:disabled {
+  opacity: 0.5;
+}
+
+button:focus
+a.button:focus {
+  outline: 1px solid #666;
 }
