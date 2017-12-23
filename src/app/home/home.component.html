@@ -1,9 +1,15 @@
 <div id="info">
   <p>This is a simple web application that displays video from your webcam with a delay.</p>
-  <p>
-  On the next screen make sure you give it permission to access your webcam.
-  Your webcam will used purely for local playback and the captured video will be lost as soon
-  as you close the browser tab.  This app does not send anything over the network.
-  </p>
-  <p class="action"><a class="button" routerLink="/run">Start</a>
+  <div *ngIf="!isUnsupportedBrowser">
+    <p>
+    On the next screen make sure you give it permission to access your webcam.
+    Your webcam will used purely for local playback and the captured video will be lost as soon
+    as you close the browser tab.  This app does not send anything over the network.
+    </p>
+    <p class="action"><a class="button" routerLink="/run">Start</a>
+  </div>
+  <div *ngIf="isUnsupportedBrowser">
+    Unfortunately, your browser is missing the capability to run this app. For now, it
+    only works in recent versions of Chrome or Firefox.
+  </div>
 </div>

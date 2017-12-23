@@ -5,9 +5,10 @@ import 'rxjs/add/operator/take';
 import 'rxjs/add/operator/concat';
 import 'rxjs/add/operator/switchMap';
 
-import {Component} from '@angular/core';
+import {Component, Inject} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
+import {BrowserParamsService} from '../browser-params.service'
 
 declare type MediaRecorder = any;
 declare var MediaRecorder: any;
@@ -72,7 +73,7 @@ export class ViewerComponent {
   private userActions = new Subject<UserAction>();
   private playerActions: Observable<PlayerAction>;
 
-  constructor() {
+  constructor(@Inject(BrowserParamsService) private browserParams: BrowserParamsService) {
     this.targetMs = 0;
     this.skip = false;
     this.mediaStream = null;
@@ -82,31 +83,20 @@ export class ViewerComponent {
         (userAction) => this.executeUserAction(userAction));
     this.playerActions.subscribe(
         (action) => { this.executePlayerAction(action); });
+
+    this.isUnsupportedBrowser = browserParams.isUnsupportedBrowser;
   }
 
   ngOnInit() {
+    if (this.isUnsupportedBrowser) return;
     this.video = document.querySelector('#video') as HTMLVideoElement;
     this.liveVideo = document.querySelector('#live') as HTMLVideoElement;
     this.preview = document.querySelector('#preview') as HTMLVideoElement;
     this.start();
   }
 
-  getMimeType(): string|undefined {
-    try {
-      return ['video/webm\;codecs=vp9', 'video/webm\;codecs=vp8'].find(
-          (mimeType) => MediaRecorder.isTypeSupported(mimeType));
-    } catch (e) {
-      return undefined;
-    }
-  }
-
   start() {
-    const mimeType = this.getMimeType();
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia ||
-        !mimeType) {
-      this.isUnsupportedBrowser = true;
-      return;
-    }
+    const mimeType = this.browserParams.mimeType;
 
     navigator.mediaDevices.getUserMedia({video: true})
         .then((mediaStream) => {

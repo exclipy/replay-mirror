@@ -6,6 +6,7 @@ import {AppComponent} from './app.component';
 import {HomeComponent} from './home/home.component';
 import {IconComponent} from './icon/icon.component';
 import {ViewerComponent} from './viewer/viewer.component';
+import {BrowserParamsService} from './browser-params.service';
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
@@ -15,7 +16,7 @@ const appRoutes: Routes = [
 @NgModule({
   declarations: [AppComponent, IconComponent, ViewerComponent, HomeComponent],
   imports: [BrowserModule, RouterModule.forRoot(appRoutes)],
-  providers: [],
+  providers: [BrowserParamsService],
   bootstrap: [AppComponent]
 })
 export class AppModule {
