@@ -3,6 +3,8 @@ body {
   background-color: #222;
   color: white;
   line-height: 1.3;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
 }
 
 button, a.button {
