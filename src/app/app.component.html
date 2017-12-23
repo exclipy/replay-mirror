@@ -5,9 +5,9 @@
   </div>
 
   <div id="controls" [style.visibility]="isInitialized ? 'visible' : 'hidden'">
-    <video id="preview" width="320" height="240" [hidden]="!showPreview"></video>
+    <video id="preview" width="320" height="240" [hidden]="!isPreviewShown"></video>
     <button (click)="togglePreview()" [hidden]="isLive || isEnded" id="preview-button">
-      <span>{{showPreview ? '✕' : '◱'}}</span>
+      <span>{{isPreviewShown ? '✕' : '◱'}}</span>
     </button>
     <div class="flex-spacer"></div>
     <div hidden="true">Current: <span id="currentTime"></span></div>

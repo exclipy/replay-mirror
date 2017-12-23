@@ -198,14 +198,14 @@ export class AppComponent {
 
   stopRecord() { this.userActions.next('stopRecord'); }
 
-  togglePreview() { this.showPreview = !this.showPreview; }
+  togglePreview() { this.isPreviewShown = !this.isPreviewShown; }
 
   stalled() {
     console.log('stalled');
     this.isStalled = true;
   }
 
-  set showPreview(value) {
+  set isPreviewShown(value) {
     if (this.preview) {
       if (value) {
         this.preview.play();
@@ -216,7 +216,7 @@ export class AppComponent {
     this.showPreview_ = value;
   }
 
-  get showPreview() { return this.showPreview_; }
+  get isPreviewShown() { return this.showPreview_; }
 
   get isError() {
     return this.isNotFoundError || this.isPermissionDeniedError ||
@@ -290,7 +290,7 @@ export class AppComponent {
       case 'SetLive':
         console.log('set live');
         if (!this.isLive) {
-          this.showPreview = false;
+          this.isPreviewShown = false;
           this.liveVideo.play();
           this.video.pause();
           this.isLive = true;
@@ -328,7 +328,7 @@ export class AppComponent {
       case 'StopRecord':
         console.log('stop recording');
         this.isEnded = true;
-        this.showPreview = false;
+        this.isPreviewShown = false;
         this.switchToDelayed();
         if (this.mediaStream) {
           for (const mediaStreamTrack of this.mediaStream.getTracks()) {
