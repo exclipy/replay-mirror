@@ -1,7 +1,7 @@
 <div id="player" [style.visibility]="isError ? 'hidden' : 'visible'">
   <div id="video-container">
     <video id="live" [hidden]="!isLive"></video>
-    <video id="video" [hidden]="isLive || isStopped"></video>
+    <video id="video" [hidden]="isLive || isStopped" (stalled)="stalled()"></video>
   </div>
 
   <div id="controls" [style.visibility]="isInitialized ? 'visible' : 'hidden'">

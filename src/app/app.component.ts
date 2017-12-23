@@ -91,7 +91,6 @@ export class AppComponent {
     this.video = document.querySelector('#video') as HTMLVideoElement;
     this.liveVideo = document.querySelector('#live') as HTMLVideoElement;
     this.preview = document.querySelector('#preview') as HTMLVideoElement;
-    this.video.addEventListener('stalled', () => { this.isStalled = true; });
     this.start();
   }
 
@@ -200,6 +199,11 @@ export class AppComponent {
   stopRecord() { this.userActions.next('stopRecord'); }
 
   togglePreview() { this.showPreview = !this.showPreview; }
+
+  stalled() {
+    console.log('stalled');
+    this.isStalled = true;
+  }
 
   set showPreview(value) {
     if (this.preview) {
