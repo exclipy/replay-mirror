@@ -9,6 +9,7 @@ import {Component} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 
+declare type MediaRecorder;
 declare var MediaRecorder: any;
 
 type UserAction = 'more' | 'less' | 'stopRecord' | 'stop';
@@ -37,7 +38,7 @@ type SetWaitingAction = {
   timeS: number
 };
 
-type PlayerAction = PauseAction | PlayAction | StopRecordAction |
+type PlayerAction = PauseAction | PlayAction | StopAction | StopRecordAction |
     SetTimeAction | SetLiveAction | SetWaitingAction;
 
 @Component({
@@ -90,10 +91,8 @@ export class AppComponent {
     this.video = document.querySelector('#video') as HTMLVideoElement;
     this.liveVideo = document.querySelector('#live') as HTMLVideoElement;
     this.preview = document.querySelector('#preview') as HTMLVideoElement;
-    this.video
-        .addEventListener('stalled', () => { this.isStalled = true; })
-
-            this.start();
+    this.video.addEventListener('stalled', () => { this.isStalled = true; });
+    this.start();
   }
 
   getMimeType(): string|undefined {
@@ -230,7 +229,7 @@ export class AppComponent {
         return Observable.from([{kind: 'StopRecord' as 'StopRecord'}])
             .concat(this.changeDelay(0, true));
       case 'stop':
-        return Observable.from([{kind: 'Stop'}]);
+        return Observable.from([{kind: 'Stop' as 'Stop'}]);
       default:
         const checkExhaustive: never = action;
     }
