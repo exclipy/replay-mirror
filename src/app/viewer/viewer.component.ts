@@ -12,7 +12,7 @@ import {Subject} from 'rxjs/Subject';
 declare type MediaRecorder = any;
 declare var MediaRecorder: any;
 
-type UserAction = 'more' | 'less' | 'stopRecord' | 'stop';
+type UserAction = 'more' | 'less' | 'stopRecord';
 
 type PauseAction = {
   kind: 'Pause'
@@ -22,9 +22,6 @@ type PlayAction = {
 };
 type StopRecordAction = {
   kind: 'StopRecord'
-};
-type StopAction = {
-  kind: 'Stop'
 };
 type SetLiveAction = {
   kind: 'SetLive'
@@ -38,7 +35,7 @@ type SetWaitingAction = {
   timeS: number
 };
 
-type PlayerAction = PauseAction | PlayAction | StopAction | StopRecordAction |
+type PlayerAction = PauseAction | PlayAction | StopRecordAction |
     SetTimeAction | SetLiveAction | SetWaitingAction;
 
 @Component({
@@ -59,7 +56,6 @@ export class ViewerComponent {
   private bufferSource = new MediaSource();
   private sourceBuffer: SourceBuffer|null;
   isEnded = false;
-  isStopped = false;
   isStalled = false;
   isLive = true;
   isInitialized = false;
@@ -196,8 +192,6 @@ export class ViewerComponent {
 
   more() { this.userActions.next('more'); }
 
-  stop() { this.userActions.next('stop'); }
-
   stopRecord() { this.userActions.next('stopRecord'); }
 
   togglePreview() { this.isPreviewShown = !this.isPreviewShown; }
@@ -234,8 +228,6 @@ export class ViewerComponent {
       case 'stopRecord':
         return Observable.from([{kind: 'StopRecord' as 'StopRecord'}])
             .concat(this.changeDelay(0, true));
-      case 'stop':
-        return Observable.from([{kind: 'Stop' as 'Stop'}]);
       default:
         const checkExhaustive: never = action;
     }
@@ -318,11 +310,6 @@ export class ViewerComponent {
         console.log('setting waiting', action);
         this.video.currentTime = 0;
         this.waitTime = action.timeS;
-        break;
-      case 'Stop':
-        console.log('stopping');
-        this.video.pause();
-        this.isStopped = true;
         break;
       case 'StopRecord':
         console.log('stop recording');
