@@ -9,7 +9,7 @@ import {Component} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 
-declare type MediaRecorder;
+declare type MediaRecorder = any;
 declare var MediaRecorder: any;
 
 type UserAction = 'more' | 'less' | 'stopRecord' | 'stop';
