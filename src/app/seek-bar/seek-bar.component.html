@@ -10,7 +10,7 @@
   <div id="seekbar">
     <div id="buffer-bar" [style.width]="bufferBarWidth"></div>
     <div id="knob" [style.left]="knobPosition"></div>
-    <div id="fade"></div>
+    <div id="fade" [hidden]="isEnded"></div>
   </div>
   <div class="extra">&ndash;{{timeToEnd | number:'1.0-0'}}s</div>
 </div>

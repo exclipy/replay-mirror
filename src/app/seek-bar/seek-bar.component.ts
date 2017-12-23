@@ -16,7 +16,13 @@ export class SeekBarComponent implements OnInit {
 
   ngOnInit() {}
 
-  get totalWidthDurationS() { return Math.max(this.timeToEnd * 1.5, 60); }
+  get totalWidthDurationS() {
+    if (this.isEnded) {
+      return this.totalTime;
+    } else {
+      return Math.max(this.targetDelay * 1.5, 60);
+    }
+  }
 
   get knobPosition() {
     return asPercent(1 - this.timeToEnd / this.totalWidthDurationS);
@@ -24,10 +30,6 @@ export class SeekBarComponent implements OnInit {
 
   get bufferBarWidth() {
     return asPercent(Math.min(1, this.totalTime / this.totalWidthDurationS));
-  }
-
-  get canSeeAll() {
-    return this.totalTime > this.totalWidthDurationS;
   }
 
   get timeToEnd() {
