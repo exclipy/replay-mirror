@@ -27,15 +27,13 @@ button:enabled {
 }
 
 button:enabled:hover,
-button:focus,
-a.button:hover,
-a.button:focus {
+a.button:hover {
   z-index: 10;
   box-shadow: 2px 2px 4px #111;
 }
 
 button:enabled:hover,
-a:hover {
+a.button:hover {
   background-color: #444;
 }
 
@@ -43,7 +41,14 @@ button:disabled {
   opacity: 0.5;
 }
 
-button:focus
+button:enabled:focus
 a.button:focus {
   outline: 1px solid #666;
+  background-color: #444;
+}
+
+button:enabled:active,
+a.button:active {
+  box-shadow: none;
+  background-color: #2d2d2d;
 }

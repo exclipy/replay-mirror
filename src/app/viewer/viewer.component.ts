@@ -343,9 +343,6 @@ export class ViewerComponent {
       return 0;
     }
     const result = 1000 * this.sourceBuffer.buffered.end(0);
-    //    if (this.isEnded) {
-    //      return result;
-    //    }
     return result + this.timeSinceLastReceivedMs;
   }
 
