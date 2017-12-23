@@ -39,6 +39,10 @@ video {
   background: #333;
 }
 
+#controls app-seek-bar {
+  flex: 1 0 auto;
+}
+
 #controls button {
   position: relative;
   width: 48px;
@@ -56,13 +60,6 @@ app-icon {
   right: 0;
   bottom: 0;
   margin: auto auto;
-}
-
-#controls div.info {
-  padding: 0 5px;
-  line-height: 48px;
-  font-size: 13px;
-  min-width: 96px;
 }
 
 #controls button span {

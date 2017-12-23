@@ -11,14 +11,17 @@
 
   <div id="controls" [style.visibility]="isInitialized ? 'visible' : 'hidden'">
     <video id="preview" width="320" height="240" [hidden]="!isPreviewShown"></video>
-    <button (click)="togglePreview()" [hidden]="isLive || isEnded" id="preview-button">
+    <button (click)="togglePreview()"
+        [disabled]="isLive || isEnded"
+        id="preview-button">
       <span>{{isPreviewShown ? '✕' : '◱'}}</span>
     </button>
-    <div class="flex-spacer"></div>
-    <div class="info">Current: {{currentTime | number:'1.0-1'}}</div>
-    <div class="info">Total: {{totalTime | number:'1.0-1'}}</div>
-    <!--<div class="info">Target: {{(targetMs / 1000) | number:'1.0-1'}}</div>-->
-    <div class="info">Delay: {{displayedDelay | number:'1.0-1'}}</div>
+    <app-seek-bar
+         [targetDelay]="targetMs / 1000"
+         [displayedDelay]="displayedDelay"
+         [currentTime]="currentTime"
+         [totalTime]="totalTime"
+         [isEnded]="isEnded"></app-seek-bar>
     <button (click)="more()" class="skip">
       <app-icon pic="back5"></app-icon>
     </button>

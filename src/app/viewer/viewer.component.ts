@@ -334,6 +334,7 @@ export class ViewerComponent {
   get isAtEnd() { return this.isLive || this.isStalled; }
 
   get timeSinceLastReceivedMs() {
+    if (!this.lastReceived) return 0;
     const now = new Date().getTime();
     return now - this.lastReceived.getTime();
   }
@@ -360,6 +361,9 @@ export class ViewerComponent {
     this.totalTime = this.sourceBuffer.buffered.length ?
         this.sourceBuffer.buffered.end(0) :
         0;
+    if (!this.isEnded) {
+      this.totalTime += this.timeSinceLastReceivedMs / 1000;
+    }
     this.currentTime = this.isLive ? this.totalTime : this.video.currentTime;
     this.displayedDelay = this.delayMs / 1000;
   }

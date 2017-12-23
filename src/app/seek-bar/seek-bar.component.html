@@ -1,0 +1,16 @@
+<div id="info" *ngIf="false">
+  <div>Current: {{currentTime | number:'1.0-1'}}</div>
+  <div>Total: {{totalTime | number:'1.0-1'}}</div>
+  <div>Delay: {{displayedDelay | number:'1.0-1'}}</div>
+  <div>Target: {{targetDelay | number:'1.0-1'}}</div>
+  <div>Ended?: {{isEnded}}</div>
+</div>
+
+<div id="container">
+  <div id="seekbar">
+    <div id="buffer-bar" [style.width]="bufferBarWidth"></div>
+    <div id="knob" [style.left]="knobPosition"></div>
+    <div id="fade"></div>
+  </div>
+  <div class="extra">&ndash;{{timeToEnd | number:'1.0-0'}}s</div>
+</div>

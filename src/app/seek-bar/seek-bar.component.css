@@ -1,0 +1,58 @@
+#info {
+  display: flex;
+  position: absolute;
+  left: 0;
+  bottom: 50px;
+}
+
+#info > div {
+  padding: 0 5px;
+  line-height: 48px;
+  font-size: 13px;
+  min-width: 96px;
+}
+
+#container {
+  display: flex;
+}
+
+#seekbar {
+  flex: 1 0 auto;
+  margin: 0 20px;
+  position: relative;
+}
+
+#container .extra {
+  flex: 0 0 auto;
+  min-width: 48px;
+  line-height: 48px;
+  font-size: 14px;
+}
+
+#knob {
+  position: absolute;
+  width: 8px;
+  height: 32px;
+  margin-left: -4px;
+  background-color: #ddd;
+  top: 8px;
+  border-radius: 3px;
+}
+
+#buffer-bar {
+  background-color: #999;
+  height: 8px;
+  width: 100%;
+  position: absolute;
+  top: 20px;
+  right: 0;
+}
+
+#fade {
+  position: absolute;
+  background: linear-gradient(to right, #333333ff 0%, #333333cc 30%, #33333333 70%, #33333300 100%); 
+  left: 0;
+  top: 0;
+  height: 48px;
+  width: 100px;
+}
