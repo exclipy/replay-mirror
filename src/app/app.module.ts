@@ -12,6 +12,7 @@ import {ViewerComponent} from './viewer/viewer.component';
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
   {path: 'run', component: ViewerComponent},
+  {path: '**', redirectTo: ''}
 ];
 
 @NgModule({

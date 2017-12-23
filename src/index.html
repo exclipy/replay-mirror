@@ -2,18 +2,6 @@
 <html lang="en">
 <head>
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300" rel="stylesheet">
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111257390-1"></script>
-  <script>
-    if (window.location.hostname.indexOf('replaymirror.com') >= 0) {
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'UA-111257390-1');
-    }
-  </script>
-
   <meta charset="utf-8">
   <title>ReplayMirror</title>
   <base href="/">
@@ -23,5 +11,13 @@
 </head>
 <body>
   <app-root></app-root>
+
+  <!-- Google Analytics -->
+  <script>
+  window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+  ga('create', 'UA-111257390-1', 'auto');
+  </script>
+  <script async src='https://www.google-analytics.com/analytics.js'></script>
+  <!-- End Google Analytics -->
 </body>
 </html>
