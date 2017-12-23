@@ -1,11 +1,11 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input} from '@angular/core';
 
 @Component({
   selector: 'app-seek-bar',
   templateUrl: './seek-bar.component.html',
   styleUrls: ['./seek-bar.component.css']
 })
-export class SeekBarComponent implements OnInit {
+export class SeekBarComponent {
   @Input() currentTime: number = 0;
   @Input() totalTime: number = 0;
   @Input() targetDelay: number = 0;
@@ -13,8 +13,6 @@ export class SeekBarComponent implements OnInit {
   @Input() isEnded: boolean = false;
 
   constructor() {}
-
-  ngOnInit() {}
 
   get totalWidthDurationS() {
     if (this.isEnded) {

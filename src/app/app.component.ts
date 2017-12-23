@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject} from '@angular/core';
 import {NavigationEnd, Router} from '@angular/router';
 
 declare let ga: Function;
@@ -8,7 +8,7 @@ declare let ga: Function;
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   constructor(@Inject(Router) router: Router) {
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
@@ -17,6 +17,4 @@ export class AppComponent implements OnInit {
       }
     });
   }
-
-  ngOnInit() {}
 }
