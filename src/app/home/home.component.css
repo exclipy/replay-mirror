@@ -2,8 +2,9 @@
   font-family: sans-serif;
   text-align: left;
   width: 50%;
+  min-width: 300px;
   max-width: 800px;
-  margin: 300px auto 0;
+  margin: 20% auto 0;
 }
 
 .action {
