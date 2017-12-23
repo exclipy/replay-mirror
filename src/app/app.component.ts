@@ -193,10 +193,7 @@ export class AppComponent {
 
   more() { this.userActions.next('more'); }
 
-  stop() {
-    this.video.pause();
-    this.isStopped = true;
-  }
+  stop() { this.userActions.next('stop'); }
 
   stopRecord() { this.userActions.next('stopRecord'); }
 
@@ -345,9 +342,7 @@ export class AppComponent {
     }
   }
 
-  get isAtEnd() {
-    return this.isLive || this.isStalled;
-  }
+  get isAtEnd() { return this.isLive || this.isStalled; }
 
   get timeSinceLastReceivedMs() {
     const now = new Date().getTime();
