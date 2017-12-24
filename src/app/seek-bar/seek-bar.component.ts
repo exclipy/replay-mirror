@@ -31,7 +31,13 @@ export class SeekBarComponent {
   }
 
   get timeToEnd() {
-    return this.isEnded ? this.totalTime - this.currentTime : this.targetDelay;
+    if (this.isEnded) {
+      return this.totalTime - this.currentTime;
+    } else if (this.targetDelay > this.totalTime) {
+      return this.targetDelay;
+    } else {
+      return this.displayedDelay;
+    }
   }
 }
 
