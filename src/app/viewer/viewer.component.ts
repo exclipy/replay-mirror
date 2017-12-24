@@ -268,10 +268,10 @@ export class ViewerComponent implements OnInit {
       if (this.targetMs <= this.timeSinceLastReceivedMs && !this.isEnded) {
         return Observable.from([{kind: ('SetLive' as 'SetLive')}]);
       }
-      const actions = [{
-          kind: 'SetTime' as 'SetTime',
-          timeS: (this.absoluteEndMs - this.targetMs) / 1000
-        }];
+      const actions: PlayerAction[] = [{
+        kind: 'SetTime' as 'SetTime',
+        timeS: (this.absoluteEndMs - this.targetMs) / 1000
+      }];
       if (this.targetMs > this.timeSinceLastReceivedMs) {
         actions.push({kind: ('Play' as 'Play')});
       }
