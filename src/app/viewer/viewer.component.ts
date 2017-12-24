@@ -1,13 +1,19 @@
-import 'rxjs/add/observable/interval';
 import 'rxjs/add/observable/from';
+import 'rxjs/add/observable/fromEvent';
+import 'rxjs/add/observable/interval';
+import 'rxjs/add/observable/merge';
 import 'rxjs/add/observable/timer';
-import 'rxjs/add/operator/take';
 import 'rxjs/add/operator/concat';
+import 'rxjs/add/operator/filter';
+import 'rxjs/add/operator/exhaustMap';
+import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/switchMap';
+import 'rxjs/add/operator/take';
 
-import {Component, Inject} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
+
 import {BrowserParamsService} from '../browser-params.service'
 
 declare type MediaRecorder = any;
@@ -44,7 +50,7 @@ type PlayerAction = PauseAction | PlayAction | StopRecordAction |
   templateUrl: './viewer.component.html',
   styleUrls: ['./viewer.component.css']
 })
-export class ViewerComponent {
+export class ViewerComponent implements OnInit {
   targetMs = 0;
   private skip = false;
   private mediaStream: MediaStream|null;
@@ -73,16 +79,12 @@ export class ViewerComponent {
   private userActions = new Subject<UserAction>();
   private playerActions: Observable<PlayerAction>;
 
-  constructor(@Inject(BrowserParamsService) private browserParams: BrowserParamsService) {
+  constructor(@Inject(BrowserParamsService) private browserParams:
+                  BrowserParamsService) {
     this.targetMs = 0;
     this.skip = false;
     this.mediaStream = null;
     this.adjustIntervalId = null;
-
-    this.playerActions = this.userActions.switchMap(
-        (userAction) => this.executeUserAction(userAction));
-    this.playerActions.subscribe(
-        (action) => { this.executePlayerAction(action); });
 
     this.isUnsupportedBrowser = browserParams.isUnsupportedBrowser;
   }
@@ -93,6 +95,19 @@ export class ViewerComponent {
     this.liveVideo = document.querySelector('#live') as HTMLVideoElement;
     this.preview = document.querySelector('#preview') as HTMLVideoElement;
     this.start();
+
+    const foregroundedStream =
+        Observable.fromEvent(document, 'visibilitychange');
+    const fixDelayStream =
+        foregroundedStream.filter(() => document.visibilityState === 'visible')
+            .exhaustMap(() => this.changeDelay(0));
+
+    this.playerActions = Observable.merge(
+        this.userActions.switchMap(
+            (userAction) => this.executeUserAction(userAction)),
+        fixDelayStream);
+    this.playerActions.subscribe(
+        (action) => { this.executePlayerAction(action); });
   }
 
   start() {
@@ -147,12 +162,6 @@ export class ViewerComponent {
           }
         });
 
-    //    document.addEventListener('visibilitychange', () =>
-    //      {
-    //        if (document.visibilityState === 'visible') {
-    //          this.changeDelay(0);
-    //        }
-    //      });
     //
     //    this.adjustIntervalId = window.setInterval(() => {
     //      if (!this.skip && this.video.currentTime !== undefined &&
