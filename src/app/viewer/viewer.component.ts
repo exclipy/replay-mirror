@@ -238,7 +238,7 @@ export class ViewerComponent implements OnInit {
         Math.max(this.delayMs + ms, this.timeSinceLastReceivedMs) :
         Math.max(this.targetMs + ms, 0);
     if (noWait || this.isEnded) {
-      console.log('stopping', this.targetMs);
+      // Don't allow the currentTime to be before the start.
       this.targetMs = Math.min(this.targetMs, this.absoluteEndMs);
     }
     const headroom = this.absoluteEndMs - this.targetMs;
@@ -265,16 +265,17 @@ export class ViewerComponent implements OnInit {
                         }
                       }));
     } else {
-      if (this.timeSinceLastReceivedMs > this.targetMs) {
+      if (this.targetMs <= this.timeSinceLastReceivedMs && !this.isEnded) {
         return Observable.from([{kind: ('SetLive' as 'SetLive')}]);
       }
-      return Observable.from([
-        {
+      const actions = [{
           kind: 'SetTime' as 'SetTime',
           timeS: (this.absoluteEndMs - this.targetMs) / 1000
-        },
-        {kind: ('Play' as 'Play')}
-      ]);
+        }];
+      if (this.targetMs > this.timeSinceLastReceivedMs) {
+        actions.push({kind: ('Play' as 'Play')});
+      }
+      return Observable.from(actions);
     }
   }
 
