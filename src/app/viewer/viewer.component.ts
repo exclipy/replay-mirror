@@ -57,7 +57,7 @@ export class ViewerComponent {
   private bufferSource = new MediaSource();
   private sourceBuffer: SourceBuffer|null;
   isEnded = false;
-  isStalled = false;
+  isStopped = false;
   isLive = true;
   isInitialized = false;
   isUnsupportedBrowser = false;
@@ -186,9 +186,9 @@ export class ViewerComponent {
 
   togglePreview() { this.isPreviewShown = !this.isPreviewShown; }
 
-  stalled() {
-    console.log('stalled');
-    this.isStalled = true;
+  stopped() {
+    console.log('stopped');
+    this.isStopped = true;
   }
 
   set isPreviewShown(value) {
@@ -285,7 +285,7 @@ export class ViewerComponent {
         this.switchToDelayed();
         this.video.play();
         this.waitTime = 0;
-        this.isStalled = false;
+        this.isStopped = false;
         break;
       case 'Pause':
         console.log('pausing');
@@ -311,6 +311,7 @@ export class ViewerComponent {
             mediaStreamTrack.stop();
           }
         }
+        this.bufferSource.endOfStream();
         if (this.mediaRecorder) {
           this.mediaRecorder.stop();
         }
@@ -331,7 +332,7 @@ export class ViewerComponent {
     }
   }
 
-  get isAtEnd() { return this.isLive || this.isStalled; }
+  get isAtEnd() { return this.isLive || this.isStopped; }
 
   get timeSinceLastReceivedMs() {
     if (!this.lastReceived) return 0;
