@@ -1,9 +1,30 @@
-#info {
-  text-align: left;
+#page {
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  min-height: 100%;
   width: 50%;
   min-width: 300px;
   max-width: 800px;
-  margin: 15% auto 0;
+}
+
+#info {
+  text-align: left;
+}
+
+#footer {
+  font-size: 80%;
+  padding-bottom: 10px;
+  text-align: center;
+  color: #999;
+}
+
+#footer p {
+  margin: 0;
+}
+
+#footer a {
+  color: #999;
 }
 
 h1 {
