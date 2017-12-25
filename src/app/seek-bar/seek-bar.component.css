@@ -43,9 +43,10 @@
   height: 8px;
   width: 100%;
   position: absolute;
-  top: 20px;
+  top: 19px;
   right: 0;
-  outline: 1px solid #999;
+  border: 1px solid #999;
+  border-right: 0;
   overflow: hidden;
 }
 
