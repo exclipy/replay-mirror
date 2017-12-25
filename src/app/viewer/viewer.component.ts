@@ -62,6 +62,7 @@ export class ViewerComponent implements OnInit {
   private lastReceived: Date|null = null;
   private bufferSource = new MediaSource();
   private sourceBuffer: SourceBuffer|null;
+  private isPreviewDismissed = false;
   isEnded = false;
   isStopped = false;
   isLive = true;
@@ -189,11 +190,17 @@ export class ViewerComponent implements OnInit {
 
   less() { this.userActions.next('less'); }
 
-  more() { this.userActions.next('more'); }
+  more() {
+    if (!this.isPreviewDismissed) this.isPreviewShown = true;
+    this.userActions.next('more');
+  }
 
   stopRecord() { this.userActions.next('stopRecord'); }
 
-  togglePreview() { this.isPreviewShown = !this.isPreviewShown; }
+  togglePreview() {
+    this.isPreviewShown = !this.isPreviewShown;
+    this.isPreviewDismissed = true;
+  }
 
   stopped() {
     console.log('stopped');
