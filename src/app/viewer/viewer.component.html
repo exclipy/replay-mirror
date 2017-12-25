@@ -15,7 +15,7 @@
 
   <div id="controls" [style.visibility]="isInitialized ? 'visible' : 'hidden'">
     <video id="preview"
-      [hidden]="!isPreviewShown"
+      [hidden]="!isPreviewShown || isLive"
       (click)="togglePreview()"></video>
     <button (click)="togglePreview()"
         [disabled]="isLive || isEnded"

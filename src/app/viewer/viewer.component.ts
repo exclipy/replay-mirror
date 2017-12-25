@@ -296,7 +296,6 @@ export class ViewerComponent implements OnInit {
       case 'SetLive':
         console.log('set live');
         if (!this.isLive) {
-          this.isPreviewShown = false;
           this.liveVideo.play();
           this.video.pause();
           this.isLive = true;
