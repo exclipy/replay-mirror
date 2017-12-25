@@ -192,7 +192,7 @@ export class ViewerComponent implements OnInit {
   less() { this.userActions.next('less'); }
 
   more() {
-    if (!this.isPreviewDismissed) this.isPreviewShown = true;
+    if (!this.isPreviewDismissed && !this.isEnded) this.isPreviewShown = true;
     this.isWizardShown = false;
     this.userActions.next('more');
   }
