@@ -10,8 +10,12 @@
   <div id="seekbar-container">
     <div id="seekbar">
       <div id="buffer-bar"
-        [style.width]="bufferBarWidth"
-        [style.background]="bufferBarBackground"></div>
+        [style.width]="bufferBarWidth">
+        <div id="buffer-bar-stripes"
+          [style.background]="bufferBarBackground"
+          [style.animationDuration]="animationDuration">
+        </div>
+      </div>
       <div id="fade" [hidden]="isEnded"></div>
     </div>
     <div id="knob" [style.left]="knobPosition"></div>

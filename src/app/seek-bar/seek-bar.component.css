@@ -49,13 +49,37 @@
 }
 
 #buffer-bar {
-  background-color: #999; /* Will be overridden dynamically. */
   height: 8px;
   width: 100%;
   position: absolute;
   top: 20px;
   right: 0;
   outline: 1px solid #999;
+  overflow: hidden;
+}
+
+#buffer-bar-stripes {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: -32px;
+  bottom: 0;
+  background-color: #999; /* Will be overridden dynamically. */
+  background-attachment: fixed;
+  animation-duration: 1s;
+  animation-name: slideleft;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+@keyframes slideleft {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-32px);
+  }
 }
 
 #fade {

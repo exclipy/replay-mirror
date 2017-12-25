@@ -12,7 +12,22 @@ export class SeekBarComponent {
   @Input() displayedDelay: number = 0;
   @Input() isEnded: boolean = false;
 
+  private seekbar;
+
   constructor() {}
+
+  ngOnInit() {
+    this.seekbar = document.getElementById('seekbar');
+  }
+
+  pixelsToSeconds(pixels: number): number {
+    return pixels / this.seekbar.offsetWidth * this.totalWidthDurationS;
+  }
+
+  get animationDuration() {
+    console.log( this.pixelsToSeconds(24) + 's');
+    return this.pixelsToSeconds(24) + 's';
+  }
 
   get totalWidthDurationS() {
     if (this.isEnded) {
@@ -45,7 +60,7 @@ export class SeekBarComponent {
       return '#999';
     } else {
       const timeCompression = this.totalWidthDurationS / 60;
-      const angle = Math.atan(timeCompression);
+      const angle = Math.atan(timeCompression) + Math.PI;
       const period = 8 * Math.cos(Math.atan(timeCompression)) / timeCompression;
       const angleStr = angle.toPrecision(4);
       const periodStr = period.toPrecision(4);
