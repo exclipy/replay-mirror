@@ -42,7 +42,7 @@ export class SeekBarComponent {
   }
 
   get bufferBarWidth() {
-    return asPercent(this.totalTime / this.totalWidthDurationS);
+    return asPercent(Math.min(1, this.totalTime / this.totalWidthDurationS));
   }
 
   get timeToEnd() {

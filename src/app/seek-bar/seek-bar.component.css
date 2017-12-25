@@ -16,19 +16,10 @@
   display: flex;
 }
 
-#seekbar-container {
+#seekbar {
   flex: 1 0 auto;
   margin: 0 20px;
   position: relative;
-}
-
-#seekbar {
-  overflow: hidden;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
 }
 
 #container .extra {
@@ -85,7 +76,7 @@
 #fade {
   position: absolute;
   background: linear-gradient(to right, #333333ff 0%, #333333cc 40%, #33333333 80%, #33333300 100%); 
-  left: 0;
+  left: -1px; /* cover the 1px outline as well */
   top: 0;
   height: 48px;
   width: 20%;

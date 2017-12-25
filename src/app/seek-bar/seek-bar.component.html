@@ -7,17 +7,15 @@
 </div>
 
 <div id="container">
-  <div id="seekbar-container">
-    <div id="seekbar">
-      <div id="buffer-bar"
-        [style.width]="bufferBarWidth">
-        <div id="buffer-bar-stripes"
-          [style.background]="bufferBarBackground"
-          [style.animationDuration]="animationDuration">
-        </div>
+  <div id="seekbar">
+    <div id="buffer-bar"
+      [style.width]="bufferBarWidth">
+      <div id="buffer-bar-stripes"
+        [style.background]="bufferBarBackground"
+        [style.animationDuration]="animationDuration">
       </div>
-      <div id="fade" [hidden]="isEnded"></div>
     </div>
+    <div id="fade" [hidden]="isEnded"></div>
     <div id="knob" [style.left]="knobPosition"></div>
   </div>
   <div class="extra">&ndash;{{timeToEnd | number:'1.0-0'}}s</div>
