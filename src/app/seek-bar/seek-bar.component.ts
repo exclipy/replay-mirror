@@ -27,7 +27,7 @@ export class SeekBarComponent {
   }
 
   get bufferBarWidth() {
-    return asPercent(Math.min(1, this.totalTime / this.totalWidthDurationS));
+    return asPercent(this.totalTime / this.totalWidthDurationS);
   }
 
   get timeToEnd() {
@@ -46,7 +46,7 @@ export class SeekBarComponent {
     } else {
       const timeCompression = this.totalWidthDurationS / 60;
       const angle = Math.atan(timeCompression);
-      const period = 8 / Math.sqrt(2) / timeCompression;
+      const period = 8 * Math.cos(Math.atan(timeCompression)) / timeCompression;
       const angleStr = angle.toPrecision(4);
       const periodStr = period.toPrecision(4);
       const period2Str = (period * 2).toPrecision(4);

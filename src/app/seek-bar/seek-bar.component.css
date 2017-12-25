@@ -16,10 +16,19 @@
   display: flex;
 }
 
-#seekbar {
+#seekbar-container {
   flex: 1 0 auto;
   margin: 0 20px;
   position: relative;
+}
+
+#seekbar {
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 #container .extra {
