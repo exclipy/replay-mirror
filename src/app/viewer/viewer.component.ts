@@ -114,7 +114,7 @@ export class ViewerComponent implements OnInit {
   start() {
     const mimeType = this.browserParams.mimeType;
 
-    navigator.mediaDevices.getUserMedia({video: true})
+    navigator.mediaDevices.getUserMedia({video: {facingMode: 'user'}})
         .then((mediaStream) => {
           this.mediaStream = mediaStream;
           this.mediaRecorder =
