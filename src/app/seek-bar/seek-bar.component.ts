@@ -50,8 +50,10 @@ export class SeekBarComponent {
       const angleStr = angle.toPrecision(4);
       const periodStr = period.toPrecision(4);
       const period2Str = (period * 2).toPrecision(4);
-      const result = (`repeating-linear-gradient(${angleStr}rad, transparent, transparent ${periodStr}px, #999 ${periodStr}px, #999 ${period2Str}px)`);
-      console.log(result);
+      const result =
+          (`repeating-linear-gradient(${angleStr}rad,` +
+           `transparent, transparent ${periodStr}px,` +
+           `#999 ${periodStr}px, #999 ${period2Str}px)`);
       return result;
     }
   }
