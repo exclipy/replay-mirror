@@ -298,6 +298,7 @@ export class ViewerComponent implements OnInit {
         if (!this.isLive) {
           this.liveVideo.play();
           this.video.pause();
+          this.waitTime = 0;
           this.isLive = true;
         }
         break;
