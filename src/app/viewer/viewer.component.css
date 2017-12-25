@@ -68,10 +68,13 @@ app-icon {
 
 #controls #preview {
   position: fixed;
-  bottom: 24px;
-  left: 24px;
+  bottom: 48px;
+  left: 0px;
   border: 1px solid white;
   background: #333;
+  width: 320px;
+  max-width: 50%;
+  height: auto;
 }
 
 #waitTime {

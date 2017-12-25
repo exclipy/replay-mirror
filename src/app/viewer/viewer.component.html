@@ -10,11 +10,13 @@
   <div [hidden]="isWaiting" id="waitTime"><div>{{waitTime}}</div></div>
 
   <div id="controls" [style.visibility]="isInitialized ? 'visible' : 'hidden'">
-    <video id="preview" width="320" height="240" [hidden]="!isPreviewShown"></video>
+    <video id="preview"
+      [hidden]="!isPreviewShown"
+      (click)="togglePreview()"></video>
     <button (click)="togglePreview()"
         [disabled]="isLive || isEnded"
         id="preview-button">
-      <span>{{isPreviewShown ? '✕' : '◱'}}</span>
+      <span>◱</span>
     </button>
     <app-seek-bar
          [targetDelay]="targetMs / 1000"
