@@ -25,7 +25,6 @@ export class SeekBarComponent {
   }
 
   get animationDuration() {
-    console.log( this.pixelsToSeconds(24) + 's');
     return this.pixelsToSeconds(24) + 's';
   }
 
