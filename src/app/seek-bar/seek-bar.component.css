@@ -40,12 +40,13 @@
 }
 
 #buffer-bar {
-  background-color: #999;
+  background-color: #999; /* Will be overridden dynamically. */
   height: 8px;
   width: 100%;
   position: absolute;
   top: 20px;
   right: 0;
+  outline: 1px solid #999;
 }
 
 #fade {

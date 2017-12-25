@@ -39,6 +39,22 @@ export class SeekBarComponent {
       return this.displayedDelay;
     }
   }
+
+  get bufferBarBackground() {
+    if (this.isEnded) {
+      return '#999';
+    } else {
+      const timeCompression = this.totalWidthDurationS / 60;
+      const angle = Math.atan(timeCompression);
+      const period = 8 / Math.sqrt(2) / timeCompression;
+      const angleStr = angle.toPrecision(4);
+      const periodStr = period.toPrecision(4);
+      const period2Str = (period * 2).toPrecision(4);
+      const result = (`repeating-linear-gradient(${angleStr}rad, transparent, transparent ${periodStr}px, #999 ${periodStr}px, #999 ${period2Str}px)`);
+      console.log(result);
+      return result;
+    }
+  }
 }
 
 function asPercent(n: number) {
