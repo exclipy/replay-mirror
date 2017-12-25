@@ -63,6 +63,7 @@ export class ViewerComponent implements OnInit {
   private bufferSource = new MediaSource();
   private sourceBuffer: SourceBuffer|null;
   private isPreviewDismissed = false;
+  isWizardShown = true;
   isEnded = false;
   isStopped = false;
   isLive = true;
@@ -192,10 +193,14 @@ export class ViewerComponent implements OnInit {
 
   more() {
     if (!this.isPreviewDismissed) this.isPreviewShown = true;
+    this.isWizardShown = false;
     this.userActions.next('more');
   }
 
-  stopRecord() { this.userActions.next('stopRecord'); }
+  stopRecord() {
+    this.isWizardShown = false;
+    this.userActions.next('stopRecord');
+  }
 
   togglePreview() {
     this.isPreviewShown = !this.isPreviewShown;

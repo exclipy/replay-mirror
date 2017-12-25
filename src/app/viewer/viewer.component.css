@@ -108,3 +108,30 @@ app-icon {
   right: 0;
   bottom: 50%;
 }
+
+#wizard {
+  font-size: 90%;
+  position: absolute;
+  bottom: 48px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  cursor: default;
+}
+
+#wizard::after {
+  content: '';
+  border-top: 8px solid #f6f6f6;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: none;
+  margin-right: 88px;
+}
+
+#wizard p {
+  margin: 0;
+  background: #f6f6f6;
+  color: #333;
+  padding: 8px;
+}

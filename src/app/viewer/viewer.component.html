@@ -9,6 +9,10 @@
 
   <div [hidden]="isWaiting" id="waitTime"><div>{{waitTime}}</div></div>
 
+  <div id="wizard" *ngIf="isWizardShown" (click)="isWizardShown = false">
+    <p>Start here: click to rewind 5 seconds</p>
+  </div>
+
   <div id="controls" [style.visibility]="isInitialized ? 'visible' : 'hidden'">
     <video id="preview"
       [hidden]="!isPreviewShown"
