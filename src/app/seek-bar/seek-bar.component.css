@@ -53,7 +53,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  right: -32px;
+  right: -1600px;
   bottom: 0;
   background-color: #999; /* Will be overridden dynamically. */
   background-attachment: fixed;
@@ -69,7 +69,7 @@
   }
 
   to {
-    transform: translateX(-32px);
+    transform: translateX(-1600px);
   }
 }
 
