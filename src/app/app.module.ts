@@ -1,6 +1,8 @@
 import {NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {RouterModule, Routes} from '@angular/router';
+import {ServiceWorkerModule} from '@angular/service-worker';
+import {environment} from '../environments/environment';
 
 import {AppComponent} from './app.component';
 import {BrowserParamsService} from './browser-params.service';
@@ -11,8 +13,7 @@ import {ViewerComponent} from './viewer/viewer.component';
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
-  {path: 'run', component: ViewerComponent},
-  {path: '**', redirectTo: ''}
+  {path: 'run', component: ViewerComponent}, {path: '**', redirectTo: ''}
 ];
 
 @NgModule({
@@ -20,7 +21,11 @@ const appRoutes: Routes = [
     AppComponent, IconComponent, ViewerComponent, HomeComponent,
     SeekBarComponent
   ],
-  imports: [BrowserModule, RouterModule.forRoot(appRoutes)],
+  imports: [
+    BrowserModule, RouterModule.forRoot(appRoutes), environment.production ?
+        ServiceWorkerModule.register('/ngsw-worker.js') :
+        []
+  ],
   providers: [BrowserParamsService],
   bootstrap: [AppComponent]
 })
