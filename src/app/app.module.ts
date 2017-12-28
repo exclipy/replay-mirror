@@ -22,8 +22,9 @@ const appRoutes: Routes = [
     SeekBarComponent
   ],
   imports: [
-    BrowserModule, RouterModule.forRoot(appRoutes),
-    ServiceWorkerModule.register('/ngsw-worker.js')
+    BrowserModule, RouterModule.forRoot(appRoutes), environment.production ?
+        ServiceWorkerModule.register('/ngsw-worker.js') :
+        []
   ],
   providers: [BrowserParamsService],
   bootstrap: [AppComponent]
