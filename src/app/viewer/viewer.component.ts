@@ -10,8 +10,8 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/switchMap';
 import 'rxjs/add/operator/take';
 
+import {animate, state, style, transition, trigger} from '@angular/animations';
 import {Component, Inject, OnInit} from '@angular/core';
-import {animate, style, transition, trigger} from '@angular/animations';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 
@@ -52,17 +52,9 @@ type PlayerAction = PauseAction | PlayAction | StopRecordAction |
   styleUrls: ['./viewer.component.css'],
   animations: [trigger(
       'preview',
-      [transition(
-          'hide => show',
-          [
-            style({opacity: 0, transform: 'scale(0)'}),
-            animate(100, style({opacity: 1, transform: 'scale(1)'}))
-          ]),transition(
-          'show => hide',
-          [
-            style({visibility: 'visible', opacity: 1, transform: 'scale(1)'}),
-            animate(100, style({opacity: 0, transform: 'scale(0)'}))
-          ])
+      [
+        state('hide', style({opacity: 0, transform: 'scale(0)'})),
+        transition('hide <=> show', [animate(100)])
       ])]
 })
 export class ViewerComponent implements OnInit {
@@ -192,7 +184,8 @@ export class ViewerComponent implements OnInit {
     //          this.showDelay();
     //          this.changeDelay(0);
     //        } else {
-    //          let rate = Math.pow(1.5, (this.delayMs - this.target)/1000);
+    //          let rate = Math.pow(1.5, (this.delayMs -
+    //          this.target)/1000);
     //          if (Math.abs(rate - 1) < 0.01) {
     //            rate = 1;
     //          }

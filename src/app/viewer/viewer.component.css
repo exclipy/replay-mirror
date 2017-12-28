@@ -71,6 +71,7 @@ app-icon {
   bottom: 48px;
   left: 0px;
   transform-origin: bottom left;
+  line-height: 0;
 }
 
 #controls #preview {
