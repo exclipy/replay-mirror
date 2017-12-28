@@ -66,15 +66,19 @@ app-icon {
   display: block;
 }
 
-#controls #preview {
+#controls #preview-wrapper {
   position: fixed;
   bottom: 48px;
   left: 0px;
+  transform-origin: bottom left;
+}
+
+#controls #preview {
+  max-width: 100%;
+  width: 320px;
+  height: auto;
   border: 1px solid white;
   background: #333;
-  width: 320px;
-  max-width: 33%;
-  height: auto;
 }
 
 #waitTime {

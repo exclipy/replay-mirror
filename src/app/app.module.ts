@@ -1,7 +1,9 @@
 import {NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {RouterModule, Routes} from '@angular/router';
 import {ServiceWorkerModule} from '@angular/service-worker';
+
 import {environment} from '../environments/environment';
 
 import {AppComponent} from './app.component';
@@ -22,9 +24,8 @@ const appRoutes: Routes = [
     SeekBarComponent
   ],
   imports: [
-    BrowserModule, RouterModule.forRoot(appRoutes), environment.production ?
-        ServiceWorkerModule.register('/ngsw-worker.js') :
-        []
+    BrowserModule, BrowserAnimationsModule, RouterModule.forRoot(appRoutes),
+    ServiceWorkerModule.register('/ngsw-worker.js')
   ],
   providers: [BrowserParamsService],
   bootstrap: [AppComponent]

@@ -11,6 +11,7 @@ import 'rxjs/add/operator/switchMap';
 import 'rxjs/add/operator/take';
 
 import {Component, Inject, OnInit} from '@angular/core';
+import {animate, style, transition, trigger} from '@angular/animations';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 
@@ -48,7 +49,21 @@ type PlayerAction = PauseAction | PlayAction | StopRecordAction |
 @Component({
   selector: 'app-viewer',
   templateUrl: './viewer.component.html',
-  styleUrls: ['./viewer.component.css']
+  styleUrls: ['./viewer.component.css'],
+  animations: [trigger(
+      'preview',
+      [transition(
+          'hide => show',
+          [
+            style({opacity: 0, transform: 'scale(0)'}),
+            animate(100, style({opacity: 1, transform: 'scale(1)'}))
+          ]),transition(
+          'show => hide',
+          [
+            style({visibility: 'visible', opacity: 1, transform: 'scale(1)'}),
+            animate(100, style({opacity: 0, transform: 'scale(0)'}))
+          ])
+      ])]
 })
 export class ViewerComponent implements OnInit {
   targetMs = 0;
