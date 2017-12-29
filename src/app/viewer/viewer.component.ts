@@ -170,31 +170,6 @@ export class ViewerComponent implements OnInit {
             console.log(e);
           }
         });
-
-    //
-    //    this.adjustIntervalId = window.setInterval(() => {
-    //      if (!this.skip && this.video.currentTime !== undefined &&
-    //      this.video.buffered.length > 0) {
-    //        console.log('currentTime: ', this.video.currentTime,
-    //            'buffer end: ', this.video.buffered.end(0),
-    //            'delay: ', this.delayMs,
-    //            'delta: ', this.target - this.delayMs);
-    //
-    //        if (Math.abs(this.target - this.delayMs) > 500) {
-    //          this.showDelay();
-    //          this.changeDelay(0);
-    //        } else {
-    //          let rate = Math.pow(1.5, (this.delayMs -
-    //          this.target)/1000);
-    //          if (Math.abs(rate - 1) < 0.01) {
-    //            rate = 1;
-    //          }
-    //          this.video.playbackRate = rate;
-    //          console.log('playback rate: ', rate);
-    //          this.showDelay();
-    //        }
-    //      }
-    //    }, 1000);
   }
 
   less() { this.userActions.next('less'); }
