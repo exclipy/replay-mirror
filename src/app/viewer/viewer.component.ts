@@ -154,9 +154,9 @@ export class ViewerComponent implements OnInit {
           this.isLive = true;
           this.video.src = window.URL.createObjectURL(this.bufferSource);
           this.video.pause();
-          this.liveVideo.src = window.URL.createObjectURL(this.mediaStream);
+          bindStream(this.liveVideo, this.mediaStream);
           this.liveVideo.play();
-          this.preview.src = window.URL.createObjectURL(this.mediaStream);
+          bindStream(this.preview, this.mediaStream);
           this.preview.pause();
         })
         .catch((e) => {
@@ -167,7 +167,7 @@ export class ViewerComponent implements OnInit {
             this.isNotFoundError = true;
           } else {
             this.isUnknownError = true;
-            console.log(e);
+            console.log('Unknown error:', e);
           }
         });
   }
@@ -372,5 +372,15 @@ export class ViewerComponent implements OnInit {
     }
     this.currentTime = this.isLive ? this.totalTime : this.video.currentTime;
     this.displayedDelay = this.delayMs / 1000;
+  }
+}
+
+// Sets the srcObject on an element with fallback to src.
+function bindStream(element: HTMLMediaElement, stream: MediaStream) {
+  if ('srcObject' in element) {
+    element.srcObject = stream;
+  } else {
+    // Avoid using this in new browsers, as it is going away.
+    (element as HTMLMediaElement).src = window.URL.createObjectURL(stream);
   }
 }
