@@ -37,6 +37,7 @@
     "@types/node": "~6.0.60",
     "codelyzer": "^4.0.1",
     "firebase-tools": "^7.1.1",
+    "http-server": "^0.11.1",
     "jasmine-core": "~2.6.2",
     "jasmine-spec-reporter": "~4.1.0",
     "karma": "~1.7.0",
