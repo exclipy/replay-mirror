@@ -30,7 +30,6 @@
     "rxjs-compat": "^6.0.0-rc.0"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "~0.8.0",
     "@angular/cli": "^8.1.2",
     "@angular/compiler-cli": "^8.1.2",
     "@angular/language-service": "^8.1.2",
