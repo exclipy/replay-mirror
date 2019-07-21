@@ -7,6 +7,7 @@
     "start": "ng serve",
     "build": "ng build --prod --env=prod && node_modules/.bin/ngsw-config dist ./src/ngsw-config.json && cp node_modules/@angular/service-worker/ngsw-worker.js ./dist/ngsw-worker.js",
     "deploy": "firebase deploy",
+    "firebase": "firebase",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
