@@ -10,65 +10,65 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/switchMap';
 import 'rxjs/add/operator/take';
 
-import {animate, state, style, transition, trigger} from '@angular/animations';
-import {Component, Inject, OnInit} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import {Subject} from 'rxjs/Subject';
+import { animate, state, style, transition, trigger } from '@angular/animations';
+import { Component, Inject, OnInit } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
+import { Subject } from 'rxjs/Subject';
 
-import {BrowserParamsService} from '../browser-params.service'
+import { BrowserParamsService } from '../browser-params.service'
 
 declare type MediaRecorder = any;
 declare var MediaRecorder: any;
 
 type UserAction = 'more' | 'less' | 'stopRecord';
 
-type PauseAction = {
-  kind: 'Pause'
-};
-type PlayAction = {
-  kind: 'Play'
-};
-type StopRecordAction = {
-  kind: 'StopRecord'
-};
-type SetLiveAction = {
-  kind: 'SetLive'
-};
-type SetTimeAction = {
-  kind: 'SetTime',
-  timeS: number
-};
-type SetWaitingAction = {
-  kind: 'SetWaiting',
-  timeS: number
-};
+interface PauseAction {
+  kind: 'Pause';
+}
+interface PlayAction {
+  kind: 'Play';
+}
+interface StopRecordAction {
+  kind: 'StopRecord';
+}
+interface SetLiveAction {
+  kind: 'SetLive';
+}
+interface SetTimeAction {
+  kind: 'SetTime';
+  timeS: number;
+}
+interface SetWaitingAction {
+  kind: 'SetWaiting';
+  timeS: number;
+}
 
 type PlayerAction = PauseAction | PlayAction | StopRecordAction |
-    SetTimeAction | SetLiveAction | SetWaitingAction;
+  SetTimeAction | SetLiveAction | SetWaitingAction;
 
 @Component({
   selector: 'app-viewer',
   templateUrl: './viewer.component.html',
   styleUrls: ['./viewer.component.css'],
   animations: [trigger(
-      'preview',
-      [
-        state('hide', style({opacity: 0, transform: 'scale(0)'})),
-        transition('hide <=> show', [animate(100)])
-      ])]
+    'preview',
+    [
+      state('hide', style({ opacity: 0, transform: 'scale(0)' })),
+      transition('hide <=> show', [animate(100)])
+    ])]
 })
 export class ViewerComponent implements OnInit {
   targetMs = 0;
   private skip = false;
-  private mediaStream: MediaStream|null;
-  private mediaRecorder: MediaRecorder|null;
-  private adjustIntervalId: number|null;
+  private mediaStream: MediaStream | null;
+  private mediaRecorder: MediaRecorder | null;
+  private adjustIntervalId: number | null;
   private video: HTMLVideoElement;
   private liveVideo: HTMLVideoElement;
   private preview: HTMLVideoElement;
-  private lastReceived: Date|null = null;
+  private lastReceived: Date | null = null;
   private bufferSource = new MediaSource();
-  private sourceBuffer: SourceBuffer|null;
+  private sourceBuffer: SourceBuffer | null;
   private isPreviewDismissed = false;
   isWizardShown = true;
   isEnded = false;
@@ -89,7 +89,7 @@ export class ViewerComponent implements OnInit {
   private playerActions: Observable<PlayerAction>;
 
   constructor(@Inject(BrowserParamsService) private browserParams:
-                  BrowserParamsService) {
+    BrowserParamsService) {
     this.targetMs = 0;
     this.skip = false;
     this.mediaStream = null;
@@ -106,76 +106,78 @@ export class ViewerComponent implements OnInit {
     this.start();
 
     const foregroundedStream =
-        Observable.fromEvent(document, 'visibilitychange');
+      Observable.fromEvent(document, 'visibilitychange');
     const fixDelayStream =
-        foregroundedStream.filter(() => document.visibilityState === 'visible')
-            .exhaustMap(() => this.changeDelay(0));
+      foregroundedStream.filter(() => document.visibilityState === 'visible')
+        .exhaustMap(() => this.changeDelay(0));
 
     this.playerActions = Observable.merge(
-        this.userActions.switchMap(
-            (userAction) => this.executeUserAction(userAction)),
-        fixDelayStream);
+      this.userActions.switchMap(
+        (userAction) => this.executeUserAction(userAction)),
+      fixDelayStream);
     this.playerActions.subscribe(
-        (action) => { this.executePlayerAction(action); });
+      (action) => { this.executePlayerAction(action); });
   }
 
   start() {
     const mimeType = this.browserParams.mimeType;
 
-    navigator.mediaDevices.getUserMedia({video: {facingMode: 'user'}})
-        .then((mediaStream) => {
-          this.mediaStream = mediaStream;
-          this.mediaRecorder =
-              new MediaRecorder(mediaStream, {mimeType: mimeType}) as any;
-          this.bufferSource.addEventListener('sourceopen', () => {
-            this.sourceBuffer = this.bufferSource.addSourceBuffer(mimeType);
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
+      .then((mediaStream) => {
+        this.mediaStream = mediaStream;
+        this.mediaRecorder =
+          new MediaRecorder(mediaStream, { mimeType: mimeType }) as any;
+        this.bufferSource.addEventListener('sourceopen', () => {
+          this.sourceBuffer = this.bufferSource.addSourceBuffer(mimeType);
 
-            this.mediaRecorder.ondataavailable = (e) => {
-              if (this.isEnded) {
-                return;
-              }
-              this.showDelay();
-              this.lastReceived = new Date();
-              const fileReader = new FileReader();
-              fileReader.onload = (f) => {
-                this.sourceBuffer.appendBuffer((f.target as any).result);
-              };
-              fileReader.readAsArrayBuffer(e.data);
+          this.mediaRecorder.ondataavailable = (e) => {
+            if (this.isEnded) {
+              return;
+            }
+            this.showDelay();
+            this.lastReceived = new Date();
+            const fileReader = new FileReader();
+            fileReader.onload = (f) => {
+              this.sourceBuffer.appendBuffer((f.target as any).result);
             };
-            this.mediaRecorder.start();
-            this.mediaRecorder.requestData();
-            Observable.interval(1000).subscribe(() => {
-              if (!this.isEnded) {
-                this.mediaRecorder.requestData();
-              }
-            });
-            this.isInitialized = true;
+            fileReader.readAsArrayBuffer(e.data);
+          };
+          this.mediaRecorder.start();
+          this.mediaRecorder.requestData();
+          Observable.interval(1000).subscribe(() => {
+            if (!this.isEnded) {
+              this.mediaRecorder.requestData();
+            }
           });
-          this.isLive = true;
-          this.video.src = window.URL.createObjectURL(this.bufferSource);
-          this.video.pause();
-          bindStream(this.liveVideo, this.mediaStream);
-          this.liveVideo.play();
-          bindStream(this.preview, this.mediaStream);
-          this.preview.pause();
-        })
-        .catch((e) => {
-          if (e.name === 'PermissionDeniedError' ||  // Chrome
-              e.name === 'NotAllowedError') {        // Firefox
-            this.isPermissionDeniedError = true;
-          } else if (e.name === 'NotFoundError') {
-            this.isNotFoundError = true;
-          } else {
-            this.isUnknownError = true;
-            console.log('Unknown error:', e);
-          }
+          this.isInitialized = true;
         });
+        this.isLive = true;
+        this.video.src = window.URL.createObjectURL(this.bufferSource);
+        this.video.pause();
+        bindStream(this.liveVideo, this.mediaStream);
+        this.liveVideo.play();
+        bindStream(this.preview, this.mediaStream);
+        this.preview.pause();
+      })
+      .catch((e) => {
+        if (e.name === 'PermissionDeniedError' ||  // Chrome
+          e.name === 'NotAllowedError') {        // Firefox
+          this.isPermissionDeniedError = true;
+        } else if (e.name === 'NotFoundError') {
+          this.isNotFoundError = true;
+        } else {
+          this.isUnknownError = true;
+          console.log('Unknown error:', e);
+        }
+      });
   }
 
   less() { this.userActions.next('less'); }
 
   more() {
-    if (!this.isPreviewDismissed && !this.isEnded) this.isPreviewShown = true;
+    if (!this.isPreviewDismissed && !this.isEnded) {
+      this.isPreviewShown = true;
+    }
     this.isWizardShown = false;
     this.userActions.next('more');
   }
@@ -210,7 +212,7 @@ export class ViewerComponent implements OnInit {
 
   get isError() {
     return this.isNotFoundError || this.isPermissionDeniedError ||
-        this.isUnsupportedBrowser;
+      this.isUnsupportedBrowser;
   }
 
   executeUserAction(action: UserAction): Observable<PlayerAction> {
@@ -220,8 +222,8 @@ export class ViewerComponent implements OnInit {
       case 'more':
         return this.changeDelay(5000);
       case 'stopRecord':
-        return Observable.from([{kind: 'StopRecord' as 'StopRecord'}])
-            .concat(this.changeDelay(0, true));
+        return Observable.from([{ kind: 'StopRecord' as 'StopRecord' }])
+          .concat(this.changeDelay(0, true));
       default:
         const checkExhaustive: never = action;
     }
@@ -230,8 +232,8 @@ export class ViewerComponent implements OnInit {
   changeDelay(ms, noWait = false): Observable<PlayerAction> {
     this.skip = true;
     this.targetMs = this.isEnded ?
-        Math.max(this.delayMs + ms, this.timeSinceLastReceivedMs) :
-        Math.max(this.targetMs + ms, 0);
+      Math.max(this.delayMs + ms, this.timeSinceLastReceivedMs) :
+      Math.max(this.targetMs + ms, 0);
     if (noWait || this.isEnded) {
       // Don't allow the currentTime to be before the start.
       this.targetMs = Math.min(this.targetMs, this.absoluteEndMs);
@@ -241,34 +243,34 @@ export class ViewerComponent implements OnInit {
       const periods = Math.floor(-headroom / 1000) + 1;
       const x = new Date();
       return Observable
-          .from([
-            {kind: 'Pause' as 'Pause'},
-            {kind: ('SetTime' as 'SetTime'), timeS: 0},
-            {kind: ('SetWaiting' as 'SetWaiting'), timeS: periods},
-          ])
-          .concat(Observable.timer((-headroom) % 1000, 1000)
-                      .take(periods)
-                      .switchMap((i: number): Observable<PlayerAction> => {
-                        const x = new Date();
-                        if (i < periods - 1) {
-                          return Observable.from([{
-                            kind: ('SetWaiting' as 'SetWaiting'),
-                            timeS: periods - 1 - i
-                          }]);
-                        } else {
-                          return Observable.from([{kind: ('Play' as 'Play')}]);
-                        }
-                      }));
+        .from([
+          { kind: 'Pause' as 'Pause' },
+          { kind: ('SetTime' as 'SetTime'), timeS: 0 },
+          { kind: ('SetWaiting' as 'SetWaiting'), timeS: periods },
+        ])
+        .concat(Observable.timer((-headroom) % 1000, 1000)
+          .take(periods)
+          .switchMap((i: number): Observable<PlayerAction> => {
+            const x = new Date();
+            if (i < periods - 1) {
+              return Observable.from([{
+                kind: ('SetWaiting' as 'SetWaiting'),
+                timeS: periods - 1 - i
+              }]);
+            } else {
+              return Observable.from([{ kind: ('Play' as 'Play') }]);
+            }
+          }));
     } else {
       if (this.targetMs <= this.timeSinceLastReceivedMs && !this.isEnded) {
-        return Observable.from([{kind: ('SetLive' as 'SetLive')}]);
+        return Observable.from([{ kind: ('SetLive' as 'SetLive') }]);
       }
       const actions: PlayerAction[] = [{
         kind: 'SetTime' as 'SetTime',
         timeS: (this.absoluteEndMs - this.targetMs) / 1000
       }];
       if (this.targetMs > this.timeSinceLastReceivedMs) {
-        actions.push({kind: ('Play' as 'Play')});
+        actions.push({ kind: ('Play' as 'Play') });
       }
       return Observable.from(actions);
     }
@@ -340,7 +342,7 @@ export class ViewerComponent implements OnInit {
   get isAtEnd() { return this.isLive || this.isStopped; }
 
   get timeSinceLastReceivedMs() {
-    if (!this.lastReceived) return 0;
+    if (!this.lastReceived) { return 0 };
     const now = new Date().getTime();
     return now - this.lastReceived.getTime();
   }
@@ -365,8 +367,8 @@ export class ViewerComponent implements OnInit {
 
   showDelay() {
     this.totalTime = this.sourceBuffer.buffered.length ?
-        this.sourceBuffer.buffered.end(0) :
-        0;
+      this.sourceBuffer.buffered.end(0) :
+      0;
     if (!this.isEnded) {
       this.totalTime += this.timeSinceLastReceivedMs / 1000;
     }

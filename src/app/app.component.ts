@@ -1,5 +1,5 @@
-import {Component, Inject} from '@angular/core';
-import {NavigationEnd, Router} from '@angular/router';
+import { Component, Inject } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
 
 declare let ga: Function;
 

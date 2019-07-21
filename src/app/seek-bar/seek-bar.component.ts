@@ -1,20 +1,20 @@
-import {Component, Input} from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-seek-bar',
   templateUrl: './seek-bar.component.html',
   styleUrls: ['./seek-bar.component.css']
 })
-export class SeekBarComponent {
-  @Input() currentTime: number = 0;
-  @Input() totalTime: number = 0;
-  @Input() targetDelay: number = 0;
-  @Input() displayedDelay: number = 0;
-  @Input() isEnded: boolean = false;
+export class SeekBarComponent implements OnInit {
+  @Input() currentTime = 0;
+  @Input() totalTime = 0;
+  @Input() targetDelay = 0;
+  @Input() displayedDelay = 0;
+  @Input() isEnded = false;
 
   private seekbar;
 
-  constructor() {}
+  constructor() { }
 
   ngOnInit() { this.seekbar = document.getElementById('seekbar'); }
 
@@ -65,9 +65,9 @@ export class SeekBarComponent {
       const periodStr = period.toPrecision(4);
       const period2Str = (period * 2).toPrecision(4);
       const result =
-          (`repeating-linear-gradient(${angleStr}rad,` +
-           `transparent, transparent ${periodStr}px,` +
-           `#999 ${periodStr}px, #999 ${period2Str}px)`);
+        (`repeating-linear-gradient(${angleStr}rad,` +
+          `transparent, transparent ${periodStr}px,` +
+          `#999 ${periodStr}px, #999 ${period2Str}px)`);
       return result;
     }
   }
