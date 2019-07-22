@@ -70,12 +70,18 @@ app-icon {
   position: fixed;
   bottom: 48px;
   left: 0px;
+  width: 33%;
+  height: 33%;
   transform-origin: bottom left;
   line-height: 0;
 }
 
 #controls #preview {
   max-width: 100%;
+  max-height: 100%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
   width: 320px;
   height: auto;
   border: 1px solid white;
