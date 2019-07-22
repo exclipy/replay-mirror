@@ -24,10 +24,10 @@
     "@angular/platform-browser-dynamic": "^8.1.2",
     "@angular/router": "^8.1.2",
     "@angular/service-worker": "^8.1.2",
-    "core-js": "^2.4.1",
+    "core-js": "^2.6.9",
     "rxjs": "^6.5.2",
-    "zone.js": "^0.9.1",
-    "rxjs-compat": "^6.0.0-rc.0"
+    "rxjs-compat": "^6.0.0-rc.0",
+    "zone.js": "^0.9.1"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.801.2",
@@ -36,7 +36,7 @@
     "@angular/language-service": "~8.1.2",
     "@types/google.analytics": "0.0.36",
     "@types/jasmine": "~3.3.8",
-    "@types/jasminewd2": "~2.0.3",
+    "@types/jasminewd2": "^2.0.6",
     "@types/node": "~8.9.4",
     "codelyzer": "^5.0.0",
     "firebase-tools": "^7.1.1",
@@ -49,7 +49,7 @@
     "karma-jasmine": "~2.0.1",
     "karma-jasmine-html-reporter": "^1.4.0",
     "protractor": "~5.4.0",
-    "sw-precache": "^5.2.0",
+    "sw-precache": "^5.2.1",
     "ts-node": "~7.0.0",
     "tslint": "~5.15.0",
     "typescript": "~3.4.3"
