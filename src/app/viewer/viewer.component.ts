@@ -70,6 +70,7 @@ export class ViewerComponent implements OnInit {
   private bufferSource = new MediaSource();
   private sourceBuffer: SourceBuffer | null;
   private isPreviewDismissed = false;
+  private showPreview = false;
   isWizardShown = true;
   isEnded = false;
   isStopped = false;
@@ -83,7 +84,6 @@ export class ViewerComponent implements OnInit {
   totalTime = 0;
   displayedDelay = 0;
   waitTime = 0;
-  showPreview_ = false;
 
   private userActions = new Subject<UserAction>();
   private playerActions: Observable<PlayerAction>;
@@ -126,7 +126,7 @@ export class ViewerComponent implements OnInit {
       .then((mediaStream) => {
         this.mediaStream = mediaStream;
         this.mediaRecorder =
-          new MediaRecorder(mediaStream, { mimeType: mimeType }) as any;
+          new MediaRecorder(mediaStream, { mimeType });
         this.bufferSource.addEventListener('sourceopen', () => {
           this.sourceBuffer = this.bufferSource.addSourceBuffer(mimeType);
 
@@ -205,10 +205,10 @@ export class ViewerComponent implements OnInit {
         this.preview.pause();
       }
     }
-    this.showPreview_ = value;
+    this.showPreview = value;
   }
 
-  get isPreviewShown() { return this.showPreview_; }
+  get isPreviewShown() { return this.showPreview; }
 
   get isError() {
     return this.isNotFoundError || this.isPermissionDeniedError ||
