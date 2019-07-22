@@ -1,19 +1,7 @@
-import 'rxjs/add/observable/from';
-import 'rxjs/add/observable/fromEvent';
-import 'rxjs/add/observable/interval';
-import 'rxjs/add/observable/merge';
-import 'rxjs/add/observable/timer';
-import 'rxjs/add/operator/concat';
-import 'rxjs/add/operator/filter';
-import 'rxjs/add/operator/exhaustMap';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/switchMap';
-import 'rxjs/add/operator/take';
-
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, Inject, OnInit } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
+import { Observable, Subject, concat, from, fromEvent, interval, merge, timer } from 'rxjs';
+import { filter, exhaustMap, map, switchMap, take } from 'rxjs/operators';
 
 import { BrowserParamsService } from '../browser-params.service';
 
@@ -106,14 +94,14 @@ export class ViewerComponent implements OnInit {
     this.start();
 
     const foregroundedStream =
-      Observable.fromEvent(document, 'visibilitychange');
+      fromEvent(document, 'visibilitychange');
     const fixDelayStream =
-      foregroundedStream.filter(() => document.visibilityState === 'visible')
-        .exhaustMap(() => this.changeDelay(0));
+      foregroundedStream.pipe(filter(() => document.visibilityState === 'visible'),
+        exhaustMap(() => this.changeDelay(0)));
 
-    this.playerActions = Observable.merge(
-      this.userActions.switchMap(
-        (userAction) => this.executeUserAction(userAction)),
+    this.playerActions = merge(
+      this.userActions.pipe(switchMap(
+        (userAction) => this.executeUserAction(userAction))),
       fixDelayStream);
     this.playerActions.subscribe(
       (action) => { this.executePlayerAction(action); });
@@ -144,7 +132,7 @@ export class ViewerComponent implements OnInit {
           };
           this.mediaRecorder.start();
           this.mediaRecorder.requestData();
-          Observable.interval(1000).subscribe(() => {
+          interval(1000).subscribe(() => {
             if (!this.isEnded) {
               this.mediaRecorder.requestData();
             }
@@ -222,14 +210,15 @@ export class ViewerComponent implements OnInit {
       case 'more':
         return this.changeDelay(5000);
       case 'stopRecord':
-        return Observable.from([{ kind: 'StopRecord' as 'StopRecord' }])
-          .concat(this.changeDelay(0, true));
+        return concat(
+          from([{ kind: 'StopRecord' as 'StopRecord' }]),
+          this.changeDelay(0, true));
       default:
         const checkExhaustive: never = action;
     }
   }
 
-  changeDelay(ms, noWait = false): Observable<PlayerAction> {
+  changeDelay(ms: number, noWait = false): Observable<PlayerAction> {
     this.skip = true;
     this.targetMs = this.isEnded ?
       Math.max(this.delayMs + ms, this.timeSinceLastReceivedMs) :
@@ -242,27 +231,27 @@ export class ViewerComponent implements OnInit {
     if (headroom < 0) {
       const periods = Math.floor(-headroom / 1000) + 1;
       const x = new Date();
-      return Observable
-        .from([
+      return concat(
+        from([
           { kind: 'Pause' as 'Pause' },
           { kind: ('SetTime' as 'SetTime'), timeS: 0 },
           { kind: ('SetWaiting' as 'SetWaiting'), timeS: periods },
-        ])
-        .concat(Observable.timer((-headroom) % 1000, 1000)
-          .take(periods)
-          .switchMap((i: number): Observable<PlayerAction> => {
+        ]),
+        timer((-headroom) % 1000, 1000).pipe(
+          take(periods),
+          switchMap((i: number): Observable<PlayerAction> => {
             if (i < periods - 1) {
-              return Observable.from([{
+              return from([{
                 kind: ('SetWaiting' as 'SetWaiting'),
                 timeS: periods - 1 - i
               }]);
             } else {
-              return Observable.from([{ kind: ('Play' as 'Play') }]);
+              return from([{ kind: ('Play' as 'Play') }]);
             }
-          }));
+          })));
     } else {
       if (this.targetMs <= this.timeSinceLastReceivedMs && !this.isEnded) {
-        return Observable.from([{ kind: ('SetLive' as 'SetLive') }]);
+        return from([{ kind: ('SetLive' as 'SetLive') }]);
       }
       const actions: PlayerAction[] = [{
         kind: 'SetTime' as 'SetTime',
@@ -271,7 +260,7 @@ export class ViewerComponent implements OnInit {
       if (this.targetMs > this.timeSinceLastReceivedMs) {
         actions.push({ kind: ('Play' as 'Play') });
       }
-      return Observable.from(actions);
+      return from(actions);
     }
   }
 
