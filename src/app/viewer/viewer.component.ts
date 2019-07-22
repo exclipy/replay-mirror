@@ -230,7 +230,6 @@ export class ViewerComponent implements OnInit {
     const headroom = this.absoluteEndMs - this.targetMs;
     if (headroom < 0) {
       const periods = Math.floor(-headroom / 1000) + 1;
-      const x = new Date();
       return concat(
         from([
           { kind: 'Pause' as 'Pause' },
