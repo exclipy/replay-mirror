@@ -15,7 +15,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 
-import { BrowserParamsService } from '../browser-params.service'
+import { BrowserParamsService } from '../browser-params.service';
 
 declare type MediaRecorder = any;
 declare var MediaRecorder: any;
@@ -99,7 +99,7 @@ export class ViewerComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.isUnsupportedBrowser) return;
+    if (this.isUnsupportedBrowser) { return; }
     this.video = document.querySelector('#video') as HTMLVideoElement;
     this.liveVideo = document.querySelector('#live') as HTMLVideoElement;
     this.preview = document.querySelector('#preview') as HTMLVideoElement;
@@ -251,7 +251,6 @@ export class ViewerComponent implements OnInit {
         .concat(Observable.timer((-headroom) % 1000, 1000)
           .take(periods)
           .switchMap((i: number): Observable<PlayerAction> => {
-            const x = new Date();
             if (i < periods - 1) {
               return Observable.from([{
                 kind: ('SetWaiting' as 'SetWaiting'),
@@ -342,7 +341,7 @@ export class ViewerComponent implements OnInit {
   get isAtEnd() { return this.isLive || this.isStopped; }
 
   get timeSinceLastReceivedMs() {
-    if (!this.lastReceived) { return 0 };
+    if (!this.lastReceived) { return 0; }
     const now = new Date().getTime();
     return now - this.lastReceived.getTime();
   }
