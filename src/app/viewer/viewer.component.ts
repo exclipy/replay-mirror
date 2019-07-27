@@ -50,7 +50,6 @@ type PlayerAction = PauseAction | PlayAction | StopRecordAction |
 })
 export class ViewerComponent implements OnInit, OnDestroy {
   targetMs = 0;
-  private skip = false;
   private mediaStream: MediaStream | null;
   private mediaRecorder: MediaRecorder | null;
   private adjustIntervalId: number | null;
@@ -85,7 +84,6 @@ export class ViewerComponent implements OnInit, OnDestroy {
     private store: Store<State>,
   ) {
     this.targetMs = 0;
-    this.skip = false;
     this.mediaStream = null;
     this.adjustIntervalId = null;
 
@@ -229,7 +227,6 @@ export class ViewerComponent implements OnInit, OnDestroy {
   }
 
   changeDelay(ms: number, noWait = false): Observable<PlayerAction> {
-    this.skip = true;
     this.targetMs = this.isEnded ?
       Math.max(this.delayMs + ms, this.timeSinceLastReceivedMs) :
       Math.max(this.targetMs + ms, 0);
