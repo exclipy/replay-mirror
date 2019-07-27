@@ -14,6 +14,7 @@ import { SeekBarComponent } from './seek-bar/seek-bar.component';
 import { ViewerComponent } from './viewer/viewer.component';
 import { StoreModule } from '@ngrx/store';
 import { reducers, metaReducers } from './reducers';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 const appRoutes: Routes = [
   { path: '', component: HomeComponent },
@@ -34,7 +35,11 @@ const appRoutes: Routes = [
         strictStateImmutability: true,
         strictActionImmutability: true
       }
-    })
+    }),
+    StoreDevtoolsModule.instrument({
+      maxAge: 25, // Retains last 25 states
+      logOnly: environment.production, // Restrict extension to log-only mode
+    }),
   ],
   providers: [BrowserParamsService],
   bootstrap: [AppComponent]

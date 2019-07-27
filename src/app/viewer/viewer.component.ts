@@ -1,9 +1,13 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, Inject, OnInit } from '@angular/core';
-import { Observable, Subject, concat, from, fromEvent, interval, merge, timer } from 'rxjs';
+import { Component, Inject, OnInit, OnDestroy } from '@angular/core';
+import { Observable, Subject, concat, from, fromEvent, interval, merge, timer, Subscription } from 'rxjs';
 import { filter, exhaustMap, map, switchMap, take } from 'rxjs/operators';
 
 import { BrowserParamsService } from '../browser-params.service';
+import { Store, select } from '@ngrx/store';
+import { State } from '../reducers';
+import * as ViewerActions from './viewer.actions';
+import { showPreviewSelector } from './viewer.selectors';
 
 declare type MediaRecorder = any;
 declare var MediaRecorder: any;
@@ -45,7 +49,7 @@ type PlayerAction = PauseAction | PlayAction | StopRecordAction |
       transition('hide <=> show', [animate(100)])
     ])]
 })
-export class ViewerComponent implements OnInit {
+export class ViewerComponent implements OnInit, OnDestroy {
   targetMs = 0;
   private skip = false;
   private mediaStream: MediaStream | null;
@@ -58,7 +62,6 @@ export class ViewerComponent implements OnInit {
   private bufferSource = new MediaSource();
   private sourceBuffer: SourceBuffer | null;
   private isPreviewDismissed = false;
-  private showPreview = false;
   isWizardShown = true;
   isEnded = false;
   isStopped = false;
@@ -73,15 +76,32 @@ export class ViewerComponent implements OnInit {
   displayedDelay = 0;
   waitTime = 0;
 
+  showPreview$: Observable<boolean>;
+
   private userActions = new Subject<UserAction>();
   private playerActions: Observable<PlayerAction>;
+  private showPreview$sub: Subscription;
 
-  constructor(@Inject(BrowserParamsService) private browserParams:
-    BrowserParamsService) {
+  constructor(
+    @Inject(BrowserParamsService) private browserParams: BrowserParamsService,
+    private store: Store<State>,
+  ) {
     this.targetMs = 0;
     this.skip = false;
     this.mediaStream = null;
     this.adjustIntervalId = null;
+
+    this.showPreview$ = store.pipe(select(showPreviewSelector));
+
+    this.showPreview$sub = this.showPreview$.subscribe(value => {
+      if (this.preview) {
+        if (value) {
+          this.preview.play();
+        } else {
+          this.preview.pause();
+        }
+      }
+    });
 
     this.isUnsupportedBrowser = browserParams.isUnsupportedBrowser;
   }
@@ -105,6 +125,10 @@ export class ViewerComponent implements OnInit {
       fixDelayStream);
     this.playerActions.subscribe(
       (action) => { this.executePlayerAction(action); });
+  }
+
+  ngOnDestroy() {
+    this.showPreview$sub.unsubscribe();
   }
 
   start() {
@@ -164,7 +188,7 @@ export class ViewerComponent implements OnInit {
 
   more() {
     if (!this.isPreviewDismissed && !this.isEnded) {
-      this.isPreviewShown = true;
+      this.store.dispatch(ViewerActions.showPreview());
     }
     this.isWizardShown = false;
     this.userActions.next('more');
@@ -176,7 +200,7 @@ export class ViewerComponent implements OnInit {
   }
 
   togglePreview() {
-    this.isPreviewShown = !this.isPreviewShown;
+    this.store.dispatch(ViewerActions.togglePreview());
     this.isPreviewDismissed = true;
   }
 
@@ -184,19 +208,6 @@ export class ViewerComponent implements OnInit {
     console.log('stopped');
     this.isStopped = true;
   }
-
-  set isPreviewShown(value) {
-    if (this.preview) {
-      if (value) {
-        this.preview.play();
-      } else {
-        this.preview.pause();
-      }
-    }
-    this.showPreview = value;
-  }
-
-  get isPreviewShown() { return this.showPreview; }
 
   get isError() {
     return this.isNotFoundError || this.isPermissionDeniedError ||
@@ -298,7 +309,7 @@ export class ViewerComponent implements OnInit {
       case 'StopRecord':
         console.log('stop recording');
         this.isEnded = true;
-        this.isPreviewShown = false;
+        this.store.dispatch(ViewerActions.hidePreview());
         this.switchToDelayed();
         if (this.mediaStream) {
           for (const mediaStreamTrack of this.mediaStream.getTracks()) {

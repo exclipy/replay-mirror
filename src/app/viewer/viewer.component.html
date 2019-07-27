@@ -15,7 +15,7 @@
 
   <div id="controls" [style.visibility]="isInitialized ? 'visible' : 'hidden'">
     <div id="preview-wrapper"
-       [@preview]="!isPreviewShown || isLive ? 'hide' : 'show'"
+       [@preview]="!(showPreview$ | async) || isLive ? 'hide' : 'show'"
         (click)="togglePreview()">
       <video id="preview"></video>
     </div>
