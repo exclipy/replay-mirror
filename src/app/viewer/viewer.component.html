@@ -9,7 +9,7 @@
 
   <div [hidden]="isWaiting" id="waitTime"><div>{{waitTime}}</div></div>
 
-  <div id="wizard" *ngIf="isInitialized && isWizardShown" (click)="isWizardShown = false">
+  <div id="wizard" *ngIf="isInitialized && (showWizard$|async)" (click)="dismissWizard()">
     <p>Start here: click to rewind 5 seconds</p>
   </div>
 

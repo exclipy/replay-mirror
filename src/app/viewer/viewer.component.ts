@@ -7,7 +7,6 @@ import { BrowserParamsService } from '../browser-params.service';
 import { Store, select } from '@ngrx/store';
 import { State } from '../reducers';
 import * as ViewerActions from './viewer.actions';
-import { showPreviewSelector } from './viewer.selectors';
 
 declare type MediaRecorder = any;
 declare var MediaRecorder: any;
@@ -62,7 +61,6 @@ export class ViewerComponent implements OnInit, OnDestroy {
   private bufferSource = new MediaSource();
   private sourceBuffer: SourceBuffer | null;
   private isPreviewDismissed = false;
-  isWizardShown = true;
   isEnded = false;
   isStopped = false;
   isLive = true;
@@ -77,6 +75,7 @@ export class ViewerComponent implements OnInit, OnDestroy {
   waitTime = 0;
 
   showPreview$: Observable<boolean>;
+  showWizard$: Observable<boolean>;
 
   private userActions = new Subject<UserAction>();
   private playerActions: Observable<PlayerAction>;
@@ -91,7 +90,8 @@ export class ViewerComponent implements OnInit, OnDestroy {
     this.mediaStream = null;
     this.adjustIntervalId = null;
 
-    this.showPreview$ = store.pipe(select(showPreviewSelector));
+    this.showPreview$ = store.pipe(select('viewer', 'showPreview'));
+    this.showWizard$ = store.pipe(select('viewer', 'showWizard'));
 
     this.showPreview$sub = this.showPreview$.subscribe(value => {
       if (this.preview) {
@@ -190,13 +190,17 @@ export class ViewerComponent implements OnInit, OnDestroy {
     if (!this.isPreviewDismissed && !this.isEnded) {
       this.store.dispatch(ViewerActions.showPreview());
     }
-    this.isWizardShown = false;
+    this.store.dispatch(ViewerActions.more());
     this.userActions.next('more');
   }
 
   stopRecord() {
-    this.isWizardShown = false;
+    this.store.dispatch(ViewerActions.stopRecord());
     this.userActions.next('stopRecord');
+  }
+
+  dismissWizard() {
+    this.store.dispatch(ViewerActions.dismissWizard());
   }
 
   togglePreview() {
