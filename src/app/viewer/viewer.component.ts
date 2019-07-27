@@ -313,7 +313,6 @@ export class ViewerComponent implements OnInit, OnDestroy {
       case 'StopRecord':
         console.log('stop recording');
         this.isEnded = true;
-        this.store.dispatch(ViewerActions.hidePreview());
         this.switchToDelayed();
         if (this.mediaStream) {
           for (const mediaStreamTrack of this.mediaStream.getTracks()) {
