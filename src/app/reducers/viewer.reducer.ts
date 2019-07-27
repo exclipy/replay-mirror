@@ -4,27 +4,33 @@ import * as ViewerActions from '../viewer/viewer.actions';
 export interface ViewerState {
     showPreview: boolean;
     showWizard: boolean;
+    isPreviewDismissed: boolean;
+    isEnded: boolean;
 }
 
-const initialState = { showPreview: false, showWizard: true, };
+const initialState = {
+    showPreview: false,
+    showWizard: true,
+    isPreviewDismissed: false,
+    isEnded: false,
+};
 
 export const reducer = createReducer(initialState,
-    on(ViewerActions.showPreview, state => ({
-        ...state,
-        showPreview: true
-    })),
     on(ViewerActions.togglePreview, state => ({
         ...state,
-        showPreview: !state.showPreview
+        showPreview: !state.showPreview,
+        isPreviewDismissed: true,
     })),
     on(ViewerActions.more, state => ({
         ...state,
+        showPreview: !state.isPreviewDismissed && !state.isEnded || state.showPreview,
         showWizard: false
     })),
     on(ViewerActions.stopRecord, state => ({
         ...state,
         showPreview: false,
-        showWizard: false
+        showWizard: false,
+        isEnded: true,
     })),
     on(ViewerActions.dismissWizard, state => ({
         ...state,

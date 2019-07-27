@@ -60,7 +60,6 @@ export class ViewerComponent implements OnInit, OnDestroy {
   private lastReceived: Date | null = null;
   private bufferSource = new MediaSource();
   private sourceBuffer: SourceBuffer | null;
-  private isPreviewDismissed = false;
   isEnded = false;
   isStopped = false;
   isLive = true;
@@ -187,9 +186,6 @@ export class ViewerComponent implements OnInit, OnDestroy {
   less() { this.userActions.next('less'); }
 
   more() {
-    if (!this.isPreviewDismissed && !this.isEnded) {
-      this.store.dispatch(ViewerActions.showPreview());
-    }
     this.store.dispatch(ViewerActions.more());
     this.userActions.next('more');
   }
@@ -205,7 +201,6 @@ export class ViewerComponent implements OnInit, OnDestroy {
 
   togglePreview() {
     this.store.dispatch(ViewerActions.togglePreview());
-    this.isPreviewDismissed = true;
   }
 
   stopped() {
