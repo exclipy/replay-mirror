@@ -27,7 +27,8 @@
     "@types/google.analytics": "0.0.40",
     "core-js": "^3.1.4",
     "rxjs": "^6.5.2",
-    "zone.js": "^0.9.1"
+    "zone.js": "^0.9.1",
+    "@ngrx/store": "^8.0.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.801.2",

@@ -12,6 +12,8 @@ import { HomeComponent } from './home/home.component';
 import { IconComponent } from './icon/icon.component';
 import { SeekBarComponent } from './seek-bar/seek-bar.component';
 import { ViewerComponent } from './viewer/viewer.component';
+import { StoreModule } from '@ngrx/store';
+import { reducers, metaReducers } from './reducers';
 
 const appRoutes: Routes = [
   { path: '', component: HomeComponent },
@@ -25,7 +27,14 @@ const appRoutes: Routes = [
   ],
   imports: [
     BrowserModule, BrowserAnimationsModule, RouterModule.forRoot(appRoutes),
-    ServiceWorkerModule.register('/ngsw-worker.js')
+    ServiceWorkerModule.register('/ngsw-worker.js'),
+    StoreModule.forRoot(reducers, {
+      metaReducers,
+      runtimeChecks: {
+        strictStateImmutability: true,
+        strictActionImmutability: true
+      }
+    })
   ],
   providers: [BrowserParamsService],
   bootstrap: [AppComponent]
