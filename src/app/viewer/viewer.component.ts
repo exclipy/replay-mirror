@@ -12,7 +12,7 @@ import * as ViewerActions from './viewer.actions';
 declare type MediaRecorder = any;
 declare var MediaRecorder: any;
 
-type UserAction = 'more' | 'less' | 'stopRecord';
+type UserAction = 'more' | 'less' | 'stopRecord' | 'foregrounded';
 
 interface PauseAction {
   kind: 'Pause';
@@ -112,16 +112,13 @@ export class ViewerComponent implements OnInit, OnDestroy {
     this.preview = document.querySelector('#preview') as HTMLVideoElement;
     this.start();
 
-    const foregroundedStream =
-      fromEvent(document, 'visibilitychange');
-    const fixDelayStream =
-      foregroundedStream.pipe(filter(() => document.visibilityState === 'visible'),
-        exhaustMap(() => this.changeDelay(0)));
+    fromEvent(document, 'visibilitychange').pipe(
+      untilComponentDestroyed(this),
+      filter(() => document.visibilityState === 'visible'),
+    ).subscribe(() => this.userActions.next('foregrounded'));
 
-    this.playerActions = merge(
-      this.userActions.pipe(switchMap(
-        (userAction) => this.executeUserAction(userAction))),
-      fixDelayStream);
+    this.playerActions = this.userActions.pipe(
+      switchMap((userAction) => this.executeUserAction(userAction)));
     this.playerActions
       .pipe(untilComponentDestroyed(this))
       .subscribe(
@@ -224,6 +221,9 @@ export class ViewerComponent implements OnInit, OnDestroy {
         return concat(
           from([{ kind: 'StopRecord' as 'StopRecord' }]),
           this.changeDelay(0, true));
+      case 'foregrounded':
+        return this.changeDelay(0);
+
       default:
         const checkExhaustive: never = action;
     }
