@@ -1,5 +1,6 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, Inject, OnInit, OnDestroy } from '@angular/core';
+import { untilComponentDestroyed } from '@w11k/ngx-componentdestroyed';
 import { Observable, Subject, concat, from, fromEvent, interval, merge, timer, Subscription } from 'rxjs';
 import { filter, exhaustMap, map, switchMap, take } from 'rxjs/operators';
 
@@ -77,7 +78,6 @@ export class ViewerComponent implements OnInit, OnDestroy {
 
   private userActions = new Subject<UserAction>();
   private playerActions: Observable<PlayerAction>;
-  private showPreview$sub: Subscription;
 
   constructor(
     @Inject(BrowserParamsService) private browserParams: BrowserParamsService,
@@ -90,15 +90,17 @@ export class ViewerComponent implements OnInit, OnDestroy {
     this.showPreview$ = store.pipe(select('viewer', 'showPreview'));
     this.showWizard$ = store.pipe(select('viewer', 'showWizard'));
 
-    this.showPreview$sub = this.showPreview$.subscribe(value => {
-      if (this.preview) {
-        if (value) {
-          this.preview.play();
-        } else {
-          this.preview.pause();
+    this.showPreview$
+      .pipe(untilComponentDestroyed(this))
+      .subscribe(value => {
+        if (this.preview) {
+          if (value) {
+            this.preview.play();
+          } else {
+            this.preview.pause();
+          }
         }
-      }
-    });
+      });
 
     this.isUnsupportedBrowser = browserParams.isUnsupportedBrowser;
   }
@@ -120,12 +122,13 @@ export class ViewerComponent implements OnInit, OnDestroy {
       this.userActions.pipe(switchMap(
         (userAction) => this.executeUserAction(userAction))),
       fixDelayStream);
-    this.playerActions.subscribe(
-      (action) => { this.executePlayerAction(action); });
+    this.playerActions
+      .pipe(untilComponentDestroyed(this))
+      .subscribe(
+        (action) => { this.executePlayerAction(action); });
   }
 
   ngOnDestroy() {
-    this.showPreview$sub.unsubscribe();
   }
 
   start() {
