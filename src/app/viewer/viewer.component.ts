@@ -8,6 +8,7 @@ import { BrowserParamsService } from '../browser-params.service';
 import { Store, select } from '@ngrx/store';
 import { State } from '../reducers';
 import * as ViewerActions from './viewer.actions';
+import { VideoService } from '../video.service';
 
 declare type MediaRecorder = any;
 declare var MediaRecorder: any;
@@ -51,15 +52,8 @@ type PlayerAction = PauseAction | PlayAction | StopRecordAction |
 })
 export class ViewerComponent implements OnInit, OnDestroy {
   targetMs = 0;
-  private mediaStream: MediaStream | null;
-  private mediaRecorder: MediaRecorder | null;
   private adjustIntervalId: number | null;
-  private video: HTMLVideoElement;
-  private liveVideo: HTMLVideoElement;
-  private preview: HTMLVideoElement;
   private lastReceived: Date | null = null;
-  private bufferSource = new MediaSource();
-  private sourceBuffer: SourceBuffer | null;
   isEnded = false;
   isStopped = false;
   isLive = true;
@@ -81,10 +75,11 @@ export class ViewerComponent implements OnInit, OnDestroy {
 
   constructor(
     @Inject(BrowserParamsService) private browserParams: BrowserParamsService,
+    private videoService: VideoService,
     private store: Store<State>,
   ) {
     this.targetMs = 0;
-    this.mediaStream = null;
+    this.videoService.mediaStream = null;
     this.adjustIntervalId = null;
 
     this.showPreview$ = store.pipe(select('viewer', 'showPreview'));
@@ -93,11 +88,11 @@ export class ViewerComponent implements OnInit, OnDestroy {
     this.showPreview$
       .pipe(untilComponentDestroyed(this))
       .subscribe(value => {
-        if (this.preview) {
+        if (this.videoService.preview) {
           if (value) {
-            this.preview.play();
+            this.videoService.preview.play();
           } else {
-            this.preview.pause();
+            this.videoService.preview.pause();
           }
         }
       });
@@ -107,9 +102,9 @@ export class ViewerComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     if (this.isUnsupportedBrowser) { return; }
-    this.video = document.querySelector('#video') as HTMLVideoElement;
-    this.liveVideo = document.querySelector('#live') as HTMLVideoElement;
-    this.preview = document.querySelector('#preview') as HTMLVideoElement;
+    this.videoService.video = document.querySelector('#video') as HTMLVideoElement;
+    this.videoService.liveVideo = document.querySelector('#live') as HTMLVideoElement;
+    this.videoService.preview = document.querySelector('#preview') as HTMLVideoElement;
     this.start();
 
     fromEvent(document, 'visibilitychange').pipe(
@@ -133,13 +128,13 @@ export class ViewerComponent implements OnInit, OnDestroy {
 
     navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
       .then((mediaStream) => {
-        this.mediaStream = mediaStream;
-        this.mediaRecorder =
+        this.videoService.mediaStream = mediaStream;
+        this.videoService.mediaRecorder =
           new MediaRecorder(mediaStream, { mimeType });
-        this.bufferSource.addEventListener('sourceopen', () => {
-          this.sourceBuffer = this.bufferSource.addSourceBuffer(mimeType);
+        this.videoService.bufferSource.addEventListener('sourceopen', () => {
+          this.videoService.sourceBuffer = this.videoService.bufferSource.addSourceBuffer(mimeType);
 
-          this.mediaRecorder.ondataavailable = (e) => {
+          this.videoService.mediaRecorder.ondataavailable = (e) => {
             if (this.isEnded) {
               return;
             }
@@ -147,26 +142,26 @@ export class ViewerComponent implements OnInit, OnDestroy {
             this.lastReceived = new Date();
             const fileReader = new FileReader();
             fileReader.onload = (f) => {
-              this.sourceBuffer.appendBuffer((f.target as any).result);
+              this.videoService.sourceBuffer.appendBuffer((f.target as any).result);
             };
             fileReader.readAsArrayBuffer(e.data);
           };
-          this.mediaRecorder.start();
-          this.mediaRecorder.requestData();
+          this.videoService.mediaRecorder.start();
+          this.videoService.mediaRecorder.requestData();
           interval(1000).subscribe(() => {
             if (!this.isEnded) {
-              this.mediaRecorder.requestData();
+              this.videoService.mediaRecorder.requestData();
             }
           });
           this.isInitialized = true;
         });
         this.isLive = true;
-        this.video.src = window.URL.createObjectURL(this.bufferSource);
-        this.video.pause();
-        bindStream(this.liveVideo, this.mediaStream);
-        this.liveVideo.play();
-        bindStream(this.preview, this.mediaStream);
-        this.preview.pause();
+        this.videoService.video.src = window.URL.createObjectURL(this.videoService.bufferSource);
+        this.videoService.video.pause();
+        bindStream(this.videoService.liveVideo, this.videoService.mediaStream);
+        this.videoService.liveVideo.play();
+        bindStream(this.videoService.preview, this.videoService.mediaStream);
+        this.videoService.preview.pause();
       })
       .catch((e) => {
         if (e.name === 'PermissionDeniedError' ||  // Chrome
@@ -278,8 +273,8 @@ export class ViewerComponent implements OnInit, OnDestroy {
       case 'SetLive':
         console.log('set live');
         if (!this.isLive) {
-          this.liveVideo.play();
-          this.video.pause();
+          this.videoService.liveVideo.play();
+          this.videoService.video.pause();
           this.waitTime = 0;
           this.isLive = true;
         }
@@ -287,36 +282,36 @@ export class ViewerComponent implements OnInit, OnDestroy {
       case 'Play':
         console.log('playing');
         this.switchToDelayed();
-        this.video.play();
+        this.videoService.video.play();
         this.waitTime = 0;
         this.isStopped = false;
         break;
       case 'Pause':
         console.log('pausing');
         this.switchToDelayed();
-        this.video.pause();
+        this.videoService.video.pause();
         break;
       case 'SetTime':
         console.log('setting time', action);
-        this.video.currentTime = action.timeS;
+        this.videoService.video.currentTime = action.timeS;
         break;
       case 'SetWaiting':
         console.log('setting waiting', action);
-        this.video.currentTime = 0;
+        this.videoService.video.currentTime = 0;
         this.waitTime = action.timeS;
         break;
       case 'StopRecord':
         console.log('stop recording');
         this.isEnded = true;
         this.switchToDelayed();
-        if (this.mediaStream) {
-          for (const mediaStreamTrack of this.mediaStream.getTracks()) {
+        if (this.videoService.mediaStream) {
+          for (const mediaStreamTrack of this.videoService.mediaStream.getTracks()) {
             mediaStreamTrack.stop();
           }
         }
-        this.bufferSource.endOfStream();
-        if (this.mediaRecorder) {
-          this.mediaRecorder.stop();
+        this.videoService.bufferSource.endOfStream();
+        if (this.videoService.mediaRecorder) {
+          this.videoService.mediaRecorder.stop();
         }
         if (this.adjustIntervalId) {
           window.clearInterval(this.adjustIntervalId);
@@ -329,8 +324,8 @@ export class ViewerComponent implements OnInit, OnDestroy {
 
   switchToDelayed() {
     if (this.isLive) {
-      this.liveVideo.pause();
-      this.video.play();
+      this.videoService.liveVideo.pause();
+      this.videoService.video.play();
       this.isLive = false;
     }
   }
@@ -344,10 +339,10 @@ export class ViewerComponent implements OnInit, OnDestroy {
   }
 
   get absoluteEndMs() {
-    if (!this.lastReceived || this.sourceBuffer.buffered.length === 0) {
+    if (!this.lastReceived || this.videoService.sourceBuffer.buffered.length === 0) {
       return 0;
     }
-    const result = 1000 * this.sourceBuffer.buffered.end(0);
+    const result = 1000 * this.videoService.sourceBuffer.buffered.end(0);
     return result + this.timeSinceLastReceivedMs;
   }
 
@@ -355,20 +350,20 @@ export class ViewerComponent implements OnInit, OnDestroy {
     if (this.isLive) {
       return 0;
     } else {
-      return this.absoluteEndMs - this.video.currentTime * 1000;
+      return this.absoluteEndMs - this.videoService.video.currentTime * 1000;
     }
   }
 
   get isWaiting() { return this.waitTime <= 0; }
 
   showDelay() {
-    this.totalTime = this.sourceBuffer.buffered.length ?
-      this.sourceBuffer.buffered.end(0) :
+    this.totalTime = this.videoService.sourceBuffer.buffered.length ?
+      this.videoService.sourceBuffer.buffered.end(0) :
       0;
     if (!this.isEnded) {
       this.totalTime += this.timeSinceLastReceivedMs / 1000;
     }
-    this.currentTime = this.isLive ? this.totalTime : this.video.currentTime;
+    this.currentTime = this.isLive ? this.totalTime : this.videoService.video.currentTime;
     this.displayedDelay = this.delayMs / 1000;
   }
 }
