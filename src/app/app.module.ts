@@ -15,6 +15,8 @@ import { ViewerComponent } from './viewer/viewer.component';
 import { StoreModule } from '@ngrx/store';
 import { reducers, metaReducers } from './reducers';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { EffectsModule } from '@ngrx/effects';
+import { AppEffects } from './app.effects';
 
 const appRoutes: Routes = [
   { path: '', component: HomeComponent },
@@ -40,6 +42,7 @@ const appRoutes: Routes = [
       maxAge: 25, // Retains last 25 states
       logOnly: environment.production, // Restrict extension to log-only mode
     }),
+    EffectsModule.forRoot([AppEffects]),
   ],
   providers: [BrowserParamsService],
   bootstrap: [AppComponent]
