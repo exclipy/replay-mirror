@@ -1,6 +1,6 @@
 <div id="player" [style.visibility]="(isError$ | async) ? 'hidden' : 'visible'">
   <div id="video-container">
-    <video id="live" [hidden]="!(isLive$ | async)"></video>
+    <video id="live" [hidden]="(isLive$ | async) === false"></video>
     <video
       id="video"
       [hidden]="isLive$ | async"
@@ -28,7 +28,7 @@
     <div
       id="preview-wrapper"
       [@preview]="
-        !(showPreview$ | async) || (isLive$ | async) ? 'hide' : 'show'
+        (showPreview$ | async) === false || (isLive$ | async) ? 'hide' : 'show'
       "
       (click)="togglePreview()"
     >
@@ -57,7 +57,7 @@
     <button (click)="stopRecord()" [hidden]="isEnded$ | async">
       <app-icon pic="stoprecord"></app-icon>
     </button>
-    <button routerLink="/" [hidden]="!(isEnded$ | async)">
+    <button routerLink="/" [hidden]="(isEnded$ | async) === false">
       <app-icon pic="close"></app-icon>
     </button>
   </div>

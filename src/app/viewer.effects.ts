@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, Effect, createEffect, ofType } from '@ngrx/effects';
 import { BrowserParamsService } from './browser-params.service';
-import { switchMap, tap, take, switchMap, map, startWith, takeWhile, takeUntil, filter } from 'rxjs/operators';
+import { tap, take, switchMap, map, startWith, takeWhile, takeUntil, filter } from 'rxjs/operators';
 import * as ViewerActions from './viewer/viewer.actions';
 import { empty, interval, Observable, concat, from, timer } from 'rxjs';
 import { VideoService } from './video.service';

@@ -22,7 +22,7 @@ export interface ViewerState {
         totalTime: number;
         displayedDelay: number;
         waitTime: number;
-    },
+    };
 }
 
 const initialState = {
