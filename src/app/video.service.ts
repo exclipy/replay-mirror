@@ -12,7 +12,7 @@ export class VideoService {
   video: HTMLVideoElement;
   liveVideo: HTMLVideoElement;
   preview: HTMLVideoElement;
-  bufferSource = new MediaSource();
+  bufferSource: MediaSource;
   sourceBuffer: SourceBuffer | null;
 
   constructor() { }
