@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 
 declare type MediaRecorder = any;
 declare var MediaRecorder: any;
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class VideoService {
   mediaStream: MediaStream | null;
@@ -15,5 +15,5 @@ export class VideoService {
   bufferSource: MediaSource;
   sourceBuffer: SourceBuffer | null;
 
-  constructor() { }
+  constructor() {}
 }
