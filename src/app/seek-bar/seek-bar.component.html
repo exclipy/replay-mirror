@@ -1,22 +1,22 @@
 <div id="info" *ngIf="false">
-  <div>Current: {{currentTime | number:'1.0-1'}}</div>
-  <div>Total: {{totalTime | number:'1.0-1'}}</div>
-  <div>Delay: {{displayedDelay | number:'1.0-1'}}</div>
-  <div>Target: {{targetDelay | number:'1.0-1'}}</div>
-  <div>Ended?: {{isEnded}}</div>
+  <div>Current: {{ currentTime | number: '1.0-1' }}</div>
+  <div>Total: {{ totalTime | number: '1.0-1' }}</div>
+  <div>Delay: {{ displayedDelay | number: '1.0-1' }}</div>
+  <div>Target: {{ targetDelay | number: '1.0-1' }}</div>
+  <div>Ended?: {{ isEnded }}</div>
 </div>
 
 <div id="container">
   <div id="seekbar">
-    <div id="buffer-bar"
-      [style.width]="bufferBarWidth">
-      <div id="buffer-bar-stripes"
+    <div id="buffer-bar" [style.width]="bufferBarWidth">
+      <div
+        id="buffer-bar-stripes"
         [style.background]="bufferBarBackground"
-        [style.animationDuration]="animationDuration">
-      </div>
+        [style.animationDuration]="animationDuration"
+      ></div>
     </div>
     <div id="fade" [hidden]="isEnded"></div>
     <div id="knob" [style.left]="knobPosition"></div>
   </div>
-  <div class="extra">&ndash;{{timeToEnd | number:'1.0-0'}}s</div>
+  <div class="extra">&ndash;{{ timeToEnd | number: '1.0-0' }}s</div>
 </div>

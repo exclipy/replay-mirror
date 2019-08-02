@@ -21,15 +21,10 @@
     <p>Start here: click to rewind 5 seconds</p>
   </div>
 
-  <div
-    id="controls"
-    [style.visibility]="(isInitialized$ | async) ? 'visible' : 'hidden'"
-  >
+  <div id="controls" [style.visibility]="(isInitialized$ | async) ? 'visible' : 'hidden'">
     <div
       id="preview-wrapper"
-      [@preview]="
-        (showPreview$ | async) === false || (isLive$ | async) ? 'hide' : 'show'
-      "
+      [@preview]="(showPreview$ | async) === false || (isLive$ | async) ? 'hide' : 'show'"
       (click)="togglePreview()"
     >
       <video id="preview"></video>
@@ -64,9 +59,8 @@
 </div>
 
 <div class="error" *ngIf="isUnsupportedBrowser">
-  Sorry, your browser is missing the capability to run this app. For now, it
-  only works in recent versions of Chrome (desktop or Android) or Firefox
-  (desktop).
+  Sorry, your browser is missing the capability to run this app. For now, it only works in recent
+  versions of Chrome (desktop or Android) or Firefox (desktop).
 </div>
 <div class="error" *ngIf="isPermissionDeniedError$ | async">
   Please give the camera permission and reload.

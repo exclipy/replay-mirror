@@ -23,7 +23,8 @@ video {
   position: relative;
 }
 
-#video, #live {
+#video,
+#live {
   width: 100%;
   height: auto;
   max-height: 100%;
