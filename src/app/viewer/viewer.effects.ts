@@ -174,29 +174,47 @@ export class ViewerEffects {
     ),
   );
 
-  userActions$ = createEffect(() =>
-    this.actions$.pipe(
+  userActions$ = createEffect(() => {
+    return this.actions$.pipe(
       ofType(ViewerActions.less, ViewerActions.more, ViewerActions.stopRecord),
       switchMap(action => {
+        const params = {
+          timeSinceLastReceivedMs: this.timeSinceLastReceivedMs,
+          targetMs: this.targetMs,
+          absoluteEndMs: this.absoluteEndMs,
+          isEnded: this.isEnded,
+          delayMs: this.delayMs,
+        };
         switch (action.type) {
           case ViewerActions.less.type:
-            return this.changeDelay(-5000);
+            return this.changeDelay(-5000, params);
           case ViewerActions.more.type:
-            return this.changeDelay(5000);
+            return this.changeDelay(5000, params);
           case ViewerActions.stopRecord.type:
-            return this.changeDelay(0, true).pipe(startWith(ViewerActions.doStopRecord()));
+            return this.changeDelay(0, {...params, noWait: true}).pipe(
+              startWith(ViewerActions.doStopRecord()),
+            );
         }
       }),
-    ),
-  );
+    );
+  });
 
   // System actions
-  foregrounded$ = createEffect(() =>
-    this.actions$.pipe(
+  foregrounded$ = createEffect(() => {
+    return this.actions$.pipe(
       ofType(ViewerActions.foregrounded),
-      switchMap(() => this.changeDelay(0)),
-    ),
-  );
+      switchMap(() => {
+        const params = {
+          timeSinceLastReceivedMs: this.timeSinceLastReceivedMs,
+          targetMs: this.targetMs,
+          absoluteEndMs: this.absoluteEndMs,
+          isEnded: this.isEnded,
+          delayMs: this.delayMs,
+        };
+        return this.changeDelay(0, params);
+      }),
+    );
+  });
 
   updateTime$ = createEffect(() =>
     this.actions$.pipe(
@@ -336,21 +354,28 @@ export class ViewerEffects {
     });
   }
 
-  private changeDelay(ms: number, noWait = false): Observable<Action> {
-    this.targetMs = this.isEnded
-      ? Math.max(this.delayMs + ms, this.timeSinceLastReceivedMs)
-      : Math.max(this.targetMs + ms, 0);
-    if (noWait || this.isEnded) {
+  private changeDelay(
+    ms: number,
+    params: {
+      timeSinceLastReceivedMs: number;
+      targetMs: number;
+      absoluteEndMs: number;
+      isEnded: boolean;
+      delayMs: number;
+      noWait?: boolean;
+    },
+  ): Observable<Action> {
+    params.noWait = params.noWait || false;
+    let targetMs = params.isEnded
+      ? Math.max(params.delayMs + ms, params.timeSinceLastReceivedMs)
+      : Math.max(params.targetMs + ms, 0);
+    if (params.noWait || params.isEnded) {
       // Don't allow the currentTime to be before the start.
-      this.targetMs = Math.min(this.targetMs, this.absoluteEndMs);
+      targetMs = Math.min(targetMs, params.absoluteEndMs);
     }
-    this.store.dispatch(
-      ViewerActions.setLegacy({
-        payload: {targetMs: this.targetMs},
-      }),
-    );
+    this.targetMs = targetMs;
     this.store.dispatch(ViewerActions.setLegacy({payload: {targetMs: this.targetMs}}));
-    const headroom = this.absoluteEndMs - this.targetMs;
+    const headroom = params.absoluteEndMs - targetMs;
     if (headroom < 0) {
       const periods = Math.floor(-headroom / 1000) + 1;
       return concat(
@@ -379,15 +404,15 @@ export class ViewerEffects {
         ),
       );
     } else {
-      if (this.targetMs <= this.timeSinceLastReceivedMs && !this.isEnded) {
+      if (targetMs <= params.timeSinceLastReceivedMs && !params.isEnded) {
         return from([ViewerActions.setLive()]);
       }
       const actions: Action[] = [
         ViewerActions.setTime({
-          timeS: (this.absoluteEndMs - this.targetMs) / 1000,
+          timeS: (params.absoluteEndMs - targetMs) / 1000,
         }),
       ];
-      if (this.targetMs > this.timeSinceLastReceivedMs) {
+      if (targetMs > params.timeSinceLastReceivedMs) {
         actions.push(ViewerActions.play());
       }
       return from(actions);
