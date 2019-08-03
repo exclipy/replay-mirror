@@ -89,21 +89,8 @@ export class ViewerEffects {
                   mimeType,
                 );
 
-                this.videoService.mediaRecorder.ondataavailable = e => {
-                  if (this.isEnded) {
-                    this.videoService.mediaRecorder.ondataavailable = null;
-                    return;
-                  }
-                  this.showDelay();
-                  this.lastReceived = new Date();
-                  this.store.dispatch(
-                    ViewerActions.setLegacy({payload: {lastReceived: this.lastReceived}}),
-                  );
-                  const fileReader = new FileReader();
-                  fileReader.onload = f => {
-                    this.videoService.sourceBuffer.appendBuffer((f.target as any).result);
-                  };
-                  fileReader.readAsArrayBuffer(e.data);
+                this.videoService.mediaRecorder.ondataavailable = (e: {data: Blob}) => {
+                  this.store.dispatch(ViewerActions.onDataAvailable({data: e.data}));
                 };
                 this.videoService.mediaRecorder.start();
                 this.videoService.mediaRecorder.requestData();
@@ -159,6 +146,30 @@ export class ViewerEffects {
                 console.log('Unknown error:', e);
               }
             });
+        }),
+      ),
+    {dispatch: false},
+  );
+
+  onDataAvailableActions$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(ViewerActions.onDataAvailable),
+        tap(action => {
+          if (this.isEnded) {
+            this.videoService.mediaRecorder.ondataavailable = null;
+            return;
+          }
+          this.showDelay();
+          this.lastReceived = new Date();
+          this.store.dispatch(
+            ViewerActions.setLegacy({payload: {lastReceived: this.lastReceived}}),
+          );
+          const fileReader = new FileReader();
+          fileReader.onload = f => {
+            this.videoService.sourceBuffer.appendBuffer((f.target as any).result);
+          };
+          fileReader.readAsArrayBuffer(action.data);
         }),
       ),
     {dispatch: false},

@@ -10,6 +10,10 @@ export const stop = createAction('[View System] Stop');
 export const foregrounded = createAction('[View System] Foregrounded');
 export const updateTime = createAction('[View System] Update Time');
 export const init = createAction('[View System] Init');
+export const onDataAvailable = createAction(
+  '[View System] On Data Available',
+  props<{data: Blob}>(),
+);
 
 export const doStopRecord = createAction('[View Effect] Actually Stop Record');
 export const pause = createAction('[View Effect] Pause');
