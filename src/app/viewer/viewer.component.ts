@@ -60,8 +60,8 @@ export class ViewerComponent implements OnInit, OnDestroy {
     );
     this.isNotFoundError$ = store.pipe(select('viewer', 'legacy', 'isNotFoundError'));
     this.isUnknownError$ = store.pipe(select('viewer', 'legacy', 'isUnknownError'));
-    this.currentTime$ = store.pipe(select('viewer', 'legacy', 'currentTime'));
-    this.totalTime$ = store.pipe(select('viewer', 'legacy', 'totalTime'));
+    this.currentTime$ = store.pipe(select(ViewerSelectors.currentTimeS));
+    this.totalTime$ = store.pipe(select(ViewerSelectors.totalTimeS));
     this.displayedDelay$ = store.pipe(select(ViewerSelectors.displayedDelay));
     this.waitTime$ = store.pipe(select('viewer', 'legacy', 'waitTime'));
 

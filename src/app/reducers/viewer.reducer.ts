@@ -20,7 +20,6 @@ export interface ViewerState {
     isPermissionDeniedError: boolean;
     isNotFoundError: boolean;
     isUnknownError: boolean;
-    currentTime: number;
     totalTime: number;
     waitTime: number;
   };
@@ -48,7 +47,6 @@ const initialState: ViewerState = {
     isPermissionDeniedError: false,
     isNotFoundError: false,
     isUnknownError: false,
-    currentTime: 0,
     totalTime: 0,
     waitTime: 0,
   },

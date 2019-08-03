@@ -22,8 +22,6 @@ export class ViewerEffects {
   private isPermissionDeniedError = false;
   private isNotFoundError = false;
   private isUnknownError = false;
-  private currentTime = 0;
-  private totalTime = 0;
   private waitTime = 0;
 
   constructor(
@@ -48,8 +46,6 @@ export class ViewerEffects {
           this.isPermissionDeniedError = false;
           this.isNotFoundError = false;
           this.isUnknownError = false;
-          this.currentTime = 0;
-          this.totalTime = 0;
           this.waitTime = 0;
 
           this.store.dispatch(
@@ -62,8 +58,6 @@ export class ViewerEffects {
                 isPermissionDeniedError: this.isPermissionDeniedError,
                 isNotFoundError: this.isNotFoundError,
                 isUnknownError: this.isUnknownError,
-                currentTime: this.currentTime,
-                totalTime: this.totalTime,
                 waitTime: this.waitTime,
               },
             }),
@@ -331,26 +325,11 @@ export class ViewerEffects {
   }
 
   showDelay() {
-    this.totalTime = this.videoService.sourceBuffer.buffered.length
-      ? this.videoService.sourceBuffer.buffered.end(0)
-      : 0;
-    if (!this.isEnded) {
-      this.totalTime += this.timeSinceLastReceivedMs / 1000;
-    }
-    this.currentTime = this.isLive ? this.totalTime : this.videoService.video.currentTime;
     this.store.dispatch(
       ViewerActions.setTimeState({
         now: new Date(),
         bufferedTimeRanges: this.videoService.sourceBuffer.buffered,
         currentTimeS: this.videoService.video.currentTime,
-      }),
-    );
-    this.store.dispatch(
-      ViewerActions.setLegacy({
-        payload: {
-          totalTime: this.totalTime,
-          currentTime: this.currentTime,
-        },
       }),
     );
   }

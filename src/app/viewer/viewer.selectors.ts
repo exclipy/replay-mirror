@@ -73,3 +73,19 @@ export const displayedDelay = createSelector(
   delayMs,
   (delayMs: number) => delayMs / 1000,
 );
+
+export const totalTimeS = createSelector(
+  viewerStateSelector,
+  timeStateSelector,
+  timeSinceLastReceivedMs,
+  (state: ViewerState, timeState: TimeState, timeSinceLastReceivedMs: number) =>
+    timeState.bufferedTimeRangeEndS || 0 + (state.isEnded ? 0 : timeSinceLastReceivedMs / 1000),
+);
+
+export const currentTimeS = createSelector(
+  viewerStateSelector,
+  timeStateSelector,
+  totalTimeS,
+  (state: ViewerState, timeState: TimeState, totalTimeS: number) =>
+    state.legacy.isLive ? totalTimeS : timeState.currentTimeS,
+);
