@@ -7,10 +7,10 @@ export interface ViewerState {
   isPreviewDismissed: boolean;
   isEnded: boolean;
   isStopped: boolean;
+  lastReceived: Date | null;
   legacy: {
     targetMs: number;
     adjustIntervalId: number | null;
-    lastReceived: Date | null;
     isEnded: boolean;
     isLive: boolean;
     isInitialized: boolean;
@@ -31,10 +31,10 @@ const initialState = {
   isPreviewDismissed: false,
   isEnded: false,
   isStopped: false,
+  lastReceived: null,
   legacy: {
     targetMs: 0,
     adjustIntervalId: null,
-    lastReceived: null,
     isEnded: false,
     isLive: true,
     isInitialized: false,

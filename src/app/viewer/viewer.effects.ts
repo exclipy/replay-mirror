@@ -61,7 +61,6 @@ export class ViewerEffects {
               payload: {
                 targetMs: this.targetMs,
                 adjustIntervalId: this.adjustIntervalId,
-                lastReceived: this.lastReceived,
                 isEnded: this.isEnded,
                 isLive: this.isLive,
                 isUnsupportedBrowser: this.isUnsupportedBrowser,
@@ -89,8 +88,10 @@ export class ViewerEffects {
                   mimeType,
                 );
 
-                this.videoService.mediaRecorder.ondataavailable = (e: {data: Blob}) => {
-                  this.store.dispatch(ViewerActions.onDataAvailable({data: e.data}));
+                this.videoService.mediaRecorder.ondataavailable = (e: {data?: Blob}) => {
+                  if (e.data) {
+                    this.store.dispatch(ViewerActions.onDataAvailable({data: e.data}));
+                  }
                 };
                 this.videoService.mediaRecorder.start();
                 this.videoService.mediaRecorder.requestData();
@@ -151,28 +152,24 @@ export class ViewerEffects {
     {dispatch: false},
   );
 
-  onDataAvailableActions$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(ViewerActions.onDataAvailable),
-        tap(action => {
-          if (this.isEnded) {
-            this.videoService.mediaRecorder.ondataavailable = null;
-            return;
-          }
-          this.showDelay();
-          this.lastReceived = new Date();
-          this.store.dispatch(
-            ViewerActions.setLegacy({payload: {lastReceived: this.lastReceived}}),
-          );
-          const fileReader = new FileReader();
-          fileReader.onload = f => {
-            this.videoService.sourceBuffer.appendBuffer((f.target as any).result);
-          };
-          fileReader.readAsArrayBuffer(action.data);
-        }),
-      ),
-    {dispatch: false},
+  onDataAvailableActions$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ViewerActions.onDataAvailable),
+      map(action => {
+        if (this.isEnded) {
+          this.videoService.mediaRecorder.ondataavailable = null;
+          return ViewerActions.setLastReceived({date: new Date()});
+        }
+        this.showDelay();
+        this.lastReceived = new Date();
+        const fileReader = new FileReader();
+        fileReader.onload = f => {
+          this.videoService.sourceBuffer.appendBuffer((f.target as any).result);
+        };
+        fileReader.readAsArrayBuffer(action.data);
+        return ViewerActions.setLastReceived({date: new Date()});
+      }),
+    ),
   );
 
   userActions$ = createEffect(() =>

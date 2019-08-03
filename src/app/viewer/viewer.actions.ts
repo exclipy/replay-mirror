@@ -21,6 +21,10 @@ export const play = createAction('[View Effect] Play');
 export const setLive = createAction('[View Effect] Set Live');
 export const setTime = createAction('[View Effect] Set Time', props<{timeS: number}>());
 export const setWaiting = createAction('[View Effect] Set Waiting', props<{timeS: number}>());
+export const setLastReceived = createAction(
+  '[View Effect] Set Last Received',
+  props<{date: Date}>(),
+);
 
 export const setLegacy = createAction(
   '[View Effect] Set Legacy',
@@ -28,9 +32,7 @@ export const setLegacy = createAction(
     payload: {
       targetMs?: number;
       adjustIntervalId?: number | null;
-      lastReceived?: Date | null;
       isEnded?: boolean;
-      isStopped?: boolean;
       isLive?: boolean;
       isInitialized?: boolean;
       isUnsupportedBrowser?: boolean;
