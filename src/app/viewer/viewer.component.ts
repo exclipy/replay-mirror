@@ -1,26 +1,37 @@
-import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, Inject, OnInit, OnDestroy } from '@angular/core';
-import { untilComponentDestroyed } from '@w11k/ngx-componentdestroyed';
-import { Observable, Subject, concat, from, fromEvent, interval, merge, timer, Subscription, zip } from 'rxjs';
-import { filter, exhaustMap, map, switchMap, take, tap } from 'rxjs/operators';
+import {animate, state, style, transition, trigger} from '@angular/animations';
+import {Component, Inject, OnInit, OnDestroy} from '@angular/core';
+import {untilComponentDestroyed} from '@w11k/ngx-componentdestroyed';
+import {
+  Observable,
+  Subject,
+  concat,
+  from,
+  fromEvent,
+  interval,
+  merge,
+  timer,
+  Subscription,
+  zip,
+} from 'rxjs';
+import {filter, exhaustMap, map, switchMap, take, tap} from 'rxjs/operators';
 
-import { BrowserParamsService } from '../browser-params.service';
-import { Store, select } from '@ngrx/store';
-import { State } from '../reducers';
+import {BrowserParamsService} from '../browser-params.service';
+import {Store, select} from '@ngrx/store';
+import {State} from '../reducers';
 import * as ViewerActions from './viewer.actions';
-import { VideoService } from '../video.service';
+import {VideoService} from './video.service';
 import * as ViewerSelectors from './viewer.selectors';
 
 @Component({
   selector: 'app-viewer',
   templateUrl: './viewer.component.html',
   styleUrls: ['./viewer.component.css'],
-  animations: [trigger(
-    'preview',
-    [
-      state('hide', style({ opacity: 0, transform: 'scale(0)' })),
-      transition('hide <=> show', [animate(100)])
-    ])]
+  animations: [
+    trigger('preview', [
+      state('hide', style({opacity: 0, transform: 'scale(0)'})),
+      transition('hide <=> show', [animate(100)]),
+    ]),
+  ],
 })
 export class ViewerComponent implements OnInit, OnDestroy {
   targetMs$: Observable<number>;
@@ -37,7 +48,6 @@ export class ViewerComponent implements OnInit, OnDestroy {
   totalTime$: Observable<number>;
   displayedDelay$: Observable<number>;
   waitTime$: Observable<number>;
-
 
   isUnsupportedBrowser = false;
   showPreview$: Observable<boolean>;
@@ -59,7 +69,9 @@ export class ViewerComponent implements OnInit, OnDestroy {
     this.isStopped$ = store.pipe(select('viewer', 'legacy', 'isStopped'));
     this.isLive$ = store.pipe(select('viewer', 'legacy', 'isLive'));
     this.isInitialized$ = store.pipe(select('viewer', 'legacy', 'isInitialized'));
-    this.isPermissionDeniedError$ = store.pipe(select('viewer', 'legacy', 'isPermissionDeniedError'));
+    this.isPermissionDeniedError$ = store.pipe(
+      select('viewer', 'legacy', 'isPermissionDeniedError'),
+    );
     this.isNotFoundError$ = store.pipe(select('viewer', 'legacy', 'isNotFoundError'));
     this.isUnknownError$ = store.pipe(select('viewer', 'legacy', 'isUnknownError'));
     this.currentTime$ = store.pipe(select('viewer', 'legacy', 'currentTime'));
@@ -75,32 +87,34 @@ export class ViewerComponent implements OnInit, OnDestroy {
     this.isWaiting$ = store.pipe(select(ViewerSelectors.isWaiting));
     this.isError$ = store.pipe(select(ViewerSelectors.isError));
 
-    this.showPreview$
-      .pipe(untilComponentDestroyed(this))
-      .subscribe(value => {
-        if (this.videoService.preview) {
-          if (value) {
-            this.videoService.preview.play();
-          } else {
-            this.videoService.preview.pause();
-          }
+    this.showPreview$.pipe(untilComponentDestroyed(this)).subscribe(value => {
+      if (this.videoService.preview) {
+        if (value) {
+          this.videoService.preview.play();
+        } else {
+          this.videoService.preview.pause();
         }
-      });
+      }
+    });
 
     this.isUnsupportedBrowser = browserParams.isUnsupportedBrowser;
   }
 
   ngOnInit() {
-    if (this.isUnsupportedBrowser) { return; }
+    if (this.isUnsupportedBrowser) {
+      return;
+    }
     this.videoService.video = document.querySelector('#video') as HTMLVideoElement;
     this.videoService.liveVideo = document.querySelector('#live') as HTMLVideoElement;
     this.videoService.preview = document.querySelector('#preview') as HTMLVideoElement;
     this.store.dispatch(ViewerActions.init());
 
-    fromEvent(document, 'visibilitychange').pipe(
-      untilComponentDestroyed(this),
-      filter(() => document.visibilityState === 'visible'),
-    ).subscribe(() => this.store.dispatch(ViewerActions.foregrounded()));
+    fromEvent(document, 'visibilitychange')
+      .pipe(
+        untilComponentDestroyed(this),
+        filter(() => document.visibilityState === 'visible'),
+      )
+      .subscribe(() => this.store.dispatch(ViewerActions.foregrounded()));
   }
 
   ngOnDestroy() {

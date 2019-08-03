@@ -16,7 +16,7 @@ import {StoreModule} from '@ngrx/store';
 import {reducers, metaReducers} from './reducers';
 import {StoreDevtoolsModule} from '@ngrx/store-devtools';
 import {EffectsModule} from '@ngrx/effects';
-import {ViewerEffects} from './viewer.effects';
+import {ViewerEffects} from './viewer/viewer.effects';
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},

@@ -1,12 +1,12 @@
 import {Injectable} from '@angular/core';
 import {Actions, Effect, createEffect, ofType} from '@ngrx/effects';
-import {BrowserParamsService} from './browser-params.service';
+import {BrowserParamsService} from '../browser-params.service';
 import {tap, take, switchMap, map, startWith, takeWhile, takeUntil, filter} from 'rxjs/operators';
-import * as ViewerActions from './viewer/viewer.actions';
+import * as ViewerActions from './viewer.actions';
 import {empty, interval, Observable, concat, from, timer} from 'rxjs';
 import {VideoService} from './video.service';
 import {Action, Store, select} from '@ngrx/store';
-import {State} from './reducers';
+import {State} from '../reducers';
 
 declare type MediaRecorder = any;
 declare var MediaRecorder: any;
