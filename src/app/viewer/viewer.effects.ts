@@ -206,26 +206,28 @@ export class ViewerEffects {
   );
 
   // Player Actions
-  doStopRecord$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(ViewerActions.doStopRecord),
-        tap(() => {
-          this.isEnded = true;
-          this.store.dispatch(ViewerActions.setLegacy({payload: {isEnded: this.isEnded}}));
-          this.switchToDelayed();
-          if (this.videoService.mediaStream) {
-            for (const mediaStreamTrack of this.videoService.mediaStream.getTracks()) {
-              mediaStreamTrack.stop();
-            }
+  doStopRecord$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ViewerActions.doStopRecord),
+      map(() => {
+        if (this.isLive) {
+          this.videoService.liveVideo.pause();
+          this.videoService.video.play();
+        }
+        if (this.videoService.mediaStream) {
+          for (const mediaStreamTrack of this.videoService.mediaStream.getTracks()) {
+            mediaStreamTrack.stop();
           }
-          this.videoService.bufferSource.endOfStream();
-          if (this.videoService.mediaRecorder) {
-            this.videoService.mediaRecorder.stop();
-          }
-        }),
-      ),
-    {dispatch: false},
+        }
+        this.videoService.bufferSource.endOfStream();
+        if (this.videoService.mediaRecorder) {
+          this.videoService.mediaRecorder.stop();
+        }
+        this.isEnded = true;
+        this.isLive = false;
+        return ViewerActions.setLegacy({payload: {isLive: this.isLive, isEnded: this.isEnded}});
+      }),
+    ),
   );
 
   setLive$ = createEffect(
@@ -247,34 +249,35 @@ export class ViewerEffects {
     {dispatch: false},
   );
 
-  play$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(ViewerActions.play),
-        tap(() => {
-          this.switchToDelayed();
+  play$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ViewerActions.play),
+      map(() => {
+        if (this.isLive) {
+          this.videoService.liveVideo.pause();
           this.videoService.video.play();
-          this.waitTime = 0;
-          this.store.dispatch(
-            ViewerActions.setLegacy({
-              payload: {waitTime: this.waitTime},
-            }),
-          );
-        }),
-      ),
-    {dispatch: false},
+        }
+        this.videoService.video.play();
+        this.waitTime = 0;
+        this.isLive = false;
+        return ViewerActions.setLegacy({
+          payload: {waitTime: 0, isLive: false},
+        });
+      }),
+    ),
   );
 
-  pause$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(ViewerActions.pause),
-        tap(() => {
-          this.switchToDelayed();
-          this.videoService.video.pause();
-        }),
-      ),
-    {dispatch: false},
+  pause$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ViewerActions.pause),
+      map(() => {
+        this.videoService.liveVideo.pause();
+        this.videoService.video.play();
+        this.videoService.video.pause();
+        this.isLive = false;
+        return ViewerActions.setLegacy({payload: {isLive: this.isLive}});
+      }),
+    ),
   );
 
   setTime$ = createEffect(
@@ -300,15 +303,6 @@ export class ViewerEffects {
       ),
     {dispatch: false},
   );
-
-  switchToDelayed() {
-    if (this.isLive) {
-      this.videoService.liveVideo.pause();
-      this.videoService.video.play();
-      this.isLive = false;
-      this.store.dispatch(ViewerActions.setLegacy({payload: {isLive: this.isLive}}));
-    }
-  }
 
   get timeSinceLastReceivedMs() {
     if (!this.lastReceived) {
