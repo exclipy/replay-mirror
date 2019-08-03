@@ -14,7 +14,6 @@ declare var MediaRecorder: any;
 @Injectable()
 export class ViewerEffects {
   private targetMs = 0;
-  private adjustIntervalId: number | null = 0;
   private lastReceived: Date | null = null;
   private isEnded = false;
   private isLive = true;
@@ -42,7 +41,6 @@ export class ViewerEffects {
         ofType(ViewerActions.init),
         tap(() => {
           this.targetMs = 0;
-          this.adjustIntervalId = 0;
           this.lastReceived = null;
           this.isEnded = false;
           this.isLive = true;
@@ -60,7 +58,6 @@ export class ViewerEffects {
             ViewerActions.setLegacy({
               payload: {
                 targetMs: this.targetMs,
-                adjustIntervalId: this.adjustIntervalId,
                 isEnded: this.isEnded,
                 isLive: this.isLive,
                 isUnsupportedBrowser: this.isUnsupportedBrowser,
@@ -224,9 +221,6 @@ export class ViewerEffects {
           this.videoService.bufferSource.endOfStream();
           if (this.videoService.mediaRecorder) {
             this.videoService.mediaRecorder.stop();
-          }
-          if (this.adjustIntervalId) {
-            window.clearInterval(this.adjustIntervalId);
           }
         }),
       ),

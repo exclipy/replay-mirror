@@ -23,7 +23,6 @@ import * as ViewerSelectors from './viewer.selectors';
 })
 export class ViewerComponent implements OnInit, OnDestroy {
   targetMs$: Observable<number>;
-  adjustIntervalId$: Observable<number | null>;
   lastReceived$: Observable<Date | null>;
   isEnded$: Observable<boolean>;
   isStopped$: Observable<boolean>;
@@ -51,7 +50,6 @@ export class ViewerComponent implements OnInit, OnDestroy {
     private store: Store<State>,
   ) {
     this.targetMs$ = store.pipe(select('viewer', 'legacy', 'targetMs'));
-    this.adjustIntervalId$ = store.pipe(select('viewer', 'legacy', 'adjustIntervalId'));
     this.lastReceived$ = store.pipe(select('viewer', 'legacy', 'lastReceived'));
     this.isEnded$ = store.pipe(select('viewer', 'legacy', 'isEnded'));
     this.isStopped$ = store.pipe(select(ViewerSelectors.isStopped));
