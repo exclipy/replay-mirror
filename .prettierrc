@@ -2,7 +2,6 @@
   "bracketSpacing": false,
   "jsxBracketSameLine": true,
   "useTabs": false,
-  "parser": "typescript",
   "singleQuote": true,
   "tabWidth": 2,
   "printWidth": 100,
@@ -15,21 +14,8 @@
       }
     },
     {
-      "files": "*.css",
-      "options": {
-        "parser": "css"
-      }
-    },
-    {
-      "files": ".prettierrc",
-      "options": {
-        "parser": "json"
-      }
-    },
-    {
       "files": "*.md",
       "options": {
-        "parser": "markdown",
         "proseWrap": "always"
       }
     }
