@@ -1,4 +1,4 @@
-import {createReducer, on, Action} from '@ngrx/store';
+import {Action, createReducer, on} from '@ngrx/store';
 import * as ViewerActions from '../viewer/viewer.actions';
 
 export interface ViewerState {

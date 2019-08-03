@@ -1,25 +1,13 @@
 import {animate, state, style, transition, trigger} from '@angular/animations';
-import {Component, Inject, OnInit, OnDestroy} from '@angular/core';
+import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
+import {select, Store} from '@ngrx/store';
 import {untilComponentDestroyed} from '@w11k/ngx-componentdestroyed';
-import {
-  Observable,
-  Subject,
-  concat,
-  from,
-  fromEvent,
-  interval,
-  merge,
-  timer,
-  Subscription,
-  zip,
-} from 'rxjs';
-import {filter, exhaustMap, map, switchMap, take, tap} from 'rxjs/operators';
-
+import {fromEvent, Observable} from 'rxjs';
+import {filter} from 'rxjs/operators';
 import {BrowserParamsService} from '../browser-params.service';
-import {Store, select} from '@ngrx/store';
 import {State} from '../reducers';
-import * as ViewerActions from './viewer.actions';
 import {VideoService} from './video.service';
+import * as ViewerActions from './viewer.actions';
 import * as ViewerSelectors from './viewer.selectors';
 
 @Component({

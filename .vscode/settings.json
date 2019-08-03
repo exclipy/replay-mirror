@@ -1,0 +1,9 @@
+{
+  "editor.formatOnSave": true,
+  "[typescript]": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll.tslint": true,
+      "source.organizeImports": true
+    }
+  }
+}

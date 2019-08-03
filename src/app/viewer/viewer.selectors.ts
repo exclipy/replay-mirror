@@ -1,6 +1,6 @@
-import {createSelector, createFeatureSelector} from '@ngrx/store';
-import {ViewerState} from '../reducers/viewer.reducer';
+import {createFeatureSelector, createSelector} from '@ngrx/store';
 import {State} from '../reducers';
+import {ViewerState} from '../reducers/viewer.reducer';
 
 export const viewerStateSelector = createFeatureSelector<State, ViewerState>('viewer');
 
@@ -8,7 +8,6 @@ export const isAtEnd = createSelector(
   viewerStateSelector,
   (state: ViewerState) => state.legacy.isLive || state.legacy.isStopped,
 );
-
 export const isError = createSelector(
   viewerStateSelector,
   (state: ViewerState) =>

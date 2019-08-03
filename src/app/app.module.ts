@@ -3,19 +3,17 @@ import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {RouterModule, Routes} from '@angular/router';
 import {ServiceWorkerModule} from '@angular/service-worker';
-
+import {EffectsModule} from '@ngrx/effects';
+import {StoreModule} from '@ngrx/store';
+import {StoreDevtoolsModule} from '@ngrx/store-devtools';
 import {environment} from '../environments/environment';
-
 import {AppComponent} from './app.component';
 import {BrowserParamsService} from './browser-params.service';
 import {HomeComponent} from './home/home.component';
 import {IconComponent} from './icon/icon.component';
+import {metaReducers, reducers} from './reducers';
 import {SeekBarComponent} from './seek-bar/seek-bar.component';
 import {ViewerComponent} from './viewer/viewer.component';
-import {StoreModule} from '@ngrx/store';
-import {reducers, metaReducers} from './reducers';
-import {StoreDevtoolsModule} from '@ngrx/store-devtools';
-import {EffectsModule} from '@ngrx/effects';
 import {ViewerEffects} from './viewer/viewer.effects';
 
 const appRoutes: Routes = [

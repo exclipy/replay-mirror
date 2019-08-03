@@ -1,7 +1,6 @@
 import {Component, Inject, OnDestroy} from '@angular/core';
 import {SwUpdate} from '@angular/service-worker';
 import {environment} from '../../environments/environment';
-
 import {BrowserParamsService} from '../browser-params.service';
 
 @Component({
