@@ -24,7 +24,6 @@ export class ViewerEffects {
   private isUnknownError = false;
   private currentTime = 0;
   private totalTime = 0;
-  private displayedDelay = 0;
   private waitTime = 0;
 
   constructor(
@@ -51,7 +50,6 @@ export class ViewerEffects {
           this.isUnknownError = false;
           this.currentTime = 0;
           this.totalTime = 0;
-          this.displayedDelay = 0;
           this.waitTime = 0;
 
           this.store.dispatch(
@@ -66,7 +64,6 @@ export class ViewerEffects {
                 isUnknownError: this.isUnknownError,
                 currentTime: this.currentTime,
                 totalTime: this.totalTime,
-                displayedDelay: this.displayedDelay,
                 waitTime: this.waitTime,
               },
             }),
@@ -341,13 +338,18 @@ export class ViewerEffects {
       this.totalTime += this.timeSinceLastReceivedMs / 1000;
     }
     this.currentTime = this.isLive ? this.totalTime : this.videoService.video.currentTime;
-    this.displayedDelay = this.delayMs / 1000;
+    this.store.dispatch(
+      ViewerActions.setTimeState({
+        now: new Date(),
+        bufferedTimeRanges: this.videoService.sourceBuffer.buffered,
+        currentTimeS: this.videoService.video.currentTime,
+      }),
+    );
     this.store.dispatch(
       ViewerActions.setLegacy({
         payload: {
           totalTime: this.totalTime,
           currentTime: this.currentTime,
-          displayedDelay: this.displayedDelay,
         },
       }),
     );

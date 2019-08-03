@@ -62,7 +62,7 @@ export class ViewerComponent implements OnInit, OnDestroy {
     this.isUnknownError$ = store.pipe(select('viewer', 'legacy', 'isUnknownError'));
     this.currentTime$ = store.pipe(select('viewer', 'legacy', 'currentTime'));
     this.totalTime$ = store.pipe(select('viewer', 'legacy', 'totalTime'));
-    this.displayedDelay$ = store.pipe(select('viewer', 'legacy', 'displayedDelay'));
+    this.displayedDelay$ = store.pipe(select(ViewerSelectors.displayedDelay));
     this.waitTime$ = store.pipe(select('viewer', 'legacy', 'waitTime'));
 
     this.videoService.mediaStream = null;

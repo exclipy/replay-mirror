@@ -25,6 +25,10 @@ export const setLastReceived = createAction(
   '[View Effect] Set Last Received',
   props<{date: Date}>(),
 );
+export const setTimeState = createAction(
+  '[View Effect] Set Time State',
+  props<{now: Date; bufferedTimeRanges: TimeRanges; currentTimeS: number}>(),
+);
 
 export const setLegacy = createAction(
   '[View Effect] Set Legacy',
