@@ -12,11 +12,13 @@ import {
   takeUntil,
   takeWhile,
   tap,
+  withLatestFrom,
 } from 'rxjs/operators';
 import {BrowserParamsService} from '../browser-params.service';
 import {State} from '../reducers';
 import {VideoService} from './video.service';
 import * as ViewerActions from './viewer.actions';
+import {changeDelayParams} from './viewer.selectors';
 
 declare type MediaRecorder = any;
 declare var MediaRecorder: any;
@@ -24,7 +26,6 @@ declare var MediaRecorder: any;
 @Injectable()
 export class ViewerEffects {
   private targetMs = 0;
-  private lastReceived: Date | null = null;
   private isEnded = false;
   private isLive = true;
   private isInitialized = false;
@@ -48,7 +49,6 @@ export class ViewerEffects {
         ofType(ViewerActions.init),
         tap(() => {
           this.targetMs = 0;
-          this.lastReceived = null;
           this.isEnded = false;
           this.isLive = true;
           this.isInitialized = false;
@@ -159,7 +159,6 @@ export class ViewerEffects {
             this.videoService.mediaRecorder.ondataavailable = null;
             return from([ViewerActions.setLastReceived({date: new Date()})]);
           }
-          this.lastReceived = new Date();
           const fileReader = new FileReader();
           fileReader.onload = f => {
             this.videoService.sourceBuffer.appendBuffer((f.target as any).result);
@@ -177,14 +176,8 @@ export class ViewerEffects {
   userActions$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(ViewerActions.less, ViewerActions.more, ViewerActions.stopRecord),
-      switchMap(action => {
-        const params = {
-          timeSinceLastReceivedMs: this.timeSinceLastReceivedMs,
-          targetMs: this.targetMs,
-          absoluteEndMs: this.absoluteEndMs,
-          isEnded: this.isEnded,
-          delayMs: this.delayMs,
-        };
+      withLatestFrom(this.store.pipe(select(changeDelayParams))),
+      switchMap(([action, params]) => {
         switch (action.type) {
           case ViewerActions.less.type:
             return this.changeDelay(-5000, params);
@@ -203,14 +196,8 @@ export class ViewerEffects {
   foregrounded$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(ViewerActions.foregrounded),
-      switchMap(() => {
-        const params = {
-          timeSinceLastReceivedMs: this.timeSinceLastReceivedMs,
-          targetMs: this.targetMs,
-          absoluteEndMs: this.absoluteEndMs,
-          isEnded: this.isEnded,
-          delayMs: this.delayMs,
-        };
+      withLatestFrom(this.store.pipe(select(changeDelayParams))),
+      switchMap(([_, params]) => {
         return this.changeDelay(0, params);
       }),
     );
@@ -321,30 +308,6 @@ export class ViewerEffects {
       ),
     {dispatch: false},
   );
-
-  get timeSinceLastReceivedMs() {
-    if (!this.lastReceived) {
-      return 0;
-    }
-    const now = new Date().getTime();
-    return now - this.lastReceived.getTime();
-  }
-
-  get absoluteEndMs() {
-    if (!this.lastReceived || this.videoService.sourceBuffer.buffered.length === 0) {
-      return 0;
-    }
-    const result = 1000 * this.videoService.sourceBuffer.buffered.end(0);
-    return result + this.timeSinceLastReceivedMs;
-  }
-
-  get delayMs() {
-    if (this.isLive) {
-      return 0;
-    } else {
-      return this.absoluteEndMs - this.videoService.video.currentTime * 1000;
-    }
-  }
 
   private createSetTimeStateAction(): Action {
     return ViewerActions.setTimeState({

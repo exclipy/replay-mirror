@@ -89,3 +89,22 @@ export const currentTimeS = createSelector(
   (state: ViewerState, timeState: TimeState, totalTimeS: number) =>
     state.legacy.isLive ? totalTimeS : timeState.currentTimeS,
 );
+
+export const changeDelayParams = createSelector(
+  viewerStateSelector,
+  timeSinceLastReceivedMs,
+  absoluteEndMs,
+  delayMs,
+  (
+    state: ViewerState,
+    timeSinceLastReceivedMs: number,
+    absoluteEndMs: number,
+    delayMs: number,
+  ) => ({
+    timeSinceLastReceivedMs,
+    targetMs: state.legacy.targetMs,
+    absoluteEndMs,
+    isEnded: state.legacy.isEnded,
+    delayMs,
+  }),
+);
