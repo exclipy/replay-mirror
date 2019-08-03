@@ -54,7 +54,7 @@ export class ViewerComponent implements OnInit, OnDestroy {
     this.adjustIntervalId$ = store.pipe(select('viewer', 'legacy', 'adjustIntervalId'));
     this.lastReceived$ = store.pipe(select('viewer', 'legacy', 'lastReceived'));
     this.isEnded$ = store.pipe(select('viewer', 'legacy', 'isEnded'));
-    this.isStopped$ = store.pipe(select('viewer', 'legacy', 'isStopped'));
+    this.isStopped$ = store.pipe(select(ViewerSelectors.isStopped));
     this.isLive$ = store.pipe(select('viewer', 'legacy', 'isLive'));
     this.isInitialized$ = store.pipe(select('viewer', 'legacy', 'isInitialized'));
     this.isPermissionDeniedError$ = store.pipe(

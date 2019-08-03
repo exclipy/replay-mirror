@@ -17,7 +17,6 @@ export class ViewerEffects {
   private adjustIntervalId: number | null = 0;
   private lastReceived: Date | null = null;
   private isEnded = false;
-  private isStopped = false;
   private isLive = true;
   private isInitialized = false;
   private isUnsupportedBrowser = false;
@@ -46,7 +45,6 @@ export class ViewerEffects {
           this.adjustIntervalId = 0;
           this.lastReceived = null;
           this.isEnded = false;
-          this.isStopped = false;
           this.isLive = true;
           this.isInitialized = false;
           this.isUnsupportedBrowser = false;
@@ -65,7 +63,6 @@ export class ViewerEffects {
                 adjustIntervalId: this.adjustIntervalId,
                 lastReceived: this.lastReceived,
                 isEnded: this.isEnded,
-                isStopped: this.isStopped,
                 isLive: this.isLive,
                 isUnsupportedBrowser: this.isUnsupportedBrowser,
                 isPermissionDeniedError: this.isPermissionDeniedError,
@@ -191,18 +188,6 @@ export class ViewerEffects {
     ),
   );
 
-  stop$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(ViewerActions.stop),
-        tap(() => {
-          this.isStopped = true;
-          this.store.dispatch(ViewerActions.setLegacy({payload: {isStopped: this.isStopped}}));
-        }),
-      ),
-    {dispatch: false},
-  );
-
   updateTime$ = createEffect(
     () =>
       this.actions$.pipe(
@@ -267,10 +252,9 @@ export class ViewerEffects {
           this.switchToDelayed();
           this.videoService.video.play();
           this.waitTime = 0;
-          this.isStopped = false;
           this.store.dispatch(
             ViewerActions.setLegacy({
-              payload: {waitTime: this.waitTime, isStopped: this.isStopped},
+              payload: {waitTime: this.waitTime},
             }),
           );
         }),

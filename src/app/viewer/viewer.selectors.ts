@@ -6,7 +6,7 @@ export const viewerStateSelector = createFeatureSelector<State, ViewerState>('vi
 
 export const isAtEnd = createSelector(
   viewerStateSelector,
-  (state: ViewerState) => state.legacy.isLive || state.legacy.isStopped,
+  (state: ViewerState) => state.legacy.isLive || state.isStopped,
 );
 export const isError = createSelector(
   viewerStateSelector,
@@ -19,4 +19,9 @@ export const isError = createSelector(
 export const isWaiting = createSelector(
   viewerStateSelector,
   (state: ViewerState) => state.legacy.waitTime <= 0,
+);
+
+export const isStopped = createSelector(
+  viewerStateSelector,
+  (state: ViewerState) => state.isStopped,
 );

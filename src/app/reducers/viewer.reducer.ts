@@ -6,12 +6,12 @@ export interface ViewerState {
   showWizard: boolean;
   isPreviewDismissed: boolean;
   isEnded: boolean;
+  isStopped: boolean;
   legacy: {
     targetMs: number;
     adjustIntervalId: number | null;
     lastReceived: Date | null;
     isEnded: boolean;
-    isStopped: boolean;
     isLive: boolean;
     isInitialized: boolean;
     isUnsupportedBrowser: boolean;
@@ -30,12 +30,12 @@ const initialState = {
   showWizard: true,
   isPreviewDismissed: false,
   isEnded: false,
+  isStopped: false,
   legacy: {
     targetMs: 0,
     adjustIntervalId: null,
     lastReceived: null,
     isEnded: false,
-    isStopped: false,
     isLive: true,
     isInitialized: false,
     isUnsupportedBrowser: false,
@@ -66,6 +66,14 @@ export const reducer = createReducer(
     showPreview: false,
     showWizard: false,
     isEnded: true,
+  })),
+  on(ViewerActions.stop, state => ({
+    ...state,
+    isStopped: false,
+  })),
+  on(ViewerActions.play, state => ({
+    ...state,
+    isStopped: false,
   })),
   on(ViewerActions.dismissWizard, state => ({
     ...state,
