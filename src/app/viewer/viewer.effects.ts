@@ -304,7 +304,7 @@ export class ViewerEffects {
         ofType(ViewerActions.setTime),
         tap(action => {
           this.videoService.video.currentTime = action.timeS;
-        }),
+        }), // TODO: also set the TimeState here to avoid the flash
       ),
     {dispatch: false},
   );
