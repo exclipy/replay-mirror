@@ -374,12 +374,14 @@ export class ViewerEffects {
       targetMs = Math.min(targetMs, params.absoluteEndMs);
     }
     this.targetMs = targetMs;
-    this.store.dispatch(ViewerActions.setLegacy({payload: {targetMs: this.targetMs}}));
+    const actions: Action[] = [];
+    actions.push(ViewerActions.setLegacy({payload: {targetMs: this.targetMs}}));
     const headroom = params.absoluteEndMs - targetMs;
     if (headroom < 0) {
       const periods = Math.floor(-headroom / 1000) + 1;
       return concat(
         from([
+          ...actions,
           ViewerActions.pause(),
           ViewerActions.setTime({timeS: 0}),
           ViewerActions.setWaiting({timeS: periods}),
@@ -405,13 +407,9 @@ export class ViewerEffects {
       );
     } else {
       if (targetMs <= params.timeSinceLastReceivedMs && !params.isEnded) {
-        return from([ViewerActions.setLive()]);
+        return from([...actions, ViewerActions.setLive()]);
       }
-      const actions: Action[] = [
-        ViewerActions.setTime({
-          timeS: (params.absoluteEndMs - targetMs) / 1000,
-        }),
-      ];
+      actions.push(ViewerActions.setTime({timeS: (params.absoluteEndMs - targetMs) / 1000}));
       if (targetMs > params.timeSinceLastReceivedMs) {
         actions.push(ViewerActions.play());
       }
