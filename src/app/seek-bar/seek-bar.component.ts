@@ -1,9 +1,9 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-seek-bar',
   templateUrl: './seek-bar.component.html',
-  styleUrls: ['./seek-bar.component.css']
+  styleUrls: ['./seek-bar.component.css'],
 })
 export class SeekBarComponent implements OnInit {
   @Input() currentTime = 0;
@@ -14,12 +14,14 @@ export class SeekBarComponent implements OnInit {
 
   private seekbar;
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit() { this.seekbar = document.getElementById('seekbar'); }
+  ngOnInit() {
+    this.seekbar = document.getElementById('seekbar');
+  }
 
   pixelsToSeconds(pixels: number): number {
-    return pixels / this.seekbar.offsetWidth * this.totalWidthDurationS;
+    return (pixels / this.seekbar.offsetWidth) * this.totalWidthDurationS;
   }
 
   get animationDuration() {
@@ -52,7 +54,9 @@ export class SeekBarComponent implements OnInit {
     }
   }
 
-  get timeCompression() { return this.totalWidthDurationS / 60; }
+  get timeCompression() {
+    return this.totalWidthDurationS / 60;
+  }
 
   get bufferBarBackground() {
     if (this.isEnded) {
@@ -60,14 +64,14 @@ export class SeekBarComponent implements OnInit {
     } else {
       const timeCompression = this.timeCompression;
       const angle = Math.atan(timeCompression) + Math.PI;
-      const period = 8 * Math.cos(Math.atan(timeCompression)) / timeCompression;
+      const period = (8 * Math.cos(Math.atan(timeCompression))) / timeCompression;
       const angleStr = angle.toPrecision(4);
       const periodStr = period.toPrecision(4);
       const period2Str = (period * 2).toPrecision(4);
       const result =
-        (`repeating-linear-gradient(${angleStr}rad,` +
-          `transparent, transparent ${periodStr}px,` +
-          `#999 ${periodStr}px, #999 ${period2Str}px)`);
+        `repeating-linear-gradient(${angleStr}rad,` +
+        `transparent, transparent ${periodStr}px,` +
+        `#999 ${periodStr}px, #999 ${period2Str}px)`;
       return result;
     }
   }

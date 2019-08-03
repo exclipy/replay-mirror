@@ -1,4 +1,4 @@
-import { createAction, props } from '@ngrx/store';
+import {createAction, props} from '@ngrx/store';
 
 export const togglePreview = createAction('[View Component] Toggle Preview');
 export const less = createAction('[View Component] Less');
@@ -15,26 +15,28 @@ export const doStopRecord = createAction('[View Effect] Actually Stop Record');
 export const pause = createAction('[View Effect] Pause');
 export const play = createAction('[View Effect] Play');
 export const setLive = createAction('[View Effect] Set Live');
-export const setTime = createAction('[View Effect] Set Time', props<{ timeS: number }>());
-export const setWaiting = createAction('[View Effect] Set Waiting', props<{ timeS: number }>());
+export const setTime = createAction('[View Effect] Set Time', props<{timeS: number}>());
+export const setWaiting = createAction('[View Effect] Set Waiting', props<{timeS: number}>());
 
-export const setLegacy = createAction('[View Effect] Set Legacy',
-    props<{
-        payload: {
-            targetMs?: number,
-            adjustIntervalId?: number | null,
-            lastReceived?: Date | null,
-            isEnded?: boolean,
-            isStopped?: boolean,
-            isLive?: boolean,
-            isInitialized?: boolean,
-            isUnsupportedBrowser?: boolean,
-            isPermissionDeniedError?: boolean,
-            isNotFoundError?: boolean,
-            isUnknownError?: boolean,
-            currentTime?: number,
-            totalTime?: number,
-            displayedDelay?: number,
-            waitTime?: number,
-        }
-    }>());
+export const setLegacy = createAction(
+  '[View Effect] Set Legacy',
+  props<{
+    payload: {
+      targetMs?: number;
+      adjustIntervalId?: number | null;
+      lastReceived?: Date | null;
+      isEnded?: boolean;
+      isStopped?: boolean;
+      isLive?: boolean;
+      isInitialized?: boolean;
+      isUnsupportedBrowser?: boolean;
+      isPermissionDeniedError?: boolean;
+      isNotFoundError?: boolean;
+      isUnknownError?: boolean;
+      currentTime?: number;
+      totalTime?: number;
+      displayedDelay?: number;
+      waitTime?: number;
+    };
+  }>(),
+);

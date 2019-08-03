@@ -3,10 +3,10 @@ import {
   ActionReducerMap,
   createFeatureSelector,
   createSelector,
-  MetaReducer
+  MetaReducer,
 } from '@ngrx/store';
-import { environment } from '../../environments/environment';
-import { viewerReducer, ViewerState } from './viewer.reducer';
+import {environment} from '../../environments/environment';
+import {viewerReducer, ViewerState} from './viewer.reducer';
 
 export interface State {
   viewer: ViewerState;
@@ -15,6 +15,5 @@ export interface State {
 export const reducers: ActionReducerMap<State> = {
   viewer: viewerReducer,
 };
-
 
 export const metaReducers: MetaReducer<State>[] = !environment.production ? [] : [];

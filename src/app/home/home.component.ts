@@ -1,13 +1,13 @@
-import { Component, Inject, OnDestroy } from '@angular/core';
-import { SwUpdate } from '@angular/service-worker';
-import { environment } from '../../environments/environment';
+import {Component, Inject, OnDestroy} from '@angular/core';
+import {SwUpdate} from '@angular/service-worker';
+import {environment} from '../../environments/environment';
 
-import { BrowserParamsService } from '../browser-params.service';
+import {BrowserParamsService} from '../browser-params.service';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  styleUrls: ['./home.component.css'],
 })
 export class HomeComponent implements OnDestroy {
   isUnsupportedBrowser = false;
@@ -16,7 +16,8 @@ export class HomeComponent implements OnDestroy {
 
   constructor(
     @Inject(BrowserParamsService) browserParams: BrowserParamsService,
-    @Inject(SwUpdate) updates: SwUpdate) {
+    @Inject(SwUpdate) updates: SwUpdate,
+  ) {
     this.isUnsupportedBrowser = browserParams.isUnsupportedBrowser;
 
     if (environment.production) {
@@ -27,6 +28,8 @@ export class HomeComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
-    if (environment.production) { this.subscription.unsubscribe(); }
+    if (environment.production) {
+      this.subscription.unsubscribe();
+    }
   }
 }

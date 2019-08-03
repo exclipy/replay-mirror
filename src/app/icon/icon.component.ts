@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-icon',
@@ -8,9 +8,9 @@ import { Component, Input, OnInit } from '@angular/core';
 export class IconComponent implements OnInit {
   @Input() pic: string;
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit() { }
+  ngOnInit() {}
 
   get base64() {
     switch (this.pic) {
