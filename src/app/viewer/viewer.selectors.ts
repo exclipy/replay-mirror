@@ -1,6 +1,6 @@
 import {createFeatureSelector, createSelector} from '@ngrx/store';
 import {State} from '../reducers';
-import {ViewerState, TimeState} from '../reducers/viewer.reducer';
+import {TimeState, ViewerState} from '../reducers/viewer.reducer';
 
 export const viewerStateSelector = createFeatureSelector<State, ViewerState>('viewer');
 

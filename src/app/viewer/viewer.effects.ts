@@ -2,7 +2,17 @@ import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {Action, select, Store} from '@ngrx/store';
 import {concat, from, interval, Observable, timer} from 'rxjs';
-import {filter, map, startWith, switchMap, take, takeUntil, takeWhile, tap} from 'rxjs/operators';
+import {
+  concatMap,
+  filter,
+  map,
+  startWith,
+  switchMap,
+  take,
+  takeUntil,
+  takeWhile,
+  tap,
+} from 'rxjs/operators';
 import {BrowserParamsService} from '../browser-params.service';
 import {State} from '../reducers';
 import {VideoService} from './video.service';
@@ -143,20 +153,24 @@ export class ViewerEffects {
   onDataAvailableActions$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ViewerActions.onDataAvailable),
-      map(action => {
-        if (this.isEnded) {
-          this.videoService.mediaRecorder.ondataavailable = null;
-          return ViewerActions.setLastReceived({date: new Date()});
-        }
-        this.showDelay();
-        this.lastReceived = new Date();
-        const fileReader = new FileReader();
-        fileReader.onload = f => {
-          this.videoService.sourceBuffer.appendBuffer((f.target as any).result);
-        };
-        fileReader.readAsArrayBuffer(action.data);
-        return ViewerActions.setLastReceived({date: new Date()});
-      }),
+      concatMap(
+        (action): Observable<Action> => {
+          if (this.isEnded) {
+            this.videoService.mediaRecorder.ondataavailable = null;
+            return from([ViewerActions.setLastReceived({date: new Date()})]);
+          }
+          this.lastReceived = new Date();
+          const fileReader = new FileReader();
+          fileReader.onload = f => {
+            this.videoService.sourceBuffer.appendBuffer((f.target as any).result);
+          };
+          fileReader.readAsArrayBuffer(action.data);
+          return from([
+            this.createSetTimeStateAction(),
+            ViewerActions.setLastReceived({date: new Date()}),
+          ]);
+        },
+      ),
     ),
   );
 
@@ -184,15 +198,11 @@ export class ViewerEffects {
     ),
   );
 
-  updateTime$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(ViewerActions.updateTime),
-        tap(() => {
-          this.showDelay();
-        }),
-      ),
-    {dispatch: false},
+  updateTime$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ViewerActions.updateTime),
+      map(() => this.createSetTimeStateAction()),
+    ),
   );
 
   // Player Actions
@@ -324,14 +334,12 @@ export class ViewerEffects {
     }
   }
 
-  showDelay() {
-    this.store.dispatch(
-      ViewerActions.setTimeState({
-        now: new Date(),
-        bufferedTimeRanges: this.videoService.sourceBuffer.buffered,
-        currentTimeS: this.videoService.video.currentTime,
-      }),
-    );
+  private createSetTimeStateAction(): Action {
+    return ViewerActions.setTimeState({
+      now: new Date(),
+      bufferedTimeRanges: this.videoService.sourceBuffer.buffered,
+      currentTimeS: this.videoService.video.currentTime,
+    });
   }
 
   private changeDelay(ms: number, noWait = false): Observable<Action> {
