@@ -15,7 +15,6 @@ export interface ViewerState {
     isEnded: boolean;
     isLive: boolean;
     isInitialized: boolean;
-    isUnsupportedBrowser: boolean;
     isPermissionDeniedError: boolean;
     isNotFoundError: boolean;
     isUnknownError: boolean;
@@ -40,7 +39,6 @@ const initialState: ViewerState = {
     isEnded: false,
     isLive: true,
     isInitialized: false, //
-    isUnsupportedBrowser: false,
     isPermissionDeniedError: false,
     isNotFoundError: false,
     isUnknownError: false,

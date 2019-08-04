@@ -26,7 +26,6 @@ import {changeDelayParams} from './viewer.selectors';
 export class ViewerEffects {
   private isEnded = false;
   private isLive = true;
-  private isUnsupportedBrowser = false;
   private isPermissionDeniedError = false;
   private isNotFoundError = false;
   private isUnknownError = false;
@@ -47,7 +46,6 @@ export class ViewerEffects {
         tap(() => {
           this.isEnded = false;
           this.isLive = true;
-          this.isUnsupportedBrowser = false;
           this.isPermissionDeniedError = false;
           this.isNotFoundError = false;
           this.isUnknownError = false;
@@ -59,7 +57,7 @@ export class ViewerEffects {
                 targetMs: 0,
                 isEnded: this.isEnded,
                 isLive: this.isLive,
-                isUnsupportedBrowser: this.isUnsupportedBrowser,
+                isInitialized: false,
                 isPermissionDeniedError: this.isPermissionDeniedError,
                 isNotFoundError: this.isNotFoundError,
                 isUnknownError: this.isUnknownError,
