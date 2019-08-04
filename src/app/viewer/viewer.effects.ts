@@ -3,7 +3,7 @@
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {Action, select, Store} from '@ngrx/store';
-import {concat, from, interval, Observable, timer, of} from 'rxjs';
+import {concat, from, interval, Observable, of, timer} from 'rxjs';
 import {
   concatMap,
   filter,
@@ -20,7 +20,7 @@ import {BrowserParamsService} from '../browser-params.service';
 import {State} from '../reducers';
 import {VideoService} from './video.service';
 import * as ViewerActions from './viewer.actions';
-import {changeDelayParams, isLive, isEnded} from './viewer.selectors';
+import {changeDelayParams, isEnded, isLive} from './viewer.selectors';
 
 @Injectable()
 export class ViewerEffects {

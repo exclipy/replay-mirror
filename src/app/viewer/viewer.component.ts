@@ -1,9 +1,9 @@
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {select, Store} from '@ngrx/store';
-import {untilComponentDestroyed} from '@w11k/ngx-componentdestroyed';
 import {fromEvent, Observable} from 'rxjs';
 import {filter} from 'rxjs/operators';
+import {SubSink} from 'subsink';
 import {BrowserParamsService} from '../browser-params.service';
 import {State} from '../reducers';
 import {VideoService} from './video.service';
@@ -23,6 +23,8 @@ import {targetS} from './viewer.selectors';
   ],
 })
 export class ViewerComponent implements OnInit, OnDestroy {
+  private subsink = new SubSink();
+
   targetS$: Observable<number>;
   lastReceived$: Observable<Date | null>;
   isEnded$: Observable<boolean>;
@@ -72,16 +74,6 @@ export class ViewerComponent implements OnInit, OnDestroy {
     this.isWaiting$ = store.pipe(select(ViewerSelectors.isWaiting));
     this.isError$ = store.pipe(select(ViewerSelectors.isError));
 
-    this.showPreview$.pipe(untilComponentDestroyed(this)).subscribe(value => {
-      if (this.videoService.preview) {
-        if (value) {
-          this.videoService.preview.play();
-        } else {
-          this.videoService.preview.pause();
-        }
-      }
-    });
-
     this.isUnsupportedBrowser = browserParams.isUnsupportedBrowser;
   }
 
@@ -94,15 +86,27 @@ export class ViewerComponent implements OnInit, OnDestroy {
     this.videoService.preview = document.querySelector('#preview') as HTMLVideoElement;
     this.store.dispatch(ViewerActions.init());
 
-    fromEvent(document, 'visibilitychange')
-      .pipe(
-        untilComponentDestroyed(this),
-        filter(() => document.visibilityState === 'visible'),
-      )
-      .subscribe(() => this.store.dispatch(ViewerActions.foregrounded()));
+    this.subsink.add(
+      this.showPreview$.subscribe(value => {
+        if (this.videoService.preview) {
+          if (value) {
+            this.videoService.preview.play();
+          } else {
+            this.videoService.preview.pause();
+          }
+        }
+      }),
+    );
+
+    this.subsink.add(
+      fromEvent(document, 'visibilitychange')
+        .pipe(filter(() => document.visibilityState === 'visible'))
+        .subscribe(() => this.store.dispatch(ViewerActions.foregrounded())),
+    );
   }
 
   ngOnDestroy() {
+    this.subsink.unsubscribe();
     this.videoService.video = undefined;
     this.videoService.liveVideo = undefined;
     this.videoService.preview = undefined;

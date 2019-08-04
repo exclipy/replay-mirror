@@ -1,8 +1,8 @@
 import {Component, Inject, OnDestroy} from '@angular/core';
 import {SwUpdate} from '@angular/service-worker';
+import {SubSink} from 'subsink';
 import {environment} from '../../environments/environment';
 import {BrowserParamsService} from '../browser-params.service';
-import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -11,8 +11,7 @@ import {Subscription} from 'rxjs';
 })
 export class HomeComponent implements OnDestroy {
   isUnsupportedBrowser = false;
-
-  subscription: Subscription | undefined;
+  private subsink = new SubSink();
 
   constructor(
     @Inject(BrowserParamsService) browserParams: BrowserParamsService,
@@ -21,15 +20,15 @@ export class HomeComponent implements OnDestroy {
     this.isUnsupportedBrowser = browserParams.isUnsupportedBrowser;
 
     if (environment.production) {
-      this.subscription = updates.available.subscribe(_ => {
-        updates.activateUpdate().then(() => document.location.reload());
-      });
+      this.subsink.add(
+        updates.available.subscribe(_ => {
+          updates.activateUpdate().then(() => document.location.reload());
+        }),
+      );
     }
   }
 
   ngOnDestroy() {
-    if (environment.production) {
-      this.subscription!.unsubscribe();
-    }
+    this.subsink.unsubscribe();
   }
 }
