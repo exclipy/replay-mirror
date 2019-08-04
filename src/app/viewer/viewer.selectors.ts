@@ -13,12 +13,9 @@ export const isAtEnd = createSelector(
   viewerStateSelector,
   (state: ViewerState) => state.legacy.isLive || state.isStopped,
 );
-export const isError = createSelector(
+export const statusSelector = createSelector(
   viewerStateSelector,
-  (state: ViewerState) =>
-    state.legacy.isPermissionDeniedError ||
-    state.legacy.isUnknownError ||
-    state.legacy.isNotFoundError,
+  (state: ViewerState) => state.status,
 );
 
 export const isWaiting = createSelector(

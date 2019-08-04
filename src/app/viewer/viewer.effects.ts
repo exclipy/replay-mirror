@@ -21,6 +21,7 @@ import {State} from '../reducers';
 import {VideoService} from './video.service';
 import * as ViewerActions from './viewer.actions';
 import {changeDelayParams, isEnded, isLive} from './viewer.selectors';
+import {Status} from '../reducers/viewer.reducer';
 
 const REQUEST_DATA_INTERVAL_MS = 1000;
 
@@ -72,16 +73,13 @@ export class ViewerEffects {
             .catch(e => {
               if (
                 e.name === 'PermissionDeniedError' || // Chrome
-                e.name === 'NotAllowedError'
+                e.name === 'NotAllowedError' // Firefox
               ) {
-                // Firefox
-                this.store.dispatch(
-                  ViewerActions.setLegacy({payload: {isPermissionDeniedError: true}}),
-                );
+                this.store.dispatch(ViewerActions.setError({status: Status.PermissionDeniedError}));
               } else if (e.name === 'NotFoundError') {
-                this.store.dispatch(ViewerActions.setLegacy({payload: {isNotFoundError: true}}));
+                this.store.dispatch(ViewerActions.setError({status: Status.NotFoundError}));
               } else {
-                this.store.dispatch(ViewerActions.setLegacy({payload: {isUnknownError: true}}));
+                this.store.dispatch(ViewerActions.setError({status: Status.UnknownError}));
                 console.log('Unknown error:', e);
               }
             });

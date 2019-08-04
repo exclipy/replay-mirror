@@ -1,6 +1,13 @@
 import {Action, createReducer, on} from '@ngrx/store';
 import * as ViewerActions from '../viewer/viewer.actions';
 
+export enum Status {
+  Success,
+  PermissionDeniedError,
+  UnknownError,
+  NotFoundError,
+}
+
 export interface ViewerState {
   showPreview: boolean;
   showWizard: boolean;
@@ -10,14 +17,12 @@ export interface ViewerState {
   lastReceived: Date | null;
   timeState: TimeState;
   isInitialized: boolean;
+  status: Status;
 
   legacy: {
     targetMs: number;
     isEnded: boolean;
     isLive: boolean;
-    isPermissionDeniedError: boolean;
-    isNotFoundError: boolean;
-    isUnknownError: boolean;
     waitTime: number;
   };
 }
@@ -30,6 +35,7 @@ const initialState: ViewerState = {
   isStopped: false,
   lastReceived: null,
   isInitialized: false,
+  status: Status.Success,
   timeState: {
     now: new Date(),
     bufferedTimeRangeEndS: null,
@@ -39,9 +45,6 @@ const initialState: ViewerState = {
     targetMs: 0,
     isEnded: false,
     isLive: true,
-    isPermissionDeniedError: false,
-    isNotFoundError: false,
-    isUnknownError: false,
     waitTime: 0,
   },
 };
@@ -61,16 +64,21 @@ export const reducer = createReducer(
     ViewerActions.init,
     (state): ViewerState => ({
       ...state,
+      status: Status.Success,
       legacy: {
         ...state.legacy,
         targetMs: 0,
         isEnded: false,
         isLive: true,
-        isPermissionDeniedError: false,
-        isNotFoundError: false,
-        isUnknownError: false,
         waitTime: 0,
       },
+    }),
+  ),
+  on(
+    ViewerActions.setError,
+    (state, action): ViewerState => ({
+      ...state,
+      status: action.status,
     }),
   ),
   on(
@@ -153,16 +161,6 @@ export const reducer = createReducer(
     (state): ViewerState => ({
       ...state,
       showWizard: false,
-    }),
-  ),
-  on(
-    ViewerActions.setLegacy,
-    (state, action): ViewerState => ({
-      ...state,
-      legacy: {
-        ...state.legacy,
-        ...action.payload,
-      },
     }),
   ),
   on(

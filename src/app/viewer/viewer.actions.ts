@@ -1,4 +1,5 @@
 import {createAction, props} from '@ngrx/store';
+import {Status} from '../reducers/viewer.reducer';
 
 export const togglePreview = createAction('[View Component] Toggle Preview');
 export const less = createAction('[View Component] Less');
@@ -16,6 +17,12 @@ export const onDataAvailable = createAction(
 );
 
 export const finishInit = createAction('[View Effect] Finish Init');
+export const setError = createAction(
+  '[View Effect] Set error',
+  props<{
+    status: Status;
+  }>(),
+);
 export const doStopRecord = createAction('[View Effect] Actually Stop Record');
 export const play = createAction('[View Effect] Play');
 export const goToBeforeStart = createAction(
@@ -45,22 +52,5 @@ export const setTimeState = createAction(
     now: Date;
     bufferedTimeRanges: TimeRanges;
     currentTimeS: number;
-  }>(),
-);
-
-export const setLegacy = createAction(
-  '[View Effect] Set Legacy',
-  props<{
-    payload: {
-      targetMs?: number;
-      isEnded?: boolean;
-      isLive?: boolean;
-      isInitialized?: boolean;
-      isUnsupportedBrowser?: boolean;
-      isPermissionDeniedError?: boolean;
-      isNotFoundError?: boolean;
-      isUnknownError?: boolean;
-      waitTime?: number;
-    };
   }>(),
 );

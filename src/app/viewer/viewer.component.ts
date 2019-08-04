@@ -2,7 +2,7 @@ import {animate, state, style, transition, trigger} from '@angular/animations';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 import {fromEvent, Observable} from 'rxjs';
-import {filter} from 'rxjs/operators';
+import {filter, map} from 'rxjs/operators';
 import {SubSink} from 'subsink';
 import {BrowserParamsService} from '../browser-params.service';
 import {State} from '../reducers';
@@ -10,6 +10,7 @@ import {VideoService} from './video.service';
 import * as ViewerActions from './viewer.actions';
 import * as ViewerSelectors from './viewer.selectors';
 import {targetS} from './viewer.selectors';
+import {Status} from '../reducers/viewer.reducer';
 
 @Component({
   selector: 'app-viewer',
@@ -58,11 +59,6 @@ export class ViewerComponent implements OnInit, OnDestroy {
     this.isStopped$ = store.pipe(select(ViewerSelectors.isStopped));
     this.isLive$ = store.pipe(select(ViewerSelectors.isLive));
     this.isInitialized$ = store.pipe(select(state => state.viewer.isInitialized));
-    this.isPermissionDeniedError$ = store.pipe(
-      select(state => state.viewer.legacy.isPermissionDeniedError),
-    );
-    this.isNotFoundError$ = store.pipe(select(state => state.viewer.legacy.isNotFoundError));
-    this.isUnknownError$ = store.pipe(select(state => state.viewer.legacy.isUnknownError));
     this.currentTime$ = store.pipe(select(ViewerSelectors.currentTimeS));
     this.totalTime$ = store.pipe(select(ViewerSelectors.totalTimeS));
     this.displayedDelay$ = store.pipe(select(ViewerSelectors.displayedDelay));
@@ -72,8 +68,26 @@ export class ViewerComponent implements OnInit, OnDestroy {
     this.showWizard$ = store.pipe(select(state => state.viewer.showWizard));
     this.isAtEnd$ = store.pipe(select(ViewerSelectors.isAtEnd));
     this.isWaiting$ = store.pipe(select(ViewerSelectors.isWaiting));
-    this.isError$ = store.pipe(select(ViewerSelectors.isError));
 
+    this.isError$ = store.pipe(
+      select(ViewerSelectors.statusSelector),
+      map(s => s !== Status.Success),
+    );
+    this.isPermissionDeniedError$ = store.pipe(
+      select(ViewerSelectors.statusSelector),
+      map(s => {
+        console.log(status);
+        return s === Status.PermissionDeniedError;
+      }),
+    );
+    this.isNotFoundError$ = store.pipe(
+      select(ViewerSelectors.statusSelector),
+      map(s => s === Status.NotFoundError),
+    );
+    this.isUnknownError$ = store.pipe(
+      select(ViewerSelectors.statusSelector),
+      map(s => s === Status.UnknownError),
+    );
     this.isUnsupportedBrowser = browserParams.isUnsupportedBrowser;
   }
 
