@@ -312,9 +312,8 @@ export class ViewerEffects {
     () =>
       this.actions$.pipe(
         ofType(ViewerActions.setWaiting),
-        tap(action => {
+        tap(() => {
           this.videoService.video!.currentTime = 0;
-          this.store.dispatch(ViewerActions.setLegacy({payload: {waitTime: action.timeS}}));
         }),
       ),
     {dispatch: false},

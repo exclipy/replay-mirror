@@ -228,6 +228,16 @@ export const reducer = createReducer(
       },
     }),
   ),
+  on(
+    ViewerActions.setWaiting,
+    (state, action): ViewerState => ({
+      ...state,
+      legacy: {
+        ...state.legacy,
+        waitTime: action.timeS,
+      },
+    }),
+  ),
 );
 
 export function viewerReducer(state: ViewerState | undefined, action: Action) {
