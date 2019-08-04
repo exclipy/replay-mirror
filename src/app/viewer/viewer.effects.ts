@@ -26,7 +26,6 @@ import {changeDelayParams} from './viewer.selectors';
 export class ViewerEffects {
   private isEnded = false;
   private isLive = true;
-  private isPermissionDeniedError = false;
   private isNotFoundError = false;
   private isUnknownError = false;
   private waitTime = 0;
@@ -46,7 +45,6 @@ export class ViewerEffects {
         tap(() => {
           this.isEnded = false;
           this.isLive = true;
-          this.isPermissionDeniedError = false;
           this.isNotFoundError = false;
           this.isUnknownError = false;
           this.waitTime = 0;
@@ -58,7 +56,7 @@ export class ViewerEffects {
                 isEnded: this.isEnded,
                 isLive: this.isLive,
                 isInitialized: false,
-                isPermissionDeniedError: this.isPermissionDeniedError,
+                isPermissionDeniedError: false,
                 isNotFoundError: this.isNotFoundError,
                 isUnknownError: this.isUnknownError,
                 waitTime: this.waitTime,
@@ -114,11 +112,8 @@ export class ViewerEffects {
                 e.name === 'NotAllowedError'
               ) {
                 // Firefox
-                this.isPermissionDeniedError = true;
                 this.store.dispatch(
-                  ViewerActions.setLegacy({
-                    payload: {isPermissionDeniedError: this.isPermissionDeniedError},
-                  }),
+                  ViewerActions.setLegacy({payload: {isPermissionDeniedError: true}}),
                 );
               } else if (e.name === 'NotFoundError') {
                 this.isNotFoundError = true;
