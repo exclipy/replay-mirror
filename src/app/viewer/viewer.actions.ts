@@ -19,15 +19,22 @@ export const finishInit = createAction('[View Effect] Finish Init');
 export const doStopRecord = createAction('[View Effect] Actually Stop Record');
 export const pause = createAction('[View Effect] Pause');
 export const play = createAction('[View Effect] Play');
-export const goToLive = createAction('[View Effect] Go To Live');
 export const goToBeforeStart = createAction(
   '[View Effect] Go to before start',
   props<{
     targetMs: number;
-    waitingPeriods: number;
+    waitingS: number;
   }>(),
 );
-export const goTo = createAction('[View Effect] Go To', props<{timeS: number}>());
+export const goTo = createAction(
+  '[View Effect] Go To',
+  props<{
+    timeS: number;
+    targetMs: number;
+  }>(),
+);
+export const goToLive = createAction('[View Effect] Go To Live');
+export const goToEnd = createAction('[View Effect] Go To End');
 export const setWaiting = createAction('[View Effect] Set Waiting', props<{timeS: number}>());
 export const setLastReceived = createAction(
   '[View Effect] Set Last Received',

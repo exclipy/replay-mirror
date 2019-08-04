@@ -141,6 +141,30 @@ export const reducer = createReducer(
     }),
   ),
   on(
+    ViewerActions.goToBeforeStart,
+    (state, action): ViewerState => ({
+      ...state,
+      legacy: {
+        ...state.legacy,
+        targetMs: action.targetMs,
+        waitTime: action.waitingS,
+        isLive: false,
+      },
+    }),
+  ),
+  on(
+    ViewerActions.goTo,
+    (state, action): ViewerState => ({
+      ...state,
+      legacy: {
+        ...state.legacy,
+        targetMs: action.targetMs,
+        waitTime: 0,
+        isLive: false,
+      },
+    }),
+  ),
+  on(
     ViewerActions.goToLive,
     (state): ViewerState => ({
       ...state,
@@ -149,6 +173,18 @@ export const reducer = createReducer(
         targetMs: 0,
         waitTime: 0,
         isLive: true,
+      },
+    }),
+  ),
+  on(
+    ViewerActions.goToEnd,
+    (state): ViewerState => ({
+      ...state,
+      legacy: {
+        ...state.legacy,
+        targetMs: 0,
+        waitTime: 0,
+        isLive: false,
       },
     }),
   ),

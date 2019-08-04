@@ -199,18 +199,6 @@ export class ViewerEffects {
     ),
   );
 
-  goToLive$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(ViewerActions.goToLive),
-        tap(() => {
-          this.videoService.liveVideo!.play();
-          this.videoService.video!.pause();
-        }),
-      ),
-    {dispatch: false},
-  );
-
   play$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ViewerActions.play),
@@ -236,6 +224,17 @@ export class ViewerEffects {
     ),
   );
 
+  goToBeforeStart$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(ViewerActions.goToBeforeStart),
+        tap(() => {
+          this.videoService.video!.currentTime = 0;
+        }),
+      ),
+    {dispatch: false},
+  );
+
   goTo$ = createEffect(
     () =>
       this.actions$.pipe(
@@ -243,6 +242,29 @@ export class ViewerEffects {
         tap(action => {
           this.videoService.video!.currentTime = action.timeS;
         }), // TODO: also set the TimeState here to avoid the flash
+      ),
+    {dispatch: false},
+  );
+
+  goToLive$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(ViewerActions.goToLive),
+        tap(() => {
+          this.videoService.liveVideo!.play();
+          this.videoService.video!.pause();
+        }),
+      ),
+    {dispatch: false},
+  );
+
+  goToEnd$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(ViewerActions.goToEnd),
+        tap(() => {
+          this.videoService.video!.currentTime = this.videoService.video!.duration;
+        }),
       ),
     {dispatch: false},
   );
@@ -286,18 +308,11 @@ export class ViewerEffects {
       // Don't allow the currentTime to be before the start.
       targetMs = Math.min(targetMs, params.absoluteEndMs);
     }
-    const actions: Action[] = [];
-    actions.push(ViewerActions.setLegacy({payload: {targetMs}}));
     const headroom = params.absoluteEndMs - targetMs;
     if (headroom < 0) {
       const periods = Math.floor(-headroom / 1000) + 1;
       return concat(
-        from([
-          ...actions,
-          ViewerActions.pause(),
-          ViewerActions.goTo({timeS: 0}),
-          ViewerActions.setWaiting({timeS: periods}),
-        ]),
+        from([ViewerActions.pause(), ViewerActions.goToBeforeStart({targetMs, waitingS: periods})]),
         timer(-headroom % 1000, 1000).pipe(
           takeUntil(
             this.store.pipe(
@@ -317,11 +332,14 @@ export class ViewerEffects {
       if (targetMs <= params.timeSinceLastReceivedMs && !params.isEnded) {
         return from([ViewerActions.goToLive()]);
       }
-      actions.push(ViewerActions.goTo({timeS: (params.absoluteEndMs - targetMs) / 1000}));
       if (targetMs > params.timeSinceLastReceivedMs) {
-        actions.push(ViewerActions.play());
+        return from([
+          ViewerActions.goTo({timeS: (params.absoluteEndMs - targetMs) / 1000, targetMs}),
+          ViewerActions.play(),
+        ]);
+      } else {
+        return from([ViewerActions.goToEnd()]);
       }
-      return from(actions);
     }
   }
 }
