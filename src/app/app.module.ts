@@ -37,7 +37,7 @@ const appRoutes: Routes = [
       },
     }),
     StoreDevtoolsModule.instrument({
-      maxAge: 25999, // Retains last 25 states
+      maxAge: 1000, // Retains last 1000 states
       logOnly: environment.production, // Restrict extension to log-only mode
     }),
     EffectsModule.forRoot([ViewerEffects]),

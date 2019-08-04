@@ -76,7 +76,6 @@ export class ViewerComponent implements OnInit, OnDestroy {
     this.isPermissionDeniedError$ = store.pipe(
       select(ViewerSelectors.statusSelector),
       map(s => {
-        console.log(status);
         return s === Status.PermissionDeniedError;
       }),
     );
