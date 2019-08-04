@@ -1,3 +1,5 @@
+/// <reference types="@types/dom-mediacapture-record" />
+
 import {Injectable} from '@angular/core';
 
 @Injectable({
