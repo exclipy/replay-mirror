@@ -56,6 +56,7 @@ export class ViewerEffects {
           this.store.dispatch(
             ViewerActions.setLegacy({
               payload: {
+                targetMs: 0,
                 isEnded: this.isEnded,
                 isLive: this.isLive,
                 isUnsupportedBrowser: this.isUnsupportedBrowser,
