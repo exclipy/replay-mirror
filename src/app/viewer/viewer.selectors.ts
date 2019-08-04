@@ -36,14 +36,6 @@ export const isLive = createSelector(
   (state: ViewerState) => state.legacy.isLive,
 );
 
-export interface TimeProps {
-  // Current time
-  now: Date;
-  // The ranges in the media buffer
-  bufferedTimeRanges: TimeRanges;
-  currentTimeS: number;
-}
-
 export const timeSinceLastReceivedMs = createSelector(
   viewerStateSelector,
   timeStateSelector,
