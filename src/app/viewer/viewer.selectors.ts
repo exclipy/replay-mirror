@@ -11,7 +11,7 @@ export const timeStateSelector = createSelector(
 
 export const isAtEnd = createSelector(
   viewerStateSelector,
-  (state: ViewerState) => state.legacy.isLive || state.isStopped,
+  (state: ViewerState) => state.isLive || state.isStopped,
 );
 export const statusSelector = createSelector(
   viewerStateSelector,
@@ -20,7 +20,7 @@ export const statusSelector = createSelector(
 
 export const isWaiting = createSelector(
   viewerStateSelector,
-  (state: ViewerState) => state.legacy.waitTime <= 0,
+  (state: ViewerState) => state.waitTime <= 0,
 );
 
 export const isStopped = createSelector(
@@ -30,12 +30,12 @@ export const isStopped = createSelector(
 
 export const isLive = createSelector(
   viewerStateSelector,
-  (state: ViewerState) => state.legacy.isLive,
+  (state: ViewerState) => state.isLive,
 );
 
 export const isEnded = createSelector(
   viewerStateSelector,
-  (state: ViewerState) => state.legacy.isEnded,
+  (state: ViewerState) => state.isEnded,
 );
 
 export const timeSinceLastReceivedMs = createSelector(
@@ -70,7 +70,7 @@ export const displayedDelay = createSelector(
 
 export const targetS = createSelector(
   viewerStateSelector,
-  (state: ViewerState) => state.legacy.targetMs / 1000,
+  (state: ViewerState) => state.targetMs / 1000,
 );
 
 export const totalTimeS = createSelector(
@@ -101,9 +101,9 @@ export const changeDelayParams = createSelector(
     delayMs: number,
   ) => ({
     timeSinceLastReceivedMs,
-    targetMs: state.legacy.targetMs,
+    targetMs: state.targetMs,
     absoluteEndMs,
-    isEnded: state.legacy.isEnded,
+    isEnded: state.isEnded,
     delayMs,
   }),
 );

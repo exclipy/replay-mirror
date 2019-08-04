@@ -55,14 +55,14 @@ export class ViewerComponent implements OnInit, OnDestroy {
   ) {
     this.targetS$ = store.pipe(select(targetS));
     this.lastReceived$ = store.pipe(select(state => state.viewer.lastReceived));
-    this.isEnded$ = store.pipe(select(state => state.viewer.legacy.isEnded));
+    this.isEnded$ = store.pipe(select(state => state.viewer.isEnded));
     this.isStopped$ = store.pipe(select(ViewerSelectors.isStopped));
     this.isLive$ = store.pipe(select(ViewerSelectors.isLive));
     this.isInitialized$ = store.pipe(select(state => state.viewer.isInitialized));
     this.currentTime$ = store.pipe(select(ViewerSelectors.currentTimeS));
     this.totalTime$ = store.pipe(select(ViewerSelectors.totalTimeS));
     this.displayedDelay$ = store.pipe(select(ViewerSelectors.displayedDelay));
-    this.waitTime$ = store.pipe(select(state => state.viewer.legacy.waitTime));
+    this.waitTime$ = store.pipe(select(state => state.viewer.waitTime));
 
     this.showPreview$ = store.pipe(select(state => state.viewer.showPreview));
     this.showWizard$ = store.pipe(select(state => state.viewer.showWizard));

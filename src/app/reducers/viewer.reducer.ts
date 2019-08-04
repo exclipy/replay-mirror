@@ -18,13 +18,9 @@ export interface ViewerState {
   timeState: TimeState;
   isInitialized: boolean;
   status: Status;
-
-  legacy: {
-    targetMs: number;
-    isEnded: boolean;
-    isLive: boolean;
-    waitTime: number;
-  };
+  targetMs: number;
+  isLive: boolean;
+  waitTime: number;
 }
 
 const initialState: ViewerState = {
@@ -41,12 +37,9 @@ const initialState: ViewerState = {
     bufferedTimeRangeEndS: null,
     currentTimeS: null,
   },
-  legacy: {
-    targetMs: 0,
-    isEnded: false,
-    isLive: true,
-    waitTime: 0,
-  },
+  targetMs: 0,
+  isLive: true,
+  waitTime: 0,
 };
 
 export interface TimeState {
@@ -65,13 +58,10 @@ export const reducer = createReducer(
     (state): ViewerState => ({
       ...state,
       status: Status.Success,
-      legacy: {
-        ...state.legacy,
-        targetMs: 0,
-        isEnded: false,
-        isLive: true,
-        waitTime: 0,
-      },
+      targetMs: 0,
+      isEnded: false,
+      isLive: true,
+      waitTime: 0,
     }),
   ),
   on(
@@ -138,22 +128,16 @@ export const reducer = createReducer(
     (state): ViewerState => ({
       ...state,
       isStopped: false,
-      legacy: {
-        ...state.legacy,
-        waitTime: 0,
-        isLive: false,
-      },
+      waitTime: 0,
+      isLive: false,
     }),
   ),
   on(
     ViewerActions.doStopRecord,
     (state): ViewerState => ({
       ...state,
-      legacy: {
-        ...state.legacy,
-        isLive: false,
-        isEnded: true,
-      },
+      isLive: false,
+      isEnded: true,
     }),
   ),
   on(
@@ -178,12 +162,9 @@ export const reducer = createReducer(
         ...state.timeState,
         currentTimeS: 0,
       },
-      legacy: {
-        ...state.legacy,
-        targetMs: action.targetMs,
-        waitTime: action.waitingS,
-        isLive: false,
-      },
+      targetMs: action.targetMs,
+      waitTime: action.waitingS,
+      isLive: false,
     }),
   ),
   on(
@@ -194,46 +175,34 @@ export const reducer = createReducer(
         ...state.timeState,
         currentTimeS: action.timeS,
       },
-      legacy: {
-        ...state.legacy,
-        targetMs: action.targetMs,
-        waitTime: 0,
-        isLive: false,
-      },
+      targetMs: action.targetMs,
+      waitTime: 0,
+      isLive: false,
     }),
   ),
   on(
     ViewerActions.goToLive,
     (state): ViewerState => ({
       ...state,
-      legacy: {
-        ...state.legacy,
-        targetMs: 0,
-        waitTime: 0,
-        isLive: true,
-      },
+      targetMs: 0,
+      waitTime: 0,
+      isLive: true,
     }),
   ),
   on(
     ViewerActions.goToEnd,
     (state): ViewerState => ({
       ...state,
-      legacy: {
-        ...state.legacy,
-        targetMs: 0,
-        waitTime: 0,
-        isLive: false,
-      },
+      targetMs: 0,
+      waitTime: 0,
+      isLive: false,
     }),
   ),
   on(
     ViewerActions.setWaiting,
     (state, action): ViewerState => ({
       ...state,
-      legacy: {
-        ...state.legacy,
-        waitTime: action.timeS,
-      },
+      waitTime: action.timeS,
     }),
   ),
 );
