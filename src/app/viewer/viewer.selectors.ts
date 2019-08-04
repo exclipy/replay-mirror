@@ -36,6 +36,11 @@ export const isLive = createSelector(
   (state: ViewerState) => state.legacy.isLive,
 );
 
+export const isEnded = createSelector(
+  viewerStateSelector,
+  (state: ViewerState) => state.legacy.isEnded,
+);
+
 export const timeSinceLastReceivedMs = createSelector(
   viewerStateSelector,
   timeStateSelector,

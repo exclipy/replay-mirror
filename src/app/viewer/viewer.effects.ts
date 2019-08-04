@@ -20,12 +20,10 @@ import {BrowserParamsService} from '../browser-params.service';
 import {State} from '../reducers';
 import {VideoService} from './video.service';
 import * as ViewerActions from './viewer.actions';
-import {changeDelayParams, isLive} from './viewer.selectors';
+import {changeDelayParams, isLive, isEnded} from './viewer.selectors';
 
 @Injectable()
 export class ViewerEffects {
-  private isEnded = false;
-
   constructor(
     private browserParams: BrowserParamsService,
     private videoService: VideoService,
@@ -39,13 +37,11 @@ export class ViewerEffects {
       this.actions$.pipe(
         ofType(ViewerActions.init),
         tap(() => {
-          this.isEnded = false;
-
           this.store.dispatch(
             ViewerActions.setLegacy({
               payload: {
                 targetMs: 0,
-                isEnded: this.isEnded,
+                isEnded: false,
                 isLive: true,
                 isInitialized: false,
                 isPermissionDeniedError: false,
@@ -76,11 +72,12 @@ export class ViewerEffects {
                 this.videoService.mediaRecorder!.requestData();
                 interval(1000)
                   .pipe(
-                    map(() => {
-                      if (!this.isEnded) {
+                    withLatestFrom(this.store.select(isEnded)),
+                    map(([_, isEnded]) => {
+                      if (!isEnded) {
                         this.videoService.mediaRecorder!.requestData();
                       }
-                      return this.isEnded;
+                      return isEnded;
                     }),
                     takeWhile(isEnded => !isEnded),
                   )
@@ -121,9 +118,10 @@ export class ViewerEffects {
   onDataAvailableActions$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ViewerActions.onDataAvailable),
+      withLatestFrom(this.store.select(isEnded)),
       concatMap(
-        (action): Observable<Action> => {
-          if (this.isEnded) {
+        ([action, isEnded]): Observable<Action> => {
+          if (isEnded) {
             this.videoService.mediaRecorder!.ondataavailable = () => {};
             return from([ViewerActions.setLastReceived({date: new Date()})]);
           }
@@ -197,8 +195,7 @@ export class ViewerEffects {
         if (this.videoService.mediaRecorder) {
           this.videoService.mediaRecorder.stop();
         }
-        this.isEnded = true;
-        return ViewerActions.setLegacy({payload: {isLive: false, isEnded: this.isEnded}});
+        return ViewerActions.setLegacy({payload: {isLive: false, isEnded: true}});
       }),
     ),
   );
@@ -306,7 +303,7 @@ export class ViewerEffects {
         timer(-headroom % 1000, 1000).pipe(
           takeUntil(
             this.store.pipe(
-              select(state => state.viewer.legacy.isEnded),
+              select(isEnded),
               filter(x => x),
             ),
           ),
