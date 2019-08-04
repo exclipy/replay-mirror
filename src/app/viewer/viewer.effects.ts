@@ -26,8 +26,6 @@ import {changeDelayParams} from './viewer.selectors';
 export class ViewerEffects {
   private isEnded = false;
   private isLive = true;
-  private isNotFoundError = false;
-  private isUnknownError = false;
   private waitTime = 0;
 
   constructor(
@@ -45,8 +43,6 @@ export class ViewerEffects {
         tap(() => {
           this.isEnded = false;
           this.isLive = true;
-          this.isNotFoundError = false;
-          this.isUnknownError = false;
           this.waitTime = 0;
 
           this.store.dispatch(
@@ -57,8 +53,8 @@ export class ViewerEffects {
                 isLive: this.isLive,
                 isInitialized: false,
                 isPermissionDeniedError: false,
-                isNotFoundError: this.isNotFoundError,
-                isUnknownError: this.isUnknownError,
+                isNotFoundError: false,
+                isUnknownError: false,
                 waitTime: this.waitTime,
               },
             }),
@@ -116,15 +112,9 @@ export class ViewerEffects {
                   ViewerActions.setLegacy({payload: {isPermissionDeniedError: true}}),
                 );
               } else if (e.name === 'NotFoundError') {
-                this.isNotFoundError = true;
-                this.store.dispatch(
-                  ViewerActions.setLegacy({payload: {isNotFoundError: this.isNotFoundError}}),
-                );
+                this.store.dispatch(ViewerActions.setLegacy({payload: {isNotFoundError: true}}));
               } else {
-                this.isUnknownError = true;
-                this.store.dispatch(
-                  ViewerActions.setLegacy({payload: {isUnknownError: this.isUnknownError}}),
-                );
+                this.store.dispatch(ViewerActions.setLegacy({payload: {isUnknownError: true}}));
                 console.log('Unknown error:', e);
               }
             });
