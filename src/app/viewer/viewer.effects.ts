@@ -86,18 +86,16 @@ export class ViewerEffects {
                   mimeType,
                 );
 
-                this.videoService.mediaRecorder.ondataavailable = (e: {data?: Blob}) => {
-                  if (e.data) {
-                    this.store.dispatch(ViewerActions.onDataAvailable({data: e.data}));
-                  }
+                this.videoService.mediaRecorder!.ondataavailable = e => {
+                  this.store.dispatch(ViewerActions.onDataAvailable({data: e.data}));
                 };
-                this.videoService.mediaRecorder.start();
-                this.videoService.mediaRecorder.requestData();
+                this.videoService.mediaRecorder!.start();
+                this.videoService.mediaRecorder!.requestData();
                 interval(1000)
                   .pipe(
                     map(() => {
                       if (!this.isEnded) {
-                        this.videoService.mediaRecorder.requestData();
+                        this.videoService.mediaRecorder!.requestData();
                       }
                       return this.isEnded;
                     }),
@@ -156,7 +154,7 @@ export class ViewerEffects {
       concatMap(
         (action): Observable<Action> => {
           if (this.isEnded) {
-            this.videoService.mediaRecorder.ondataavailable = null;
+            this.videoService.mediaRecorder!.ondataavailable = () => {};
             return from([ViewerActions.setLastReceived({date: new Date()})]);
           }
           const fileReader = new FileReader();

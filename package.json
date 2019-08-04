@@ -27,6 +27,7 @@
     "@ngrx/effects": "^8.1.0",
     "@ngrx/store": "^8.0.0",
     "@ngrx/store-devtools": "^8.1.0",
+    "@types/dom-mediacapture-record": "^1.0.1",
     "@types/google.analytics": "0.0.40",
     "@w11k/ngx-componentdestroyed": "^4.1.4",
     "core-js": "^3.1.4",
