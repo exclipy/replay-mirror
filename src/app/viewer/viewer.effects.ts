@@ -350,14 +350,10 @@ export class ViewerEffects {
             ),
           ),
           take(periods),
-          switchMap(
-            (i: number): Observable<Action> => {
-              if (i < periods - 1) {
-                return from([ViewerActions.setWaiting({timeS: periods - 1 - i})]);
-              } else {
-                return from([ViewerActions.play()]);
-              }
-            },
+          map(i =>
+            i < periods - 1
+              ? ViewerActions.setWaiting({timeS: periods - 1 - i})
+              : ViewerActions.play(),
           ),
         ),
       );
