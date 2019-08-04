@@ -1,5 +1,5 @@
 /// <reference types="@types/dom-mediacapture-record" />
-
+// tslint:disable: member-ordering
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {Action, select, Store} from '@ngrx/store';
@@ -147,9 +147,29 @@ export class ViewerEffects {
     ),
   );
 
+  updateTime$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ViewerActions.updateTime),
+      map(() => this.createSetTimeStateAction()),
+    ),
+  );
+
+  private createSetTimeStateAction(): Action {
+    return ViewerActions.setTimeState({
+      now: new Date(),
+      bufferedTimeRanges: this.videoService.sourceBuffer!.buffered,
+      currentTimeS: this.videoService.video!.currentTime,
+    });
+  }
+
   userActions$ = createEffect(() => {
     return this.actions$.pipe(
-      ofType(ViewerActions.less, ViewerActions.more, ViewerActions.stopRecord),
+      ofType(
+        ViewerActions.less,
+        ViewerActions.more,
+        ViewerActions.stopRecord,
+        ViewerActions.foregrounded,
+      ),
       withLatestFrom(this.store.pipe(select(changeDelayParams))),
       switchMap(([action, params]) => {
         switch (action.type) {
@@ -161,30 +181,61 @@ export class ViewerEffects {
             return this.changeDelay(0, {...params, noWait: true}).pipe(
               startWith(ViewerActions.doStopRecord()),
             );
+          case ViewerActions.foregrounded.type:
+            return this.changeDelay(0, params);
         }
       }),
     );
   });
 
-  // System actions
-  foregrounded$ = createEffect(() => {
-    return this.actions$.pipe(
-      ofType(ViewerActions.foregrounded),
-      withLatestFrom(this.store.pipe(select(changeDelayParams))),
-      switchMap(([_, params]) => {
-        return this.changeDelay(0, params);
-      }),
-    );
-  });
+  private changeDelay(
+    ms: number,
+    params: {
+      timeSinceLastReceivedMs: number;
+      targetMs: number;
+      absoluteEndMs: number;
+      isEnded: boolean;
+      delayMs: number;
+      noWait?: boolean;
+    },
+  ): Observable<Action> {
+    params.noWait = params.noWait || false;
+    let targetMs = params.isEnded
+      ? Math.max(params.delayMs + ms, params.timeSinceLastReceivedMs)
+      : Math.max(params.targetMs + ms, 0);
+    if (params.noWait || params.isEnded) {
+      // Don't allow the currentTime to be before the start.
+      targetMs = Math.min(targetMs, params.absoluteEndMs);
+    }
+    const headroom = params.absoluteEndMs - targetMs;
+    if (headroom < 0) {
+      const periods = Math.floor(-headroom / 1000) + 1;
+      return concat(
+        from([ViewerActions.goToBeforeStart({targetMs, waitingS: periods})]),
+        timer(-headroom % 1000, 1000).pipe(
+          takeUntil(
+            this.store.pipe(
+              select(isEnded),
+              filter(x => x),
+            ),
+          ),
+          take(periods),
+          map(i =>
+            i < periods - 1
+              ? ViewerActions.setWaiting({timeS: periods - 1 - i})
+              : ViewerActions.play(),
+          ),
+        ),
+      );
+    } else if (targetMs <= params.timeSinceLastReceivedMs && !params.isEnded) {
+      return of(ViewerActions.goToLive());
+    } else if (targetMs > params.timeSinceLastReceivedMs) {
+      return of(ViewerActions.goTo({timeS: (params.absoluteEndMs - targetMs) / 1000, targetMs}));
+    } else {
+      return of(ViewerActions.goToEnd());
+    }
+  }
 
-  updateTime$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(ViewerActions.updateTime),
-      map(() => this.createSetTimeStateAction()),
-    ),
-  );
-
-  // Player Actions
   doStopRecord$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ViewerActions.doStopRecord),
@@ -281,62 +332,6 @@ export class ViewerEffects {
       ),
     {dispatch: false},
   );
-
-  private createSetTimeStateAction(): Action {
-    return ViewerActions.setTimeState({
-      now: new Date(),
-      bufferedTimeRanges: this.videoService.sourceBuffer!.buffered,
-      currentTimeS: this.videoService.video!.currentTime,
-    });
-  }
-
-  private changeDelay(
-    ms: number,
-    params: {
-      timeSinceLastReceivedMs: number;
-      targetMs: number;
-      absoluteEndMs: number;
-      isEnded: boolean;
-      delayMs: number;
-      noWait?: boolean;
-    },
-  ): Observable<Action> {
-    params.noWait = params.noWait || false;
-    let targetMs = params.isEnded
-      ? Math.max(params.delayMs + ms, params.timeSinceLastReceivedMs)
-      : Math.max(params.targetMs + ms, 0);
-    if (params.noWait || params.isEnded) {
-      // Don't allow the currentTime to be before the start.
-      targetMs = Math.min(targetMs, params.absoluteEndMs);
-    }
-    const headroom = params.absoluteEndMs - targetMs;
-    if (headroom < 0) {
-      const periods = Math.floor(-headroom / 1000) + 1;
-      return concat(
-        from([ViewerActions.goToBeforeStart({targetMs, waitingS: periods})]),
-        timer(-headroom % 1000, 1000).pipe(
-          takeUntil(
-            this.store.pipe(
-              select(isEnded),
-              filter(x => x),
-            ),
-          ),
-          take(periods),
-          map(i =>
-            i < periods - 1
-              ? ViewerActions.setWaiting({timeS: periods - 1 - i})
-              : ViewerActions.play(),
-          ),
-        ),
-      );
-    } else if (targetMs <= params.timeSinceLastReceivedMs && !params.isEnded) {
-      return of(ViewerActions.goToLive());
-    } else if (targetMs > params.timeSinceLastReceivedMs) {
-      return of(ViewerActions.goTo({timeS: (params.absoluteEndMs - targetMs) / 1000, targetMs}));
-    } else {
-      return of(ViewerActions.goToEnd());
-    }
-  }
 }
 
 // Sets the srcObject on an element with fallback to src.
