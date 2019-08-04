@@ -12,7 +12,6 @@ export interface ViewerState {
 
   legacy: {
     targetMs: number;
-    adjustIntervalId: number | null;
     isEnded: boolean;
     isLive: boolean;
     isInitialized: boolean;
@@ -20,7 +19,6 @@ export interface ViewerState {
     isPermissionDeniedError: boolean;
     isNotFoundError: boolean;
     isUnknownError: boolean;
-    totalTime: number;
     waitTime: number;
   };
 }
@@ -39,15 +37,13 @@ const initialState: ViewerState = {
   },
   legacy: {
     targetMs: 0,
-    adjustIntervalId: null,
     isEnded: false,
     isLive: true,
-    isInitialized: false,
+    isInitialized: false, //
     isUnsupportedBrowser: false,
     isPermissionDeniedError: false,
     isNotFoundError: false,
     isUnknownError: false,
-    totalTime: 0,
     waitTime: 0,
   },
 };

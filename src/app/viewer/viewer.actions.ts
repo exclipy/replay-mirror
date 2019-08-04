@@ -35,7 +35,6 @@ export const setLegacy = createAction(
   props<{
     payload: {
       targetMs?: number;
-      adjustIntervalId?: number | null;
       isEnded?: boolean;
       isLive?: boolean;
       isInitialized?: boolean;
@@ -43,9 +42,6 @@ export const setLegacy = createAction(
       isPermissionDeniedError?: boolean;
       isNotFoundError?: boolean;
       isUnknownError?: boolean;
-      currentTime?: number;
-      totalTime?: number;
-      displayedDelay?: number;
       waitTime?: number;
     };
   }>(),
