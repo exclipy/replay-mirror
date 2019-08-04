@@ -20,12 +20,11 @@ import {BrowserParamsService} from '../browser-params.service';
 import {State} from '../reducers';
 import {VideoService} from './video.service';
 import * as ViewerActions from './viewer.actions';
-import {changeDelayParams} from './viewer.selectors';
+import {changeDelayParams, isLive} from './viewer.selectors';
 
 @Injectable()
 export class ViewerEffects {
   private isEnded = false;
-  private isLive = true;
 
   constructor(
     private browserParams: BrowserParamsService,
@@ -41,14 +40,13 @@ export class ViewerEffects {
         ofType(ViewerActions.init),
         tap(() => {
           this.isEnded = false;
-          this.isLive = true;
 
           this.store.dispatch(
             ViewerActions.setLegacy({
               payload: {
                 targetMs: 0,
                 isEnded: this.isEnded,
-                isLive: this.isLive,
+                isLive: true,
                 isInitialized: false,
                 isPermissionDeniedError: false,
                 isNotFoundError: false,
@@ -89,8 +87,7 @@ export class ViewerEffects {
                   .subscribe();
                 this.store.dispatch(ViewerActions.setLegacy({payload: {isInitialized: true}}));
               });
-              this.isLive = true;
-              this.store.dispatch(ViewerActions.setLegacy({payload: {isLive: this.isLive}}));
+              this.store.dispatch(ViewerActions.setLegacy({payload: {isLive: true}}));
               this.videoService.video!.src = window.URL.createObjectURL(
                 this.videoService.bufferSource,
               );
@@ -185,8 +182,9 @@ export class ViewerEffects {
   doStopRecord$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ViewerActions.doStopRecord),
-      map(() => {
-        if (this.isLive) {
+      withLatestFrom(this.store.select(isLive)),
+      map(([_, isLive]) => {
+        if (isLive) {
           this.videoService.liveVideo!.pause();
           this.videoService.video!.play();
         }
@@ -200,8 +198,7 @@ export class ViewerEffects {
           this.videoService.mediaRecorder.stop();
         }
         this.isEnded = true;
-        this.isLive = false;
-        return ViewerActions.setLegacy({payload: {isLive: this.isLive, isEnded: this.isEnded}});
+        return ViewerActions.setLegacy({payload: {isLive: false, isEnded: this.isEnded}});
       }),
     ),
   );
@@ -211,12 +208,9 @@ export class ViewerEffects {
       this.actions$.pipe(
         ofType(ViewerActions.setLive),
         tap(() => {
-          if (!this.isLive) {
-            this.videoService.liveVideo!.play();
-            this.videoService.video!.pause();
-            this.isLive = true;
-            this.store.dispatch(ViewerActions.setLegacy({payload: {waitTime: 0, isLive: true}}));
-          }
+          this.videoService.liveVideo!.play();
+          this.videoService.video!.pause();
+          this.store.dispatch(ViewerActions.setLegacy({payload: {waitTime: 0, isLive: true}}));
         }),
       ),
     {dispatch: false},
@@ -226,12 +220,8 @@ export class ViewerEffects {
     this.actions$.pipe(
       ofType(ViewerActions.play),
       map(() => {
-        if (this.isLive) {
-          this.videoService.liveVideo!.pause();
-          this.videoService.video!.play();
-        }
+        this.videoService.liveVideo!.pause();
         this.videoService.video!.play();
-        this.isLive = false;
         return ViewerActions.setLegacy({
           payload: {waitTime: 0, isLive: false},
         });
@@ -246,8 +236,7 @@ export class ViewerEffects {
         this.videoService.liveVideo!.pause();
         this.videoService.video!.play();
         this.videoService.video!.pause();
-        this.isLive = false;
-        return ViewerActions.setLegacy({payload: {isLive: this.isLive}});
+        return ViewerActions.setLegacy({payload: {isLive: false}});
       }),
     ),
   );
