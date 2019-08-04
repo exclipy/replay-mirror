@@ -10,17 +10,24 @@ export const stop = createAction('[View System] Stop');
 export const foregrounded = createAction('[View System] Foregrounded');
 export const updateTime = createAction('[View System] Update Time');
 export const init = createAction('[View System] Init');
-export const finishInit = createAction('[View System] Finish Init');
 export const onDataAvailable = createAction(
   '[View System] On Data Available',
   props<{data: Blob}>(),
 );
 
+export const finishInit = createAction('[View Effect] Finish Init');
 export const doStopRecord = createAction('[View Effect] Actually Stop Record');
 export const pause = createAction('[View Effect] Pause');
 export const play = createAction('[View Effect] Play');
-export const setLive = createAction('[View Effect] Set Live');
-export const setTime = createAction('[View Effect] Set Time', props<{timeS: number}>());
+export const goToLive = createAction('[View Effect] Go To Live');
+export const goToBeforeStart = createAction(
+  '[View Effect] Go to before start',
+  props<{
+    targetMs: number;
+    waitingPeriods: number;
+  }>(),
+);
+export const goTo = createAction('[View Effect] Go To', props<{timeS: number}>());
 export const setWaiting = createAction('[View Effect] Set Waiting', props<{timeS: number}>());
 export const setLastReceived = createAction(
   '[View Effect] Set Last Received',
@@ -28,7 +35,11 @@ export const setLastReceived = createAction(
 );
 export const setTimeState = createAction(
   '[View Effect] Set Time State',
-  props<{now: Date; bufferedTimeRanges: TimeRanges; currentTimeS: number}>(),
+  props<{
+    now: Date;
+    bufferedTimeRanges: TimeRanges;
+    currentTimeS: number;
+  }>(),
 );
 
 export const setLegacy = createAction(

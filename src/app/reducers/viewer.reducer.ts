@@ -140,6 +140,18 @@ export const reducer = createReducer(
       isInitialized: true,
     }),
   ),
+  on(
+    ViewerActions.goToLive,
+    (state): ViewerState => ({
+      ...state,
+      legacy: {
+        ...state.legacy,
+        targetMs: 0,
+        waitTime: 0,
+        isLive: true,
+      },
+    }),
+  ),
 );
 
 export function viewerReducer(state: ViewerState | undefined, action: Action) {

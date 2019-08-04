@@ -199,14 +199,13 @@ export class ViewerEffects {
     ),
   );
 
-  setLive$ = createEffect(
+  goToLive$ = createEffect(
     () =>
       this.actions$.pipe(
-        ofType(ViewerActions.setLive),
+        ofType(ViewerActions.goToLive),
         tap(() => {
           this.videoService.liveVideo!.play();
           this.videoService.video!.pause();
-          this.store.dispatch(ViewerActions.setLegacy({payload: {waitTime: 0, isLive: true}}));
         }),
       ),
     {dispatch: false},
@@ -237,10 +236,10 @@ export class ViewerEffects {
     ),
   );
 
-  setTime$ = createEffect(
+  goTo$ = createEffect(
     () =>
       this.actions$.pipe(
-        ofType(ViewerActions.setTime),
+        ofType(ViewerActions.goTo),
         tap(action => {
           this.videoService.video!.currentTime = action.timeS;
         }), // TODO: also set the TimeState here to avoid the flash
@@ -296,7 +295,7 @@ export class ViewerEffects {
         from([
           ...actions,
           ViewerActions.pause(),
-          ViewerActions.setTime({timeS: 0}),
+          ViewerActions.goTo({timeS: 0}),
           ViewerActions.setWaiting({timeS: periods}),
         ]),
         timer(-headroom % 1000, 1000).pipe(
@@ -316,9 +315,9 @@ export class ViewerEffects {
       );
     } else {
       if (targetMs <= params.timeSinceLastReceivedMs && !params.isEnded) {
-        return from([...actions, ViewerActions.setLive()]);
+        return from([ViewerActions.goToLive()]);
       }
-      actions.push(ViewerActions.setTime({timeS: (params.absoluteEndMs - targetMs) / 1000}));
+      actions.push(ViewerActions.goTo({timeS: (params.absoluteEndMs - targetMs) / 1000}));
       if (targetMs > params.timeSinceLastReceivedMs) {
         actions.push(ViewerActions.play());
       }
