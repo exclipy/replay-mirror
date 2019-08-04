@@ -22,6 +22,8 @@ import {VideoService} from './video.service';
 import * as ViewerActions from './viewer.actions';
 import {changeDelayParams, isEnded, isLive} from './viewer.selectors';
 
+const REQUEST_DATA_INTERVAL_MS = 1000;
+
 @Injectable()
 export class ViewerEffects {
   constructor(
@@ -69,21 +71,8 @@ export class ViewerEffects {
                 };
                 this.videoService.mediaRecorder!.start();
                 this.videoService.mediaRecorder!.requestData();
-                interval(1000)
-                  .pipe(
-                    withLatestFrom(this.store.select(isEnded)),
-                    map(([_, isEnded]) => {
-                      if (!isEnded) {
-                        this.videoService.mediaRecorder!.requestData();
-                      }
-                      return isEnded;
-                    }),
-                    takeWhile(isEnded => !isEnded),
-                  )
-                  .subscribe();
                 this.store.dispatch(ViewerActions.finishInit());
               });
-              this.store.dispatch(ViewerActions.setLegacy({payload: {isLive: true}}));
               this.videoService.video!.src = window.URL.createObjectURL(
                 this.videoService.bufferSource,
               );
@@ -110,6 +99,26 @@ export class ViewerEffects {
               }
             });
         }),
+      ),
+    {dispatch: false},
+  );
+
+  finishInit$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(ViewerActions.finishInit),
+        switchMap(() =>
+          interval(REQUEST_DATA_INTERVAL_MS).pipe(
+            withLatestFrom(this.store.select(isEnded)),
+            map(([_, isEnded]) => {
+              if (!isEnded) {
+                this.videoService.mediaRecorder!.requestData();
+              }
+              return isEnded;
+            }),
+            takeWhile(isEnded => !isEnded),
+          ),
+        ),
       ),
     {dispatch: false},
   );
