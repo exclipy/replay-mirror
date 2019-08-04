@@ -63,7 +63,7 @@ export const delayMs = createSelector(
   isLive,
   absoluteEndMs,
   (timeState: TimeState, isLive: boolean, absoluteEndMs: number) =>
-    isLive || !timeState.currentTimeS ? 0 : absoluteEndMs - timeState.currentTimeS * 1000,
+    isLive || timeState.currentTimeS == null ? 0 : absoluteEndMs - timeState.currentTimeS * 1000,
 );
 
 export const displayedDelay = createSelector(
@@ -89,7 +89,7 @@ export const currentTimeS = createSelector(
   isLive,
   totalTimeS,
   (timeState: TimeState, isLive: boolean, totalTimeS: number) =>
-    isLive || !timeState.currentTimeS ? totalTimeS : timeState.currentTimeS,
+    isLive || timeState.currentTimeS == null ? totalTimeS : timeState.currentTimeS,
 );
 
 export const changeDelayParams = createSelector(
