@@ -3,7 +3,7 @@
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {Action, select, Store} from '@ngrx/store';
-import {concat, from, interval, Observable, timer} from 'rxjs';
+import {concat, from, interval, Observable, timer, of} from 'rxjs';
 import {
   concatMap,
   filter,
@@ -212,23 +212,13 @@ export class ViewerEffects {
     ),
   );
 
-  pause$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(ViewerActions.pause),
-      map(() => {
-        this.videoService.liveVideo!.pause();
-        this.videoService.video!.play();
-        this.videoService.video!.pause();
-        return ViewerActions.setLegacy({payload: {isLive: false}});
-      }),
-    ),
-  );
-
   goToBeforeStart$ = createEffect(
     () =>
       this.actions$.pipe(
         ofType(ViewerActions.goToBeforeStart),
         tap(() => {
+          this.videoService.liveVideo!.pause();
+          this.videoService.video!.pause();
           this.videoService.video!.currentTime = 0;
         }),
       ),
@@ -240,7 +230,9 @@ export class ViewerEffects {
       this.actions$.pipe(
         ofType(ViewerActions.goTo),
         tap(action => {
+          this.videoService.liveVideo!.pause();
           this.videoService.video!.currentTime = action.timeS;
+          this.videoService.video!.play();
         }), // TODO: also set the TimeState here to avoid the flash
       ),
     {dispatch: false},
@@ -312,7 +304,7 @@ export class ViewerEffects {
     if (headroom < 0) {
       const periods = Math.floor(-headroom / 1000) + 1;
       return concat(
-        from([ViewerActions.pause(), ViewerActions.goToBeforeStart({targetMs, waitingS: periods})]),
+        from([ViewerActions.goToBeforeStart({targetMs, waitingS: periods})]),
         timer(-headroom % 1000, 1000).pipe(
           takeUntil(
             this.store.pipe(
@@ -328,18 +320,12 @@ export class ViewerEffects {
           ),
         ),
       );
+    } else if (targetMs <= params.timeSinceLastReceivedMs && !params.isEnded) {
+      return of(ViewerActions.goToLive());
+    } else if (targetMs > params.timeSinceLastReceivedMs) {
+      return of(ViewerActions.goTo({timeS: (params.absoluteEndMs - targetMs) / 1000, targetMs}));
     } else {
-      if (targetMs <= params.timeSinceLastReceivedMs && !params.isEnded) {
-        return from([ViewerActions.goToLive()]);
-      }
-      if (targetMs > params.timeSinceLastReceivedMs) {
-        return from([
-          ViewerActions.goTo({timeS: (params.absoluteEndMs - targetMs) / 1000, targetMs}),
-          ViewerActions.play(),
-        ]);
-      } else {
-        return from([ViewerActions.goToEnd()]);
-      }
+      return of(ViewerActions.goToEnd());
     }
   }
 }

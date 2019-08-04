@@ -17,7 +17,6 @@ export const onDataAvailable = createAction(
 
 export const finishInit = createAction('[View Effect] Finish Init');
 export const doStopRecord = createAction('[View Effect] Actually Stop Record');
-export const pause = createAction('[View Effect] Pause');
 export const play = createAction('[View Effect] Play');
 export const goToBeforeStart = createAction(
   '[View Effect] Go to before start',
