@@ -22,12 +22,8 @@ import {VideoService} from './video.service';
 import * as ViewerActions from './viewer.actions';
 import {changeDelayParams} from './viewer.selectors';
 
-declare type MediaRecorder = any;
-declare var MediaRecorder: any;
-
 @Injectable()
 export class ViewerEffects {
-  private targetMs = 0;
   private isEnded = false;
   private isLive = true;
   private isInitialized = false;
@@ -50,7 +46,6 @@ export class ViewerEffects {
       this.actions$.pipe(
         ofType(ViewerActions.init),
         tap(() => {
-          this.targetMs = 0;
           this.isEnded = false;
           this.isLive = true;
           this.isInitialized = false;
@@ -63,7 +58,6 @@ export class ViewerEffects {
           this.store.dispatch(
             ViewerActions.setLegacy({
               payload: {
-                targetMs: this.targetMs,
                 isEnded: this.isEnded,
                 isLive: this.isLive,
                 isUnsupportedBrowser: this.isUnsupportedBrowser,
@@ -336,9 +330,8 @@ export class ViewerEffects {
       // Don't allow the currentTime to be before the start.
       targetMs = Math.min(targetMs, params.absoluteEndMs);
     }
-    this.targetMs = targetMs;
     const actions: Action[] = [];
-    actions.push(ViewerActions.setLegacy({payload: {targetMs: this.targetMs}}));
+    actions.push(ViewerActions.setLegacy({payload: {targetMs}}));
     const headroom = params.absoluteEndMs - targetMs;
     if (headroom < 0) {
       const periods = Math.floor(-headroom / 1000) + 1;
