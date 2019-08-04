@@ -26,7 +26,6 @@ import {changeDelayParams} from './viewer.selectors';
 export class ViewerEffects {
   private isEnded = false;
   private isLive = true;
-  private waitTime = 0;
 
   constructor(
     private browserParams: BrowserParamsService,
@@ -43,7 +42,6 @@ export class ViewerEffects {
         tap(() => {
           this.isEnded = false;
           this.isLive = true;
-          this.waitTime = 0;
 
           this.store.dispatch(
             ViewerActions.setLegacy({
@@ -55,7 +53,7 @@ export class ViewerEffects {
                 isPermissionDeniedError: false,
                 isNotFoundError: false,
                 isUnknownError: false,
-                waitTime: this.waitTime,
+                waitTime: 0,
               },
             }),
           );
@@ -216,11 +214,8 @@ export class ViewerEffects {
           if (!this.isLive) {
             this.videoService.liveVideo!.play();
             this.videoService.video!.pause();
-            this.waitTime = 0;
             this.isLive = true;
-            this.store.dispatch(
-              ViewerActions.setLegacy({payload: {waitTime: this.waitTime, isLive: this.isLive}}),
-            );
+            this.store.dispatch(ViewerActions.setLegacy({payload: {waitTime: 0, isLive: true}}));
           }
         }),
       ),
@@ -236,7 +231,6 @@ export class ViewerEffects {
           this.videoService.video!.play();
         }
         this.videoService.video!.play();
-        this.waitTime = 0;
         this.isLive = false;
         return ViewerActions.setLegacy({
           payload: {waitTime: 0, isLive: false},
@@ -275,8 +269,7 @@ export class ViewerEffects {
         ofType(ViewerActions.setWaiting),
         tap(action => {
           this.videoService.video!.currentTime = 0;
-          this.waitTime = action.timeS;
-          this.store.dispatch(ViewerActions.setLegacy({payload: {waitTime: this.waitTime}}));
+          this.store.dispatch(ViewerActions.setLegacy({payload: {waitTime: action.timeS}}));
         }),
       ),
     {dispatch: false},
