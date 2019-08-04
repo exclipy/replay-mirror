@@ -14,8 +14,6 @@ export class SeekBarComponent {
 
   @ViewChild('seekbar', {static: true}) seekbar?: ElementRef;
 
-  constructor() {}
-
   pixelsToSeconds(pixels: number): number {
     return (pixels / this.seekbar!.nativeElement.offsetWidth) * this.totalWidthDurationS;
   }

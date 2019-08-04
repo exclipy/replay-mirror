@@ -13,6 +13,4 @@ export class VideoService {
   preview: HTMLVideoElement | undefined;
   bufferSource: MediaSource | undefined;
   sourceBuffer: SourceBuffer | undefined;
-
-  constructor() {}
 }
