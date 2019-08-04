@@ -2,6 +2,7 @@ import {Component, Inject, OnDestroy} from '@angular/core';
 import {SwUpdate} from '@angular/service-worker';
 import {environment} from '../../environments/environment';
 import {BrowserParamsService} from '../browser-params.service';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -11,7 +12,7 @@ import {BrowserParamsService} from '../browser-params.service';
 export class HomeComponent implements OnDestroy {
   isUnsupportedBrowser = false;
 
-  subscription;
+  subscription: Subscription | undefined;
 
   constructor(
     @Inject(BrowserParamsService) browserParams: BrowserParamsService,
@@ -20,7 +21,7 @@ export class HomeComponent implements OnDestroy {
     this.isUnsupportedBrowser = browserParams.isUnsupportedBrowser;
 
     if (environment.production) {
-      this.subscription = updates.available.subscribe(event => {
+      this.subscription = updates.available.subscribe(_ => {
         updates.activateUpdate().then(() => document.location.reload());
       });
     }
@@ -28,7 +29,7 @@ export class HomeComponent implements OnDestroy {
 
   ngOnDestroy() {
     if (environment.production) {
-      this.subscription.unsubscribe();
+      this.subscription!.unsubscribe();
     }
   }
 }

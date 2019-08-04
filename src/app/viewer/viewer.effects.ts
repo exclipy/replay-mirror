@@ -74,15 +74,15 @@ export class ViewerEffects {
           );
           this.videoService.bufferSource = new MediaSource();
 
-          const mimeType = this.browserParams.mimeType;
+          const mimeType = this.browserParams.mimeType!;
 
           navigator.mediaDevices
             .getUserMedia({video: {facingMode: 'user'}})
             .then(mediaStream => {
               this.videoService.mediaStream = mediaStream;
               this.videoService.mediaRecorder = new MediaRecorder(mediaStream, {mimeType});
-              this.videoService.bufferSource.addEventListener('sourceopen', () => {
-                this.videoService.sourceBuffer = this.videoService.bufferSource.addSourceBuffer(
+              this.videoService.bufferSource!.addEventListener('sourceopen', () => {
+                this.videoService.sourceBuffer = this.videoService.bufferSource!.addSourceBuffer(
                   mimeType,
                 );
 
@@ -111,14 +111,14 @@ export class ViewerEffects {
               });
               this.isLive = true;
               this.store.dispatch(ViewerActions.setLegacy({payload: {isLive: this.isLive}}));
-              this.videoService.video.src = window.URL.createObjectURL(
+              this.videoService.video!.src = window.URL.createObjectURL(
                 this.videoService.bufferSource,
               );
-              this.videoService.video.pause();
-              bindStream(this.videoService.liveVideo, this.videoService.mediaStream);
-              this.videoService.liveVideo.play();
-              bindStream(this.videoService.preview, this.videoService.mediaStream);
-              this.videoService.preview.pause();
+              this.videoService.video!.pause();
+              bindStream(this.videoService.liveVideo!, this.videoService.mediaStream);
+              this.videoService.liveVideo!.play();
+              bindStream(this.videoService.preview!, this.videoService.mediaStream);
+              this.videoService.preview!.pause();
             })
             .catch(e => {
               if (
@@ -161,7 +161,7 @@ export class ViewerEffects {
           }
           const fileReader = new FileReader();
           fileReader.onload = f => {
-            this.videoService.sourceBuffer.appendBuffer((f.target as any).result);
+            this.videoService.sourceBuffer!.appendBuffer((f.target as any).result);
           };
           fileReader.readAsArrayBuffer(action.data);
           return from([
@@ -216,15 +216,15 @@ export class ViewerEffects {
       ofType(ViewerActions.doStopRecord),
       map(() => {
         if (this.isLive) {
-          this.videoService.liveVideo.pause();
-          this.videoService.video.play();
+          this.videoService.liveVideo!.pause();
+          this.videoService.video!.play();
         }
         if (this.videoService.mediaStream) {
           for (const mediaStreamTrack of this.videoService.mediaStream.getTracks()) {
             mediaStreamTrack.stop();
           }
         }
-        this.videoService.bufferSource.endOfStream();
+        this.videoService.bufferSource!.endOfStream();
         if (this.videoService.mediaRecorder) {
           this.videoService.mediaRecorder.stop();
         }
@@ -241,8 +241,8 @@ export class ViewerEffects {
         ofType(ViewerActions.setLive),
         tap(() => {
           if (!this.isLive) {
-            this.videoService.liveVideo.play();
-            this.videoService.video.pause();
+            this.videoService.liveVideo!.play();
+            this.videoService.video!.pause();
             this.waitTime = 0;
             this.isLive = true;
             this.store.dispatch(
@@ -259,10 +259,10 @@ export class ViewerEffects {
       ofType(ViewerActions.play),
       map(() => {
         if (this.isLive) {
-          this.videoService.liveVideo.pause();
-          this.videoService.video.play();
+          this.videoService.liveVideo!.pause();
+          this.videoService.video!.play();
         }
-        this.videoService.video.play();
+        this.videoService.video!.play();
         this.waitTime = 0;
         this.isLive = false;
         return ViewerActions.setLegacy({
@@ -276,9 +276,9 @@ export class ViewerEffects {
     this.actions$.pipe(
       ofType(ViewerActions.pause),
       map(() => {
-        this.videoService.liveVideo.pause();
-        this.videoService.video.play();
-        this.videoService.video.pause();
+        this.videoService.liveVideo!.pause();
+        this.videoService.video!.play();
+        this.videoService.video!.pause();
         this.isLive = false;
         return ViewerActions.setLegacy({payload: {isLive: this.isLive}});
       }),
@@ -290,7 +290,7 @@ export class ViewerEffects {
       this.actions$.pipe(
         ofType(ViewerActions.setTime),
         tap(action => {
-          this.videoService.video.currentTime = action.timeS;
+          this.videoService.video!.currentTime = action.timeS;
         }), // TODO: also set the TimeState here to avoid the flash
       ),
     {dispatch: false},
@@ -301,7 +301,7 @@ export class ViewerEffects {
       this.actions$.pipe(
         ofType(ViewerActions.setWaiting),
         tap(action => {
-          this.videoService.video.currentTime = 0;
+          this.videoService.video!.currentTime = 0;
           this.waitTime = action.timeS;
           this.store.dispatch(ViewerActions.setLegacy({payload: {waitTime: this.waitTime}}));
         }),
@@ -312,8 +312,8 @@ export class ViewerEffects {
   private createSetTimeStateAction(): Action {
     return ViewerActions.setTimeState({
       now: new Date(),
-      bufferedTimeRanges: this.videoService.sourceBuffer.buffered,
-      currentTimeS: this.videoService.video.currentTime,
+      bufferedTimeRanges: this.videoService.sourceBuffer!.buffered,
+      currentTimeS: this.videoService.video!.currentTime,
     });
   }
 

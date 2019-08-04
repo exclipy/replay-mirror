@@ -66,7 +66,7 @@ export const delayMs = createSelector(
   isLive,
   absoluteEndMs,
   (timeState: TimeState, isLive: boolean, absoluteEndMs: number) =>
-    isLive ? 0 : absoluteEndMs - timeState.currentTimeS * 1000,
+    isLive || !timeState.currentTimeS ? 0 : absoluteEndMs - timeState.currentTimeS * 1000,
 );
 
 export const displayedDelay = createSelector(
@@ -83,11 +83,11 @@ export const totalTimeS = createSelector(
 );
 
 export const currentTimeS = createSelector(
-  viewerStateSelector,
   timeStateSelector,
+  isLive,
   totalTimeS,
-  (state: ViewerState, timeState: TimeState, totalTimeS: number) =>
-    state.legacy.isLive ? totalTimeS : timeState.currentTimeS,
+  (timeState: TimeState, isLive: boolean, totalTimeS: number) =>
+    isLive || !timeState.currentTimeS ? totalTimeS : timeState.currentTimeS,
 );
 
 export const changeDelayParams = createSelector(

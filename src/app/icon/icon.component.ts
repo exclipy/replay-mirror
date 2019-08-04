@@ -6,7 +6,7 @@ import {Component, Input, OnInit} from '@angular/core';
   styleUrls: ['./icon.component.css'],
 })
 export class IconComponent implements OnInit {
-  @Input() pic: string;
+  @Input() pic!: 'back5' | 'skip5' | 'stoprecord' | 'close';
 
   constructor() {}
 

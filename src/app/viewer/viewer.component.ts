@@ -1,5 +1,5 @@
 import {animate, state, style, transition, trigger} from '@angular/animations';
-import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 import {untilComponentDestroyed} from '@w11k/ngx-componentdestroyed';
 import {fromEvent, Observable} from 'rxjs';
@@ -45,7 +45,7 @@ export class ViewerComponent implements OnInit, OnDestroy {
   isError$: Observable<boolean>;
 
   constructor(
-    @Inject(BrowserParamsService) private browserParams: BrowserParamsService,
+    browserParams: BrowserParamsService,
     private videoService: VideoService,
     private store: Store<State>,
   ) {
@@ -53,7 +53,7 @@ export class ViewerComponent implements OnInit, OnDestroy {
     this.lastReceived$ = store.pipe(select('viewer', 'legacy', 'lastReceived'));
     this.isEnded$ = store.pipe(select('viewer', 'legacy', 'isEnded'));
     this.isStopped$ = store.pipe(select(ViewerSelectors.isStopped));
-    this.isLive$ = store.pipe(select('viewer', 'legacy', 'isLive'));
+    this.isLive$ = store.pipe(select(ViewerSelectors.isLive));
     this.isInitialized$ = store.pipe(select('viewer', 'legacy', 'isInitialized'));
     this.isPermissionDeniedError$ = store.pipe(
       select('viewer', 'legacy', 'isPermissionDeniedError'),
@@ -64,8 +64,6 @@ export class ViewerComponent implements OnInit, OnDestroy {
     this.totalTime$ = store.pipe(select(ViewerSelectors.totalTimeS));
     this.displayedDelay$ = store.pipe(select(ViewerSelectors.displayedDelay));
     this.waitTime$ = store.pipe(select('viewer', 'legacy', 'waitTime'));
-
-    this.videoService.mediaStream = null;
 
     this.showPreview$ = store.pipe(select('viewer', 'showPreview'));
     this.showWizard$ = store.pipe(select('viewer', 'showWizard'));

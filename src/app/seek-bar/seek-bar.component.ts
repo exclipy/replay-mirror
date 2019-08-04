@@ -1,27 +1,23 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, ViewChild, ElementRef} from '@angular/core';
 
 @Component({
   selector: 'app-seek-bar',
   templateUrl: './seek-bar.component.html',
   styleUrls: ['./seek-bar.component.css'],
 })
-export class SeekBarComponent implements OnInit {
+export class SeekBarComponent {
   @Input() currentTime = 0;
   @Input() totalTime = 0;
   @Input() targetDelay = 0;
   @Input() displayedDelay = 0;
   @Input() isEnded = false;
 
-  private seekbar;
+  @ViewChild('seekbar', {static: true}) seekbar?: ElementRef;
 
   constructor() {}
 
-  ngOnInit() {
-    this.seekbar = document.getElementById('seekbar');
-  }
-
   pixelsToSeconds(pixels: number): number {
-    return (pixels / this.seekbar.offsetWidth) * this.totalWidthDurationS;
+    return (pixels / this.seekbar!.nativeElement.offsetWidth) * this.totalWidthDurationS;
   }
 
   get animationDuration() {

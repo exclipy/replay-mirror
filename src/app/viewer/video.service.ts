@@ -7,13 +7,13 @@ declare var MediaRecorder: any;
   providedIn: 'root',
 })
 export class VideoService {
-  mediaStream: MediaStream | null;
-  mediaRecorder: MediaRecorder | null;
-  video: HTMLVideoElement;
-  liveVideo: HTMLVideoElement;
-  preview: HTMLVideoElement;
-  bufferSource: MediaSource;
-  sourceBuffer: SourceBuffer | null;
+  mediaStream: MediaStream | undefined;
+  mediaRecorder: MediaRecorder | undefined;
+  video: HTMLVideoElement | undefined;
+  liveVideo: HTMLVideoElement | undefined;
+  preview: HTMLVideoElement | undefined;
+  bufferSource: MediaSource | undefined;
+  sourceBuffer: SourceBuffer | undefined;
 
   constructor() {}
 }
