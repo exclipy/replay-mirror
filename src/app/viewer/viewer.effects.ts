@@ -341,7 +341,7 @@ export class ViewerEffects {
         timer(-headroom % 1000, 1000).pipe(
           takeUntil(
             this.store.pipe(
-              select('viewer', 'legacy', 'isEnded'),
+              select(state => state.viewer.legacy.isEnded),
               filter(x => x),
             ),
           ),

@@ -51,23 +51,23 @@ export class ViewerComponent implements OnInit, OnDestroy {
     private store: Store<State>,
   ) {
     this.targetS$ = store.pipe(select(targetS));
-    this.lastReceived$ = store.pipe(select('viewer', 'legacy', 'lastReceived'));
-    this.isEnded$ = store.pipe(select('viewer', 'legacy', 'isEnded'));
+    this.lastReceived$ = store.pipe(select(state => state.viewer.lastReceived));
+    this.isEnded$ = store.pipe(select(state => state.viewer.legacy.isEnded));
     this.isStopped$ = store.pipe(select(ViewerSelectors.isStopped));
     this.isLive$ = store.pipe(select(ViewerSelectors.isLive));
-    this.isInitialized$ = store.pipe(select('viewer', 'legacy', 'isInitialized'));
+    this.isInitialized$ = store.pipe(select(state => state.viewer.legacy.isInitialized));
     this.isPermissionDeniedError$ = store.pipe(
-      select('viewer', 'legacy', 'isPermissionDeniedError'),
+      select(state => state.viewer.legacy.isPermissionDeniedError),
     );
-    this.isNotFoundError$ = store.pipe(select('viewer', 'legacy', 'isNotFoundError'));
-    this.isUnknownError$ = store.pipe(select('viewer', 'legacy', 'isUnknownError'));
+    this.isNotFoundError$ = store.pipe(select(state => state.viewer.legacy.isNotFoundError));
+    this.isUnknownError$ = store.pipe(select(state => state.viewer.legacy.isUnknownError));
     this.currentTime$ = store.pipe(select(ViewerSelectors.currentTimeS));
     this.totalTime$ = store.pipe(select(ViewerSelectors.totalTimeS));
     this.displayedDelay$ = store.pipe(select(ViewerSelectors.displayedDelay));
-    this.waitTime$ = store.pipe(select('viewer', 'legacy', 'waitTime'));
+    this.waitTime$ = store.pipe(select(state => state.viewer.legacy.waitTime));
 
-    this.showPreview$ = store.pipe(select('viewer', 'showPreview'));
-    this.showWizard$ = store.pipe(select('viewer', 'showWizard'));
+    this.showPreview$ = store.pipe(select(state => state.viewer.showPreview));
+    this.showWizard$ = store.pipe(select(state => state.viewer.showWizard));
     this.isAtEnd$ = store.pipe(select(ViewerSelectors.isAtEnd));
     this.isWaiting$ = store.pipe(select(ViewerSelectors.isWaiting));
     this.isError$ = store.pipe(select(ViewerSelectors.isError));
