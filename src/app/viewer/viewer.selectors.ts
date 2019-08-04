@@ -74,6 +74,11 @@ export const displayedDelay = createSelector(
   (delayMs: number) => delayMs / 1000,
 );
 
+export const targetS = createSelector(
+  viewerStateSelector,
+  (state: ViewerState) => state.legacy.targetMs / 1000,
+);
+
 export const totalTimeS = createSelector(
   viewerStateSelector,
   timeStateSelector,

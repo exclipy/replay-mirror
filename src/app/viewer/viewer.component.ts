@@ -9,6 +9,7 @@ import {State} from '../reducers';
 import {VideoService} from './video.service';
 import * as ViewerActions from './viewer.actions';
 import * as ViewerSelectors from './viewer.selectors';
+import {targetS} from './viewer.selectors';
 
 @Component({
   selector: 'app-viewer',
@@ -22,7 +23,7 @@ import * as ViewerSelectors from './viewer.selectors';
   ],
 })
 export class ViewerComponent implements OnInit, OnDestroy {
-  targetMs$: Observable<number>;
+  targetS$: Observable<number>;
   lastReceived$: Observable<Date | null>;
   isEnded$: Observable<boolean>;
   isStopped$: Observable<boolean>;
@@ -49,7 +50,7 @@ export class ViewerComponent implements OnInit, OnDestroy {
     private videoService: VideoService,
     private store: Store<State>,
   ) {
-    this.targetMs$ = store.pipe(select('viewer', 'legacy', 'targetMs'));
+    this.targetS$ = store.pipe(select(targetS));
     this.lastReceived$ = store.pipe(select('viewer', 'legacy', 'lastReceived'));
     this.isEnded$ = store.pipe(select('viewer', 'legacy', 'isEnded'));
     this.isStopped$ = store.pipe(select(ViewerSelectors.isStopped));

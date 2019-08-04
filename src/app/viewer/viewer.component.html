@@ -37,7 +37,7 @@
       <span>◱</span>
     </button>
     <app-seek-bar
-      [targetDelay]="(targetMs$ | async) / 1000"
+      [targetDelay]="targetS$ | async"
       [displayedDelay]="displayedDelay$ | async"
       [currentTime]="currentTime$ | async"
       [totalTime]="totalTime$ | async"
