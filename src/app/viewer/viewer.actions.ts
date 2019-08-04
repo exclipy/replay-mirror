@@ -10,6 +10,7 @@ export const stop = createAction('[View System] Stop');
 export const foregrounded = createAction('[View System] Foregrounded');
 export const updateTime = createAction('[View System] Update Time');
 export const init = createAction('[View System] Init');
+export const finishInit = createAction('[View System] Finish Init');
 export const onDataAvailable = createAction(
   '[View System] On Data Available',
   props<{data: Blob}>(),

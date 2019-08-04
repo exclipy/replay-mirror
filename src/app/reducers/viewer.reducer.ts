@@ -9,12 +9,12 @@ export interface ViewerState {
   isStopped: boolean;
   lastReceived: Date | null;
   timeState: TimeState;
+  isInitialized: boolean;
 
   legacy: {
     targetMs: number;
     isEnded: boolean;
     isLive: boolean;
-    isInitialized: boolean;
     isPermissionDeniedError: boolean;
     isNotFoundError: boolean;
     isUnknownError: boolean;
@@ -29,6 +29,7 @@ const initialState: ViewerState = {
   isEnded: false,
   isStopped: false,
   lastReceived: null,
+  isInitialized: false,
   timeState: {
     now: new Date(),
     bufferedTimeRangeEndS: null,
@@ -38,7 +39,6 @@ const initialState: ViewerState = {
     targetMs: 0,
     isEnded: false,
     isLive: true,
-    isInitialized: false, //
     isPermissionDeniedError: false,
     isNotFoundError: false,
     isUnknownError: false,
@@ -131,6 +131,13 @@ export const reducer = createReducer(
         ...state.legacy,
         ...legacyPatch.payload,
       },
+    }),
+  ),
+  on(
+    ViewerActions.finishInit,
+    (state): ViewerState => ({
+      ...state,
+      isInitialized: true,
     }),
   ),
 );

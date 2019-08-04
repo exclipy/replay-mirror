@@ -55,7 +55,7 @@ export class ViewerComponent implements OnInit, OnDestroy {
     this.isEnded$ = store.pipe(select(state => state.viewer.legacy.isEnded));
     this.isStopped$ = store.pipe(select(ViewerSelectors.isStopped));
     this.isLive$ = store.pipe(select(ViewerSelectors.isLive));
-    this.isInitialized$ = store.pipe(select(state => state.viewer.legacy.isInitialized));
+    this.isInitialized$ = store.pipe(select(state => state.viewer.isInitialized));
     this.isPermissionDeniedError$ = store.pipe(
       select(state => state.viewer.legacy.isPermissionDeniedError),
     );

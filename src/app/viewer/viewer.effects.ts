@@ -43,7 +43,6 @@ export class ViewerEffects {
                 targetMs: 0,
                 isEnded: false,
                 isLive: true,
-                isInitialized: false,
                 isPermissionDeniedError: false,
                 isNotFoundError: false,
                 isUnknownError: false,
@@ -82,7 +81,7 @@ export class ViewerEffects {
                     takeWhile(isEnded => !isEnded),
                   )
                   .subscribe();
-                this.store.dispatch(ViewerActions.setLegacy({payload: {isInitialized: true}}));
+                this.store.dispatch(ViewerActions.finishInit());
               });
               this.store.dispatch(ViewerActions.setLegacy({payload: {isLive: true}}));
               this.videoService.video!.src = window.URL.createObjectURL(
