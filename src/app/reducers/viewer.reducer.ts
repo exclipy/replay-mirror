@@ -144,6 +144,10 @@ export const reducer = createReducer(
     ViewerActions.goToBeforeStart,
     (state, action): ViewerState => ({
       ...state,
+      timeState: {
+        ...state.timeState,
+        currentTimeS: 0,
+      },
       legacy: {
         ...state.legacy,
         targetMs: action.targetMs,
@@ -156,6 +160,10 @@ export const reducer = createReducer(
     ViewerActions.goTo,
     (state, action): ViewerState => ({
       ...state,
+      timeState: {
+        ...state.timeState,
+        currentTimeS: action.timeS,
+      },
       legacy: {
         ...state.legacy,
         targetMs: action.targetMs,
