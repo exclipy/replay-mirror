@@ -39,19 +39,6 @@ export class ViewerEffects {
       this.actions$.pipe(
         ofType(ViewerActions.init),
         tap(() => {
-          this.store.dispatch(
-            ViewerActions.setLegacy({
-              payload: {
-                targetMs: 0,
-                isEnded: false,
-                isLive: true,
-                isPermissionDeniedError: false,
-                isNotFoundError: false,
-                isUnknownError: false,
-                waitTime: 0,
-              },
-            }),
-          );
           this.videoService.bufferSource = new MediaSource();
 
           const mimeType = this.browserParams.mimeType!;
@@ -236,40 +223,40 @@ export class ViewerEffects {
     }
   }
 
-  doStopRecord$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(ViewerActions.doStopRecord),
-      withLatestFrom(this.store.select(isLive)),
-      map(([_, isLive]) => {
-        if (isLive) {
-          this.videoService.liveVideo!.pause();
-          this.videoService.video!.play();
-        }
-        if (this.videoService.mediaStream) {
-          for (const mediaStreamTrack of this.videoService.mediaStream.getTracks()) {
-            mediaStreamTrack.stop();
+  doStopRecord$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(ViewerActions.doStopRecord),
+        withLatestFrom(this.store.select(isLive)),
+        tap(([_, isLive]) => {
+          if (isLive) {
+            this.videoService.liveVideo!.pause();
+            this.videoService.video!.play();
           }
-        }
-        this.videoService.bufferSource!.endOfStream();
-        if (this.videoService.mediaRecorder) {
-          this.videoService.mediaRecorder.stop();
-        }
-        return ViewerActions.setLegacy({payload: {isLive: false, isEnded: true}});
-      }),
-    ),
+          if (this.videoService.mediaStream) {
+            for (const mediaStreamTrack of this.videoService.mediaStream.getTracks()) {
+              mediaStreamTrack.stop();
+            }
+          }
+          this.videoService.bufferSource!.endOfStream();
+          if (this.videoService.mediaRecorder) {
+            this.videoService.mediaRecorder.stop();
+          }
+        }),
+      ),
+    {dispatch: false},
   );
 
-  play$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(ViewerActions.play),
-      map(() => {
-        this.videoService.liveVideo!.pause();
-        this.videoService.video!.play();
-        return ViewerActions.setLegacy({
-          payload: {waitTime: 0, isLive: false},
-        });
-      }),
-    ),
+  play$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(ViewerActions.play),
+        tap(() => {
+          this.videoService.liveVideo!.pause();
+          this.videoService.video!.play();
+        }),
+      ),
+    {dispatch: false},
   );
 
   goToBeforeStart$ = createEffect(

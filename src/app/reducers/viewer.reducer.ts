@@ -58,6 +58,22 @@ export interface TimeState {
 export const reducer = createReducer(
   initialState,
   on(
+    ViewerActions.init,
+    (state): ViewerState => ({
+      ...state,
+      legacy: {
+        ...state.legacy,
+        targetMs: 0,
+        isEnded: false,
+        isLive: true,
+        isPermissionDeniedError: false,
+        isNotFoundError: false,
+        isUnknownError: false,
+        waitTime: 0,
+      },
+    }),
+  ),
+  on(
     ViewerActions.setTimeState,
     (state, action): ViewerState => ({
       ...state,
@@ -114,6 +130,22 @@ export const reducer = createReducer(
     (state): ViewerState => ({
       ...state,
       isStopped: false,
+      legacy: {
+        ...state.legacy,
+        waitTime: 0,
+        isLive: false,
+      },
+    }),
+  ),
+  on(
+    ViewerActions.doStopRecord,
+    (state): ViewerState => ({
+      ...state,
+      legacy: {
+        ...state.legacy,
+        isLive: false,
+        isEnded: true,
+      },
     }),
   ),
   on(
@@ -125,11 +157,11 @@ export const reducer = createReducer(
   ),
   on(
     ViewerActions.setLegacy,
-    (state, legacyPatch): ViewerState => ({
+    (state, action): ViewerState => ({
       ...state,
       legacy: {
         ...state.legacy,
-        ...legacyPatch.payload,
+        ...action.payload,
       },
     }),
   ),
