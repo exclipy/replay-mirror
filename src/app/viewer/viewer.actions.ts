@@ -16,7 +16,7 @@ export const onDataAvailable = createAction(
   props<{data: Blob}>(),
 );
 
-export const finishInit = createAction('[View Effect] Finish Init');
+export const finishInit = createAction('[View Effect] Finish Init', props<{now: Date}>());
 export const setError = createAction(
   '[View Effect] Set error',
   props<{
@@ -37,6 +37,7 @@ export const goTo = createAction(
   props<{
     timeS: number;
     targetMs: number;
+    now: Date;
   }>(),
 );
 export const goToLive = createAction('[View Effect] Go To Live');

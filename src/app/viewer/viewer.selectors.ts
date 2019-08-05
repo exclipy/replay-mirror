@@ -45,28 +45,24 @@ export const timeSinceLastReceivedMs = createSelector(
     state.lastReceived ? timeState.now.getTime() - state.lastReceived.getTime() : 0,
 );
 
-export const absoluteEndMs = createSelector(
+export const delayMs = createSelector(
   viewerStateSelector,
   timeStateSelector,
-  timeSinceLastReceivedMs,
-  (state: ViewerState, timeState: TimeState, timeSinceLastReceivedMs: number) =>
-    !state.lastReceived || timeState.bufferedTimeRangeEndS == null
-      ? 0
-      : 1000 * timeState.bufferedTimeRangeEndS + timeSinceLastReceivedMs,
-);
-
-export const delayMs = createSelector(
-  timeStateSelector,
   isLive,
-  absoluteEndMs,
-  (timeState: TimeState, isLive: boolean, absoluteEndMs: number) =>
-    isLive || timeState.currentTimeS == null ? 0 : absoluteEndMs - timeState.currentTimeS * 1000,
+  (state: ViewerState, timeState: TimeState, isLive: boolean) =>
+    isLive || timeState.currentTimeS == null || state.timeStarted == null
+      ? 0
+      : timeToDelayMs(timeState.currentTimeS * 1000, timeState.now, state.timeStarted),
 );
 
 export const displayedDelay = createSelector(
   delayMs,
   (delayMs: number) => delayMs / 1000,
 );
+
+export function timeToDelayMs(timeMs: number, now: Date, timeStarted: Date): number {
+  return now.getTime() - timeStarted.getTime() - timeMs;
+}
 
 export const targetS = createSelector(
   viewerStateSelector,
@@ -91,19 +87,10 @@ export const currentTimeS = createSelector(
 
 export const changeDelayParams = createSelector(
   viewerStateSelector,
-  timeSinceLastReceivedMs,
-  absoluteEndMs,
-  delayMs,
-  (
-    state: ViewerState,
-    timeSinceLastReceivedMs: number,
-    absoluteEndMs: number,
-    delayMs: number,
-  ) => ({
-    timeSinceLastReceivedMs,
+  (state: ViewerState) => ({
     targetMs: state.targetMs,
-    absoluteEndMs,
     isEnded: state.isEnded,
-    delayMs,
+    timeStarted: state.timeStarted,
+    bufferedTimeRangeEndS: state.timeState.bufferedTimeRangeEndS,
   }),
 );

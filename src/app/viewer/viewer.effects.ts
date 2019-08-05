@@ -3,7 +3,7 @@
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {Action, select, Store} from '@ngrx/store';
-import {concat, from, interval, Observable, of, timer} from 'rxjs';
+import {concat, from, interval, Observable, of, timer, empty, EMPTY} from 'rxjs';
 import {
   concatMap,
   filter,
@@ -20,7 +20,7 @@ import {BrowserParamsService} from '../browser-params.service';
 import {State} from '../reducers';
 import {VideoService} from './video.service';
 import * as ViewerActions from './viewer.actions';
-import {changeDelayParams, isEnded, isLive} from './viewer.selectors';
+import {changeDelayParams, isEnded, isLive, timeToDelayMs} from './viewer.selectors';
 import {Status} from '../reducers/viewer.reducer';
 
 const REQUEST_DATA_INTERVAL_MS = 1000;
@@ -59,7 +59,7 @@ export class ViewerEffects {
                 };
                 this.videoService.mediaRecorder!.start();
                 this.videoService.mediaRecorder!.requestData();
-                this.store.dispatch(ViewerActions.finishInit());
+                this.store.dispatch(ViewerActions.finishInit({now: new Date()}));
               });
               this.videoService.video!.src = window.URL.createObjectURL(
                 this.videoService.bufferSource,
@@ -176,28 +176,33 @@ export class ViewerEffects {
   private changeDelay(
     ms: number,
     params: {
-      timeSinceLastReceivedMs: number;
       targetMs: number;
-      absoluteEndMs: number;
       isEnded: boolean;
-      delayMs: number;
+      timeStarted: Date | null;
+      bufferedTimeRangeEndS: number | null;
       noWait?: boolean;
     },
   ): Observable<Action> {
+    if (!params.timeStarted || params.bufferedTimeRangeEndS == null) {
+      return EMPTY;
+    }
     params.noWait = params.noWait || false;
-    let targetMs = params.isEnded
-      ? Math.max(params.delayMs + ms, params.timeSinceLastReceivedMs)
-      : Math.max(params.targetMs + ms, 0);
+    const now = new Date();
+    const end = params.isEnded
+      ? new Date(params.timeStarted.getTime() + params.bufferedTimeRangeEndS * 1000)
+      : now;
+    let targetTimeMs = delayToTimeMs(params.targetMs + ms, end, params.timeStarted);
+    targetTimeMs = Math.min(targetTimeMs, delayToTimeMs(0, end, params.timeStarted));
     if (params.noWait || params.isEnded) {
       // Don't allow the currentTime to be before the start.
-      targetMs = Math.min(targetMs, params.absoluteEndMs);
+      targetTimeMs = Math.max(targetTimeMs, 0);
     }
-    const headroom = params.absoluteEndMs - targetMs;
-    if (headroom < 0) {
-      const periods = Math.floor(-headroom / 1000) + 1;
+    const targetDelayMs = timeToDelayMs(targetTimeMs, end, params.timeStarted);
+    if (targetTimeMs < 0) {
+      const periods = Math.floor(-targetTimeMs / 1000) + 1;
       return concat(
-        from([ViewerActions.goToBeforeStart({targetMs, waitingS: periods})]),
-        timer(-headroom % 1000, 1000).pipe(
+        from([ViewerActions.goToBeforeStart({targetMs: targetDelayMs, waitingS: periods})]),
+        timer(-targetTimeMs % 1000, 1000).pipe(
           takeUntil(
             this.store.pipe(
               select(isEnded),
@@ -212,12 +217,14 @@ export class ViewerEffects {
           ),
         ),
       );
-    } else if (targetMs <= params.timeSinceLastReceivedMs && !params.isEnded) {
-      return of(ViewerActions.goToLive());
-    } else if (targetMs > params.timeSinceLastReceivedMs) {
-      return of(ViewerActions.goTo({timeS: (params.absoluteEndMs - targetMs) / 1000, targetMs}));
+    } else if (targetTimeMs >= params.bufferedTimeRangeEndS * 1000) {
+      if (params.isEnded) {
+        return of(ViewerActions.goToEnd());
+      } else {
+        return of(ViewerActions.goToLive());
+      }
     } else {
-      return of(ViewerActions.goToEnd());
+      return of(ViewerActions.goTo({timeS: targetTimeMs / 1000, targetMs: targetDelayMs, now}));
     }
   }
 
@@ -326,4 +333,8 @@ function bindStream(element: HTMLMediaElement, stream: MediaStream) {
     // Avoid using this in new browsers, as it is going away.
     (element as HTMLMediaElement).src = window.URL.createObjectURL(stream);
   }
+}
+
+function delayToTimeMs(delayMs: number, now: Date, timeStarted: Date): number {
+  return now.getTime() - timeStarted.getTime() - delayMs;
 }
