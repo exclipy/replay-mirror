@@ -1,4 +1,23 @@
 <div id="player" [style.visibility]="(isError$ | async) ? 'hidden' : 'visible'">
+  <div id="debug-panel" *ngIf="showDebugPanel | async">
+    currentTime: {{ currentTime$ | async }}<br />
+    displayedDelay: {{ displayedDelay$ | async }}<br />
+    isAtEnd: {{ isAtEnd$ | async }}<br />
+    isEnded: {{ isEnded$ | async }}<br />
+    isError: {{ isError$ | async }}<br />
+    isInitialized: {{ isInitialized$ | async }}<br />
+    isLive: {{ isLive$ | async }}<br />
+    isNotFoundError: {{ isNotFoundError$ | async }}<br />
+    isPermissionDeniedError: {{ isPermissionDeniedError$ | async }}<br />
+    isUnknownError: {{ isUnknownError$ | async }}<br />
+    isWaiting: {{ isWaiting$ | async }}<br />
+    showPreview: {{ showPreview$ | async }}<br />
+    showWizard: {{ showWizard$ | async }}<br />
+    targetS: {{ targetS$ | async }}<br />
+    totalTime: {{ totalTime$ | async }}<br />
+    waitTime: {{ waitTime$ | async }}<br />
+  </div>
+
   <div id="video-container">
     <video id="live" [hidden]="(isLive$ | async) === false"></video>
     <video

@@ -11,6 +11,7 @@ import * as ViewerActions from './viewer.actions';
 import * as ViewerSelectors from './viewer.selectors';
 import {targetS} from './viewer.selectors';
 import {Status} from '../reducers/viewer.reducer';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-viewer',
@@ -48,10 +49,13 @@ export class ViewerComponent implements OnInit, OnDestroy {
   isWaiting$: Observable<boolean>;
   isError$: Observable<boolean>;
 
+  showDebugPanel: Observable<boolean>;
+
   constructor(
     browserParams: BrowserParamsService,
     private videoService: VideoService,
     private store: Store<State>,
+    private route: ActivatedRoute,
   ) {
     this.targetS$ = store.pipe(select(targetS));
     this.lastReceived$ = store.pipe(select(state => state.viewer.lastReceived));
@@ -88,6 +92,8 @@ export class ViewerComponent implements OnInit, OnDestroy {
       map(s => s === Status.UnknownError),
     );
     this.isUnsupportedBrowser = browserParams.isUnsupportedBrowser;
+
+    this.showDebugPanel = this.route.fragment.pipe(map(fragment => fragment === 'debug'));
   }
 
   ngOnInit() {
