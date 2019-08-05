@@ -1,6 +1,6 @@
 import {AppPage} from './app.po';
 
-describe('slow-mirror App', () => {
+describe('replay-mirror App', () => {
   let page: AppPage;
 
   beforeEach(() => {

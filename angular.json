@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "slow-mirror": {
+    "replay-mirror": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -45,18 +45,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "slow-mirror:build"
+            "browserTarget": "replay-mirror:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "slow-mirror:build:production"
+              "browserTarget": "replay-mirror:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "slow-mirror:build"
+            "browserTarget": "replay-mirror:build"
           }
         },
         "test": {
@@ -80,7 +80,7 @@
         }
       }
     },
-    "slow-mirror-e2e": {
+    "replay-mirror-e2e": {
       "root": "e2e",
       "sourceRoot": "e2e",
       "projectType": "application",
@@ -89,7 +89,7 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "./protractor.conf.js",
-            "devServerTarget": "slow-mirror:serve"
+            "devServerTarget": "replay-mirror:serve"
           }
         },
         "lint": {
@@ -102,7 +102,7 @@
       }
     }
   },
-  "defaultProject": "slow-mirror",
+  "defaultProject": "replay-mirror",
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "app",
