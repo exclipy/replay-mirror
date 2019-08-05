@@ -1,8 +1,6 @@
 <div id="player" [style.visibility]="(isError$ | async) ? 'hidden' : 'visible'">
   <div id="debug-panel" *ngIf="showDebugPanel | async">
     currentTime: {{ currentTime$ | async }}<br />
-    timeSinceLastReceivedMs: {{ timeSinceLastReceivedMs$ | async }}<br />
-    absoluteEndMs: {{ absoluteEndMs$ | async }}<br />
     displayedDelay: {{ displayedDelay$ | async }}<br />
     isAtEnd: {{ isAtEnd$ | async }}<br />
     isEnded: {{ isEnded$ | async }}<br />

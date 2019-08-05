@@ -117,17 +117,14 @@ export class ViewerEffects {
         ([action, isEnded]): Observable<Action> => {
           if (isEnded) {
             this.videoService.mediaRecorder!.ondataavailable = () => {};
-            return from([ViewerActions.setLastReceived({date: new Date()})]);
+            return EMPTY;
           }
           const fileReader = new FileReader();
           fileReader.onload = f => {
             this.videoService.sourceBuffer!.appendBuffer((f.target as any).result);
           };
           fileReader.readAsArrayBuffer(action.data);
-          return from([
-            this.createSetTimeStateAction(),
-            ViewerActions.setLastReceived({date: new Date()}),
-          ]);
+          return from([this.createSetTimeStateAction()]);
         },
       ),
     ),

@@ -43,10 +43,6 @@ export const goTo = createAction(
 export const goToLive = createAction('[View Effect] Go To Live');
 export const goToEnd = createAction('[View Effect] Go To End');
 export const setWaiting = createAction('[View Effect] Set Waiting', props<{timeS: number}>());
-export const setLastReceived = createAction(
-  '[View Effect] Set Last Received',
-  props<{date: Date}>(),
-);
 export const setTimeState = createAction(
   '[View Effect] Set Time State',
   props<{

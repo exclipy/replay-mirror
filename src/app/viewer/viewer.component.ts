@@ -28,7 +28,6 @@ export class ViewerComponent implements OnInit, OnDestroy {
   private subsink = new SubSink();
 
   targetS$: Observable<number>;
-  lastReceived$: Observable<Date | null>;
   isEnded$: Observable<boolean>;
   isStopped$: Observable<boolean>;
   isLive$: Observable<boolean>;
@@ -58,7 +57,6 @@ export class ViewerComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
   ) {
     this.targetS$ = store.pipe(select(targetS));
-    this.lastReceived$ = store.pipe(select(state => state.viewer.lastReceived));
     this.isEnded$ = store.pipe(select(state => state.viewer.isEnded));
     this.isStopped$ = store.pipe(select(ViewerSelectors.isStopped));
     this.isLive$ = store.pipe(select(ViewerSelectors.isLive));

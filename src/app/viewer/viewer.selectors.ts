@@ -39,13 +39,6 @@ export const isEnded = createSelector(
   (state: ViewerState) => state.isEnded,
 );
 
-export const timeSinceLastReceivedMs = createSelector(
-  viewerStateSelector,
-  timeStateSelector,
-  (state: ViewerState, timeState: TimeState) =>
-    state.lastReceived ? timeState.now.getTime() - state.lastReceived.getTime() : 0,
-);
-
 export const delayMs = createSelector(
   viewerStateSelector,
   timeStateSelector,
@@ -69,9 +62,16 @@ export const targetS = createSelector(
 export const totalTimeS = createSelector(
   viewerStateSelector,
   timeStateSelector,
-  timeSinceLastReceivedMs,
-  (state: ViewerState, timeState: TimeState, timeSinceLastReceivedMs: number) =>
-    timeState.bufferedTimeRangeEndS || 0 + (state.isEnded ? 0 : timeSinceLastReceivedMs / 1000),
+  (state: ViewerState, timeState: TimeState) => {
+    if (state.isEnded) {
+      return timeState.bufferedTimeRangeEndS || 0;
+    } else {
+      if (!state.timeStarted) {
+        return 0;
+      }
+      return (timeState.now.getTime() - state.timeStarted.getTime()) / 1000;
+    }
+  },
 );
 
 export const currentTimeS = createSelector(

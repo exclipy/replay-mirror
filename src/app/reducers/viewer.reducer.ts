@@ -15,7 +15,6 @@ export interface ViewerState {
   isEnded: boolean;
   isStopped: boolean;
   timeStarted: Date | null;
-  lastReceived: Date | null;
   timeState: TimeState;
   isInitialized: boolean;
   status: Status;
@@ -31,7 +30,6 @@ const initialState: ViewerState = {
   isEnded: false,
   isStopped: false,
   timeStarted: null,
-  lastReceived: null,
   isInitialized: false,
   status: Status.Success,
   timeState: {
@@ -64,6 +62,10 @@ export const reducer = createReducer(
       isEnded: false,
       isLive: true,
       waitTime: 0,
+      timeState: {
+        ...state.timeState,
+        now: new Date(),
+      },
     }),
   ),
   on(
@@ -84,13 +86,6 @@ export const reducer = createReducer(
           : null,
         currentTimeS: action.currentTimeS,
       },
-    }),
-  ),
-  on(
-    ViewerActions.setLastReceived,
-    (state, action): ViewerState => ({
-      ...state,
-      lastReceived: action.date,
     }),
   ),
   on(
