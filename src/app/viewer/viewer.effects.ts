@@ -3,7 +3,7 @@
 import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {Action, select, Store} from '@ngrx/store';
-import {concat, from, interval, Observable, of, timer, empty, EMPTY} from 'rxjs';
+import {concat, EMPTY, from, interval, Observable, of, timer} from 'rxjs';
 import {
   concatMap,
   filter,
@@ -18,10 +18,11 @@ import {
 } from 'rxjs/operators';
 import {BrowserParamsService} from '../browser-params.service';
 import {State} from '../reducers';
+import {Status} from '../reducers/viewer.reducer';
+import {delayToTimeMs, timeToDelayMs} from './timeUtils';
 import {VideoService} from './video.service';
 import * as ViewerActions from './viewer.actions';
-import {changeDelayParams, isEnded, isLive, timeToDelayMs} from './viewer.selectors';
-import {Status} from '../reducers/viewer.reducer';
+import {changeDelayParams, isEnded, isLive} from './viewer.selectors';
 
 const REQUEST_DATA_INTERVAL_MS = 1000;
 
@@ -333,8 +334,4 @@ function bindStream(element: HTMLMediaElement, stream: MediaStream) {
     // Avoid using this in new browsers, as it is going away.
     (element as HTMLMediaElement).src = window.URL.createObjectURL(stream);
   }
-}
-
-function delayToTimeMs(delayMs: number, now: Date, timeStarted: Date): number {
-  return now.getTime() - timeStarted.getTime() - delayMs;
 }

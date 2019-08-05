@@ -1,6 +1,7 @@
 import {createFeatureSelector, createSelector} from '@ngrx/store';
 import {State} from '../reducers';
 import {TimeState, ViewerState} from '../reducers/viewer.reducer';
+import {timeToDelayMs} from './timeUtils';
 
 export const viewerStateSelector = createFeatureSelector<State, ViewerState>('viewer');
 
@@ -59,10 +60,6 @@ export const displayedDelay = createSelector(
   delayMs,
   (delayMs: number) => delayMs / 1000,
 );
-
-export function timeToDelayMs(timeMs: number, now: Date, timeStarted: Date): number {
-  return now.getTime() - timeStarted.getTime() - timeMs;
-}
 
 export const targetS = createSelector(
   viewerStateSelector,
