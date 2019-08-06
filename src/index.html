@@ -29,13 +29,24 @@
       .bad .good-text {
         display: none;
       }
+      #loading {
+        visibility: hidden;
+      }
+      .show-loading #loading {
+        visibility: visible;
+      }
     </style>
   </head>
   <body>
     <script>
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !getMimeType()) {
         window.document.body.classList.add('bad');
-      } else window.document.body.classList.add('good');
+      } else {
+        window.document.body.classList.add('good');
+      }
+      window.setTimeout(() => {
+        window.document.body.classList.add('show-loading');
+      }, 500);
 
       function getMimeType() {
         try {
@@ -57,7 +68,7 @@
             On the next screen make sure you give it permission to access your webcam.
           </p>
           <app-root>
-            <p class="action"><a class="loading-button">Loading...</a></p>
+            <p class="action"><a class="loading-button" id="loading">Loading...</a></p>
           </app-root>
         </div>
 
