@@ -65,3 +65,45 @@ a.button:active {
   box-shadow: none;
   background-color: #2d2d2d;
 }
+#page {
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  min-height: 100%;
+  width: 50%;
+  min-width: 300px;
+  max-width: 800px;
+}
+
+#dynamic {
+  height: 30vh;
+}
+
+#info {
+  text-align: left;
+}
+
+#footer {
+  font-size: 80%;
+  padding-bottom: 10px;
+  text-align: center;
+  color: #999;
+}
+
+#footer p {
+  margin: 0;
+}
+
+#footer a {
+  color: #999;
+}
+
+h1 {
+  font-weight: 100;
+  font-size: 320%;
+}
+
+.action {
+  margin: 48px 0;
+  text-align: center;
+}

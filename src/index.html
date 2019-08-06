@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300" rel="stylesheet" />
+    <link href="assets/styles.css" rel="stylesheet" />
     <meta charset="utf-8" />
     <title>ReplayMirror</title>
     <base href="/" />
@@ -20,7 +21,23 @@
     <meta property="og:type" content="website" />
   </head>
   <body>
-    <app-root></app-root>
+    <app-root>
+      <div id="page">
+        <div style="flex: 2 0 auto"></div>
+        <div id="info">
+          <h1>ReplayMirror</h1>
+          <p>This is a simple web application that displays video from your webcam with a delay.</p>
+          <div id="dynamic">
+            <p>Loading...</p>
+          </div>
+        </div>
+        <div style="flex: 3 0 auto"></div>
+        <div id="footer">
+          <p>Made by <a href="http://blog.wuwon.id.au/">Kevin Wu Won</a></p>
+          <p>Icon pack by <a href="https://icons8.com">Icons8</a></p>
+        </div>
+      </div>
+    </app-root>
 
     <!-- Google Analytics -->
     <script>
