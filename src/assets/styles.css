@@ -94,7 +94,6 @@ a.button:active {
 #footer {
   font-size: 80%;
   padding-bottom: 10px;
-  text-align: center;
   color: #999;
 }
 
@@ -104,6 +103,7 @@ a.button:active {
 
 #footer a {
   color: #999;
+  text-decoration-color: #666;
 }
 
 h1 {
@@ -113,5 +113,4 @@ h1 {
 
 .action {
   margin: 48px 0;
-  text-align: center;
 }
