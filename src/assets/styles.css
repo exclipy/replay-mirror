@@ -19,7 +19,8 @@ a {
 }
 
 button,
-a.button {
+a.button,
+a.loading-button {
   line-height: 48px;
   text-decoration: none;
   text-align: center;
@@ -32,8 +33,15 @@ a.button {
   outline: none;
 }
 
-a.button {
+a.button,
+a.loading-button {
   display: inline-block;
+}
+
+a.loading-button {
+  outline: 2px solid #333;
+  background-color: transparent;
+  cursor: default;
 }
 
 button:enabled {

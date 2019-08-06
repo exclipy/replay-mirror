@@ -19,25 +19,62 @@
     <meta property="og:image" content="https://replaymirror.com/assets/favicon.png" />
     <meta property="og:url" content="https://replaymirror.com/" />
     <meta property="og:type" content="website" />
+    <style>
+      .bad-text {
+        display: none;
+      }
+      .bad .bad-text {
+        display: block;
+      }
+      .bad .good-text {
+        display: none;
+      }
+    </style>
   </head>
   <body>
-    <app-root>
-      <div id="page">
-        <div style="flex: 2 0 auto"></div>
-        <div id="info">
-          <h1>ReplayMirror</h1>
-          <p>This is a simple web application that displays video from your webcam with a delay.</p>
-          <div id="dynamic">
-            <p>Loading...</p>
-          </div>
+    <script>
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !getMimeType()) {
+        window.document.body.classList.add('bad');
+      } else window.document.body.classList.add('good');
+
+      function getMimeType() {
+        try {
+          return ['video/webm;codecs=vp9', 'video/webm;codecs=vp8'].find(mimeType =>
+            MediaRecorder.isTypeSupported(mimeType),
+          );
+        } catch (e) {
+          return undefined;
+        }
+      }
+    </script>
+    <div id="page">
+      <div style="flex: 2 0 auto"></div>
+      <div id="info">
+        <h1>ReplayMirror</h1>
+        <p>This is a simple web application that displays video from your webcam with a delay.</p>
+        <div class="good-text">
+          <p>
+            On the next screen make sure you give it permission to access your webcam. Your webcam
+            will be used purely for local playback and the captured video will be lost as soon as
+            you close the browser tab. This app does not send anything over the network other than
+            minimal analytics.
+          </p>
+          <app-root>
+            <p class="action"><a class="loading-button">Loading...</a></p>
+          </app-root>
         </div>
-        <div style="flex: 3 0 auto"></div>
-        <div id="footer">
-          <p>Made by <a href="http://blog.wuwon.id.au/">Kevin Wu Won</a></p>
-          <p>Icon pack by <a href="https://icons8.com">Icons8</a></p>
+
+        <div class="bad-text">
+          Unfortunately, your browser is missing the capability to run this app. For now, it only
+          works in recent versions of Google Chrome for computers or Android phones.
         </div>
       </div>
-    </app-root>
+      <div style="flex: 3 0 auto"></div>
+      <div id="footer">
+        <p>Made by <a href="http://blog.wuwon.id.au/">Kevin Wu Won</a></p>
+        <p>Icon pack by <a href="https://icons8.com">Icons8</a></p>
+      </div>
+    </div>
 
     <!-- Google Analytics -->
     <script>
