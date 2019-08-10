@@ -41,20 +41,23 @@
     <p>Start here: click to rewind 5 seconds</p>
   </div>
 
-  <div id="controls" [style.visibility]="(isInitialized$ | async) ? 'visible' : 'hidden'">
-    <div
-      id="preview-wrapper"
-      [@preview]="(showPreview$ | async) === false || (isLive$ | async) ? 'hide' : 'show'"
-      (click)="togglePreview()"
-    >
-      <video id="preview"></video>
-    </div>
+  <div
+    id="preview-wrapper"
+    [@preview]="(showPreview$ | async) === false || (isLive$ | async) ? 'hide' : 'show'"
+    (click)="togglePreview()"
+  >
+    <video id="preview"></video>
+  </div>
+  <mat-toolbar [style.visibility]="(isInitialized$ | async) ? 'visible' : 'hidden'">
     <button
+      mat-button
       (click)="togglePreview()"
       [disabled]="(isLive$ | async) || (isEnded$ | async)"
       id="preview-button"
     >
-      <span>◱</span>
+      <mat-icon aria-hidden="false" aria-label="Preview" class="mirrored"
+        >picture_in_picture_alt</mat-icon
+      >
     </button>
     <app-seek-bar
       [targetDelay]="targetS$ | async"
@@ -63,19 +66,19 @@
       [totalTime]="totalTime$ | async"
       [isEnded]="isEnded$ | async"
     ></app-seek-bar>
-    <button (click)="more()" class="skip">
-      <app-icon pic="back5"></app-icon>
+    <button mat-button (click)="more()" class="skip">
+      <mat-icon aria-hidden="false" aria-label="Back 5 seconds">replay_5</mat-icon>
     </button>
-    <button (click)="less()" class="skip" [disabled]="isAtEnd$ | async">
-      <app-icon pic="skip5"></app-icon>
+    <button mat-button (click)="less()" class="skip" [disabled]="isAtEnd$ | async">
+      <mat-icon aria-hidden="false" aria-label="Forward 5 seconds">forward_5</mat-icon>
     </button>
-    <button (click)="stopRecord()" [hidden]="isEnded$ | async">
-      <app-icon pic="stoprecord"></app-icon>
+    <button mat-button (click)="stopRecord()" *ngIf="(isEnded$ | async) === false">
+      <mat-icon aria-hidden="false" aria-label="Stop">stop</mat-icon>
     </button>
-    <button routerLink="/" [hidden]="(isEnded$ | async) === false">
-      <app-icon pic="close"></app-icon>
+    <button mat-button routerLink="/" *ngIf="isEnded$ | async">
+      <mat-icon aria-hidden="false" aria-label="Close">close</mat-icon>
     </button>
-  </div>
+  </mat-toolbar>
 </div>
 
 <div class="error" *ngIf="isUnsupportedBrowser">

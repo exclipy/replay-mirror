@@ -36,73 +36,21 @@ video {
   margin: auto 0;
 }
 
-#controls {
+mat-toolbar {
   flex: 0 0 48px;
-  display: flex;
+  height: 48px;
   background: #333;
 }
 
-#controls app-seek-bar {
+app-seek-bar {
   flex: 1 0 auto;
 }
 
-#controls button {
-  position: relative;
-  width: 48px;
-  height: 48px;
-  padding: 0;
-  line-height: 1;
-  text-align: center;
-  font-size: 32px;
-  border: 0;
+.mirrored {
+  transform: scale(-1, 1);
 }
 
-app-icon {
-  display: block;
-  width: 24px;
-  height: 24px;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  margin: auto auto;
-}
-
-#controls button:enabled {
-  cursor: pointer;
-}
-
-#controls div.info {
-  padding: 0 5px;
-  line-height: 48px;
-  font-size: 13px;
-  min-width: 96px;
-}
-
-#controls button:enabled:hover,
-#controls button:focus {
-  z-index: 10;
-  box-shadow: 2px 2px 4px #111;
-}
-
-#controls button:enabled:hover {
-  background-color: #444;
-}
-
-#controls button:disabled {
-  opacity: 0.5;
-}
-
-#controls button:focus {
-  outline: 1px solid #666;
-}
-
-#controls button span {
-  display: block;
-}
-
-#controls #preview-wrapper {
+#preview-wrapper {
   position: fixed;
   bottom: 48px;
   left: 0px;
@@ -112,7 +60,7 @@ app-icon {
   line-height: 0;
 }
 
-#controls #preview {
+#preview {
   position: fixed;
   bottom: 24px;
   left: 24px;

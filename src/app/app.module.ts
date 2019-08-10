@@ -10,11 +10,13 @@ import {environment} from '../environments/environment';
 import {AppComponent} from './app.component';
 import {BrowserParamsService} from './browser-params.service';
 import {HomeComponent} from './home/home.component';
-import {IconComponent} from './icon/icon.component';
 import {metaReducers, reducers} from './reducers';
 import {SeekBarComponent} from './seek-bar/seek-bar.component';
 import {ViewerComponent} from './viewer/viewer.component';
 import {ViewerEffects} from './viewer/viewer.effects';
+import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
+import {MatToolbarModule} from '@angular/material/toolbar';
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
@@ -23,7 +25,7 @@ const appRoutes: Routes = [
 ];
 
 @NgModule({
-  declarations: [AppComponent, IconComponent, ViewerComponent, HomeComponent, SeekBarComponent],
+  declarations: [AppComponent, ViewerComponent, HomeComponent, SeekBarComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -41,6 +43,9 @@ const appRoutes: Routes = [
       logOnly: environment.production, // Restrict extension to log-only mode
     }),
     EffectsModule.forRoot([ViewerEffects]),
+    MatButtonModule,
+    MatIconModule,
+    MatToolbarModule,
   ],
   providers: [BrowserParamsService],
   bootstrap: [AppComponent],
