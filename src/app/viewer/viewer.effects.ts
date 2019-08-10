@@ -117,14 +117,17 @@ export class ViewerEffects {
         ([action, isEnded]): Observable<Action> => {
           if (isEnded) {
             this.videoService.mediaRecorder!.ondataavailable = () => {};
+          }
+          if (action.data.size > 0) {
+            const fileReader = new FileReader();
+            fileReader.onload = f => {
+              this.videoService.sourceBuffer!.appendBuffer((f.target as any).result);
+            };
+            fileReader.readAsArrayBuffer(action.data);
+            return from([this.createSetTimeStateAction()]);
+          } else {
             return EMPTY;
           }
-          const fileReader = new FileReader();
-          fileReader.onload = f => {
-            this.videoService.sourceBuffer!.appendBuffer((f.target as any).result);
-          };
-          fileReader.readAsArrayBuffer(action.data);
-          return from([this.createSetTimeStateAction()]);
         },
       ),
     ),
@@ -181,13 +184,14 @@ export class ViewerEffects {
       noWait?: boolean;
     },
   ): Observable<Action> {
-    if (!params.timeStarted || params.bufferedTimeRangeEndS == null) {
+    if (!params.timeStarted) {
       return EMPTY;
     }
+    const bufferedTimeRangeEndS = params.bufferedTimeRangeEndS || 0;
     params.noWait = params.noWait || false;
     const now = new Date();
     const end = params.isEnded
-      ? new Date(params.timeStarted.getTime() + params.bufferedTimeRangeEndS * 1000)
+      ? new Date(params.timeStarted.getTime() + bufferedTimeRangeEndS * 1000)
       : now;
     let targetTimeMs = delayToTimeMs(params.targetMs + ms, end, params.timeStarted);
     targetTimeMs = Math.min(targetTimeMs, delayToTimeMs(0, end, params.timeStarted));
@@ -215,7 +219,7 @@ export class ViewerEffects {
           ),
         ),
       );
-    } else if (targetTimeMs >= params.bufferedTimeRangeEndS * 1000) {
+    } else if (targetTimeMs >= bufferedTimeRangeEndS * 1000) {
       if (params.isEnded) {
         return of(ViewerActions.goToEnd());
       } else {
@@ -244,6 +248,7 @@ export class ViewerEffects {
           this.videoService.bufferSource!.endOfStream();
           if (this.videoService.mediaRecorder) {
             this.videoService.mediaRecorder.stop();
+            this.videoService.mediaRecorder.requestData();
           }
         }),
       ),
@@ -300,15 +305,14 @@ export class ViewerEffects {
     {dispatch: false},
   );
 
-  goToEnd$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(ViewerActions.goToEnd),
-        tap(() => {
-          this.videoService.video!.currentTime = this.videoService.video!.duration;
-        }),
-      ),
-    {dispatch: false},
+  goToEnd$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ViewerActions.goToEnd),
+      map(() => {
+        this.videoService.video!.currentTime = this.videoService.video!.duration;
+        return this.createSetTimeStateAction();
+      }),
+    ),
   );
 
   setWaiting$ = createEffect(
