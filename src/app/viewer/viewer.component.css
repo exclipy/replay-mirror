@@ -42,6 +42,11 @@ mat-toolbar {
   background: #333;
 }
 
+mat-toolbar .mat-button {
+  padding: 0;
+  min-width: 42px;
+}
+
 app-seek-bar {
   flex: 1 0 auto;
 }
