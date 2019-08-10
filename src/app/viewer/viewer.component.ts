@@ -49,6 +49,7 @@ export class ViewerComponent implements OnInit, OnDestroy {
   isError$: Observable<boolean>;
 
   showDebugPanel: Observable<boolean>;
+  bufferedEnd$: Observable<number | null>;
 
   constructor(
     browserParams: BrowserParamsService,
@@ -70,6 +71,9 @@ export class ViewerComponent implements OnInit, OnDestroy {
     this.showWizard$ = store.pipe(select(state => state.viewer.showWizard));
     this.isAtEnd$ = store.pipe(select(ViewerSelectors.isAtEnd));
     this.isWaiting$ = store.pipe(select(ViewerSelectors.isWaiting));
+
+    // For debug
+    this.bufferedEnd$ = store.pipe(select(state => state.viewer.timeState.bufferedTimeRangeEndS));
 
     this.isError$ = store.pipe(
       select(ViewerSelectors.statusSelector),
