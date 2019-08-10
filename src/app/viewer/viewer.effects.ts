@@ -248,7 +248,6 @@ export class ViewerEffects {
           this.videoService.bufferSource!.endOfStream();
           if (this.videoService.mediaRecorder) {
             this.videoService.mediaRecorder.stop();
-            this.videoService.mediaRecorder.requestData();
           }
         }),
       ),
