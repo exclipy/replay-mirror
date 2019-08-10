@@ -16,7 +16,7 @@
             "main": "src/main.ts",
             "tsConfig": "src/tsconfig.app.json",
             "polyfills": "src/polyfills.ts",
-            "assets": ["src/assets", "src/privacy.html"],
+            "assets": ["src/assets", "src/privacy.html", "src/robots.txt"],
             "scripts": []
           },
           "configurations": {

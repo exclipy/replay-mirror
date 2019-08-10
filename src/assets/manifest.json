@@ -1,0 +1,16 @@
+{
+  "name": "ReplayMirror",
+  "short_name": "ReplayMirror",
+  "icons": [
+    {
+      "src": "/assets/favicon.png",
+      "type": "image/png",
+      "sizes": "320x320"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#222",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#222"
+}
