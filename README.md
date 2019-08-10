@@ -11,10 +11,6 @@ $ npm start
 
 Try `npm run` for other commands.
 
-## Icons
-
-Icons are from https://icons8.com/icon/set/british-media/ios
-
 ## License
 
 ReplayMirror is free software: you can redistribute it and/or modify it under the terms of the GNU
