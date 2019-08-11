@@ -65,7 +65,7 @@ export class ViewerComponent implements OnInit, OnDestroy {
     this.currentTime$ = store.pipe(select(ViewerSelectors.currentTimeS));
     this.totalTime$ = store.pipe(select(ViewerSelectors.totalTimeS));
     this.displayedDelay$ = store.pipe(select(ViewerSelectors.displayedDelay));
-    this.waitTime$ = store.pipe(select(state => state.viewer.waitTime));
+    this.waitTime$ = store.pipe(select(state => state.viewer.waitTimeS));
 
     this.showPreview$ = store.pipe(select(state => state.viewer.showPreview));
     this.showWizard$ = store.pipe(select(state => state.viewer.showWizard));

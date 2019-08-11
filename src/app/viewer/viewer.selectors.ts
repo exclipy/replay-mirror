@@ -21,7 +21,7 @@ export const statusSelector = createSelector(
 
 export const isWaiting = createSelector(
   viewerStateSelector,
-  (state: ViewerState) => state.waitTime <= 0,
+  (state: ViewerState) => state.waitTimeS <= 0,
 );
 
 export const isStopped = createSelector(
@@ -56,7 +56,7 @@ export const displayedDelay = createSelector(
 
 export const targetS = createSelector(
   viewerStateSelector,
-  (state: ViewerState) => state.targetMs / 1000,
+  (state: ViewerState) => state.targetDelayMs / 1000,
 );
 
 export const totalTimeS = createSelector(
@@ -85,7 +85,7 @@ export const currentTimeS = createSelector(
 export const changeDelayParams = createSelector(
   viewerStateSelector,
   (state: ViewerState) => ({
-    targetMs: state.targetMs,
+    targetMs: state.targetDelayMs,
     isEnded: state.isEnded,
     timeStarted: state.timeStarted,
     bufferedTimeRangeEndS: state.timeState.bufferedTimeRangeEndS,

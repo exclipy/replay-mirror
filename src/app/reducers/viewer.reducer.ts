@@ -18,9 +18,9 @@ export interface ViewerState {
   timeState: TimeState;
   isInitialized: boolean;
   status: Status;
-  targetMs: number;
+  targetDelayMs: number;
   isLive: boolean;
-  waitTime: number;
+  waitTimeS: number;
 }
 
 const initialState: ViewerState = {
@@ -37,9 +37,9 @@ const initialState: ViewerState = {
     bufferedTimeRangeEndS: null,
     currentTimeS: null,
   },
-  targetMs: 0,
+  targetDelayMs: 0,
   isLive: true,
-  waitTime: 0,
+  waitTimeS: 0,
 };
 
 export interface TimeState {
@@ -58,10 +58,10 @@ export const reducer = createReducer(
     (state): ViewerState => ({
       ...state,
       status: Status.Success,
-      targetMs: 0,
+      targetDelayMs: 0,
       isEnded: false,
       isLive: true,
-      waitTime: 0,
+      waitTimeS: 0,
       timeState: {
         ...state.timeState,
         now: new Date(),
@@ -125,7 +125,7 @@ export const reducer = createReducer(
     (state): ViewerState => ({
       ...state,
       isStopped: false,
-      waitTime: 0,
+      waitTimeS: 0,
       isLive: false,
     }),
   ),
@@ -160,8 +160,8 @@ export const reducer = createReducer(
         ...state.timeState,
         currentTimeS: 0,
       },
-      targetMs: action.targetMs,
-      waitTime: action.waitingS,
+      targetDelayMs: action.targetMs,
+      waitTimeS: action.waitingS,
       isLive: false,
     }),
   ),
@@ -174,8 +174,8 @@ export const reducer = createReducer(
         currentTimeS: action.timeS,
         now: action.now,
       },
-      targetMs: action.targetMs,
-      waitTime: 0,
+      targetDelayMs: action.targetMs,
+      waitTimeS: 0,
       isLive: false,
     }),
   ),
@@ -183,8 +183,8 @@ export const reducer = createReducer(
     ViewerActions.goToLive,
     (state): ViewerState => ({
       ...state,
-      targetMs: 0,
-      waitTime: 0,
+      targetDelayMs: 0,
+      waitTimeS: 0,
       isLive: true,
     }),
   ),
@@ -192,8 +192,8 @@ export const reducer = createReducer(
     ViewerActions.goToEnd,
     (state): ViewerState => ({
       ...state,
-      targetMs: 0,
-      waitTime: 0,
+      targetDelayMs: 0,
+      waitTimeS: 0,
       isLive: false,
     }),
   ),
@@ -201,7 +201,7 @@ export const reducer = createReducer(
     ViewerActions.setWaiting,
     (state, action): ViewerState => ({
       ...state,
-      waitTime: action.timeS,
+      waitTimeS: action.timeS,
     }),
   ),
 );
