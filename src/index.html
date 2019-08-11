@@ -32,7 +32,6 @@
         margin: 0;
         padding: 0;
       }
-
       body {
         background-color: #222;
         color: white;
@@ -40,9 +39,23 @@
         font-family: 'Roboto', sans-serif;
         font-weight: 300;
       }
-
       a {
         color: white;
+      }
+      a.loading-button {
+        line-height: 48px;
+        text-decoration: none;
+        text-align: center;
+        border: 0;
+        background-color: #333;
+        color: white;
+        height: 48px;
+        padding: 0 32px;
+        font-size: 24px;
+        outline: none;
+      }
+      a.loading-button {
+        display: inline-block;
       }
       #page {
         display: flex;
@@ -53,39 +66,31 @@
         min-width: 300px;
         max-width: 800px;
       }
-
       #dynamic {
         height: 30vh;
       }
-
       #info {
         text-align: left;
       }
-
       #footer {
         font-size: 80%;
         padding-bottom: 10px;
         color: #999;
       }
-
       #footer p {
         margin: 0;
       }
-
       #footer a {
         color: #999;
         text-decoration-color: #666;
       }
-
       h1 {
         font-weight: 100;
         font-size: 320%;
       }
-
       .action {
         margin: 24px 0;
       }
-
       .bad-text {
         display: none;
       }
@@ -129,18 +134,20 @@
       <div id="info">
         <h1>ReplayMirror</h1>
         <p>This is a simple web app that displays video from your webcam with a delay.</p>
-        <div class="good-text">
-          <p>
-            On the next screen make sure you give it permission to access your webcam.
-          </p>
-          <app-root>
-            <p class="action"><a class="loading-button" id="loading">Loading...</a></p>
-          </app-root>
-        </div>
+        <div id="dynamic">
+          <div class="good-text">
+            <p>
+              On the next screen make sure you give it permission to access your webcam.
+            </p>
+            <app-root>
+              <p class="action"><a class="loading-button" id="loading">Loading...</a></p>
+            </app-root>
+          </div>
 
-        <div class="bad-text">
-          Unfortunately, your browser is missing the capability to run this app. For now, it only
-          works in recent versions of Google Chrome for computers or Android phones.
+          <div class="bad-text">
+            Unfortunately, your browser is missing the capability to run this app. For now, it only
+            works in recent versions of Google Chrome for computers or Android phones.
+          </div>
         </div>
       </div>
       <div style="flex: 3 0 auto"></div>
