@@ -147,10 +147,14 @@ export class ViewerComponent implements OnInit, OnDestroy {
   }
 
   save() {
+    if (this.videoService.recordingParts.length == 0) {
+      return;
+    }
     const a = document.createElement('a');
     a.style.display = 'none';
     a.href = window.URL.createObjectURL(
-      new Blob(this.videoService.recordingParts, {type: 'video/webm'}),
+      new Blob(this.videoService.recordingParts,
+              {type: this.videoService.recordingParts[0].type})
     );
     a.download = 'video.webm';
     a.click();
