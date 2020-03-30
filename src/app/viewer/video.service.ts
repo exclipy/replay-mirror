@@ -10,7 +10,9 @@ export class VideoService {
   mediaRecorder: MediaRecorder | undefined;
   video: HTMLVideoElement | undefined;
   liveVideo: HTMLVideoElement | undefined;
+  finalVideo: HTMLVideoElement | undefined;
   preview: HTMLVideoElement | undefined;
   bufferSource: MediaSource | undefined;
   sourceBuffer: SourceBuffer | undefined;
+  recordingParts: Array<Blob> = [];
 }

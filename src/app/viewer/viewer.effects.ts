@@ -124,6 +124,7 @@ export class ViewerEffects {
             this.videoService.sourceBuffer!.appendBuffer((f.target as any).result);
           };
           fileReader.readAsArrayBuffer(action.data);
+          this.videoService.recordingParts.push(action.data);
           return from([this.createSetTimeStateAction()]);
         },
       ),
@@ -233,6 +234,9 @@ export class ViewerEffects {
         ofType(ViewerActions.doStopRecord),
         withLatestFrom(this.store.select(isLive)),
         tap(([_, isLive]) => {
+          this.videoService.finalVideo!.src = window.URL.createObjectURL(
+            new Blob(this.videoService.recordingParts, {type: this.browserParams.mimeType}),
+          );
           if (isLive) {
             this.videoService.liveVideo!.pause();
             this.videoService.video!.play();

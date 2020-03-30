@@ -25,7 +25,8 @@ video {
 }
 
 #video,
-#live {
+#live,
+#final {
   width: 100%;
   height: auto;
   max-height: 100%;
@@ -34,6 +35,10 @@ video {
   left: 0;
   bottom: 0;
   margin: auto 0;
+}
+
+#final {
+  transform: none;
 }
 
 mat-toolbar {

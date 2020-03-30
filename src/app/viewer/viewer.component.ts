@@ -104,7 +104,10 @@ export class ViewerComponent implements OnInit, OnDestroy {
     }
     this.videoService.video = document.querySelector('#video') as HTMLVideoElement;
     this.videoService.liveVideo = document.querySelector('#live') as HTMLVideoElement;
+    this.videoService.finalVideo = document.querySelector('#final') as HTMLVideoElement;
+    this.videoService.finalVideo.controls = true;
     this.videoService.preview = document.querySelector('#preview') as HTMLVideoElement;
+    this.videoService.recordingParts = [];
     this.store.dispatch(ViewerActions.init());
 
     this.subsink.add(
@@ -130,6 +133,7 @@ export class ViewerComponent implements OnInit, OnDestroy {
     this.subsink.unsubscribe();
     this.videoService.video = undefined;
     this.videoService.liveVideo = undefined;
+    this.videoService.finalVideo = undefined;
     this.videoService.preview = undefined;
   }
 

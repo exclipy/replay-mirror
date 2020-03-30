@@ -23,10 +23,11 @@
     <video id="live" [hidden]="(isLive$ | async) === false"></video>
     <video
       id="video"
-      [hidden]="isLive$ | async"
+      [hidden]="(isLive$ | async) || (isEnded$ | async)"
       (ended)="stopped()"
       (timeupdate)="updateTime()"
     ></video>
+    <video id="final" [hidden]="(isEnded$ | async) === false"></video>
   </div>
 
   <div [hidden]="isWaiting$ | async" id="waitTime">
