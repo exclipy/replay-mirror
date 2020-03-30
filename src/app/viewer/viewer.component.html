@@ -23,11 +23,10 @@
     <video id="live" [hidden]="(isLive$ | async) === false"></video>
     <video
       id="video"
-      [hidden]="(isLive$ | async) || (isEnded$ | async)"
+      [hidden]="isLive$ | async"
       (ended)="stopped()"
       (timeupdate)="updateTime()"
     ></video>
-    <video id="final" [hidden]="(isEnded$ | async) === false"></video>
   </div>
 
   <div [hidden]="isWaiting$ | async" id="waitTime">
@@ -75,6 +74,9 @@
     </button>
     <button mat-button (click)="stopRecord()" *ngIf="(isEnded$ | async) === false">
       <mat-icon aria-hidden="false" aria-label="Stop">stop</mat-icon>
+    </button>
+    <button mat-button (click)="save()" *ngIf="isEnded$ | async">
+      <mat-icon aria-hidden="false" aria-label="Save video">save_alt</mat-icon>
     </button>
     <button mat-button routerLink="/" *ngIf="isEnded$ | async">
       <mat-icon aria-hidden="false" aria-label="Close">close</mat-icon>
