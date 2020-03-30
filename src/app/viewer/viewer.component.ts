@@ -151,7 +151,6 @@ export class ViewerComponent implements OnInit, OnDestroy {
       return;
     }
     const a = document.createElement('a');
-    a.style.display = 'none';
     a.href = window.URL.createObjectURL(
       new Blob(this.videoService.recordingParts,
               {type: this.videoService.recordingParts[0].type})
