@@ -72,11 +72,11 @@
     <button mat-button (click)="less()" class="skip" [disabled]="isAtEnd$ | async">
       <mat-icon aria-hidden="false" aria-label="Forward 5 seconds">forward_5</mat-icon>
     </button>
+    <button mat-button (click)="save()" [disabled]="(isEnded$ | async) === false">
+      <mat-icon aria-hidden="false" aria-label="Save video">save_alt</mat-icon>
+    </button>
     <button mat-button (click)="stopRecord()" *ngIf="(isEnded$ | async) === false">
       <mat-icon aria-hidden="false" aria-label="Stop">stop</mat-icon>
-    </button>
-    <button mat-button (click)="save()" *ngIf="isEnded$ | async">
-      <mat-icon aria-hidden="false" aria-label="Save video">save_alt</mat-icon>
     </button>
     <button mat-button routerLink="/" *ngIf="isEnded$ | async">
       <mat-icon aria-hidden="false" aria-label="Close">close</mat-icon>
