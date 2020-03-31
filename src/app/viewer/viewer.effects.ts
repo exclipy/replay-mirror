@@ -124,6 +124,7 @@ export class ViewerEffects {
             this.videoService.sourceBuffer!.appendBuffer((f.target as any).result);
           };
           fileReader.readAsArrayBuffer(action.data);
+          this.videoService.recordingParts.push(action.data);
           return from([this.createSetTimeStateAction()]);
         },
       ),
