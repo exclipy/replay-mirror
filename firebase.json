@@ -2,7 +2,7 @@
   "hosting": [
     {
       "site": "replay-mirror",
-      "public": "dist-prod",
+      "public": "dist",
       "rewrites": [
         {
           "source": "**",

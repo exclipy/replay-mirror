@@ -7,6 +7,7 @@
     "start": "ng serve",
     "build": "ng build --prod && node_modules/.bin/ngsw-config dist ./src/ngsw-config.json && cp node_modules/@angular/service-worker/ngsw-worker.js ./dist/ngsw-worker.js",
     "deploy": "firebase deploy",
+    "deploy-beta": "firebase deploy --only hosting:replay-mirror-beta",
     "firebase": "firebase",
     "test": "ng test",
     "lint": "ng lint",
