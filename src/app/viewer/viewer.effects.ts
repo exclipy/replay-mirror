@@ -45,8 +45,15 @@ export class ViewerEffects {
 
           const mimeType = this.browserParams.mimeType!;
 
+          const params = new URLSearchParams(window.location.search);
           navigator.mediaDevices
-            .getUserMedia({video: {facingMode: 'user'}})
+            .getUserMedia({
+              audio: params.get('audio') === 'y',
+              video: {
+                facingMode: params.get('cam') || 'user',
+                height: parseInt(params.get('h') || '480'),
+              }
+            })
             .then(mediaStream => {
               this.videoService.mediaStream = mediaStream;
               this.videoService.mediaRecorder = new MediaRecorder(mediaStream, {mimeType});

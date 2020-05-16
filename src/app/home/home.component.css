@@ -4,3 +4,11 @@
   font-weight: 300;
   padding: 0 32px;
 }
+
+select {
+  background-color: #222;
+  color: white;
+  font-size: 15px;
+  border: none;
+}
+

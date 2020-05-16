@@ -1,1 +1,17 @@
-<p class="action"><a mat-raised-button color="accent" routerLink="/run">Start</a></p>
+<div>
+  Preferred video quality:
+  <select id="video-quality">
+    <option value="480">480p</option>
+    <option value="720">720p</option>
+    <option value="1080">1080p</option>
+  </select>
+</div>
+<div>
+  Preferred camera:
+  <select id="video-camera">
+    <option value="user">Front</option>
+    <option value="environment">Back</option>
+  </select>
+</div>
+<p class="action"><button mat-raised-button color="accent" (click)="onClick()">Start</button>
+</p>
