@@ -45,12 +45,6 @@ export class ViewerEffects {
 
           const mimeType = this.browserParams.mimeType!;
 
-          console.log({
-            video: {
-              facingMode: localStorage.getItem('videoCamera')!,
-              height: parseInt(localStorage.getItem('videoQuality')!),
-            },
-          });
           navigator.mediaDevices
             .getUserMedia({
               video: {
