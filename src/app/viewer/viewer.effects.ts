@@ -45,16 +45,20 @@ export class ViewerEffects {
 
           const mimeType = this.browserParams.mimeType!;
 
-          const params = new URLSearchParams(window.location.search);
+          console.log({
+            video: {
+              facingMode: localStorage.getItem('videoCamera')!,
+              height: parseInt(localStorage.getItem('videoQuality')!),
+            },
+          });
           navigator.mediaDevices
             .getUserMedia({
-              audio: params.get('audio') === 'y',
               video: {
-                facingMode: params.get('cam') || 'user',
-                height: parseInt(params.get('h') || '480'),
-              }
+                facingMode: localStorage.getItem('videoCamera')!,
+                height: parseInt(localStorage.getItem('videoQuality')!),
+              },
             })
-            .then(mediaStream => {
+            .then((mediaStream) => {
               this.videoService.mediaStream = mediaStream;
               this.videoService.mediaRecorder = new MediaRecorder(mediaStream, {mimeType});
               this.videoService.bufferSource!.addEventListener('sourceopen', () => {
@@ -62,7 +66,7 @@ export class ViewerEffects {
                   mimeType,
                 );
 
-                this.videoService.mediaRecorder!.ondataavailable = e => {
+                this.videoService.mediaRecorder!.ondataavailable = (e) => {
                   this.store.dispatch(ViewerActions.onDataAvailable({data: e.data}));
                 };
                 this.videoService.mediaRecorder!.start();
@@ -78,7 +82,7 @@ export class ViewerEffects {
               bindStream(this.videoService.preview!, this.videoService.mediaStream);
               this.videoService.preview!.pause();
             })
-            .catch(e => {
+            .catch((e) => {
               if (
                 e.name === 'PermissionDeniedError' || // Chrome
                 e.name === 'NotAllowedError' // Firefox
@@ -109,7 +113,7 @@ export class ViewerEffects {
               }
               return isEnded;
             }),
-            takeWhile(isEnded => !isEnded),
+            takeWhile((isEnded) => !isEnded),
           ),
         ),
       ),
@@ -127,7 +131,7 @@ export class ViewerEffects {
             return EMPTY;
           }
           const fileReader = new FileReader();
-          fileReader.onload = f => {
+          fileReader.onload = (f) => {
             this.videoService.sourceBuffer!.appendBuffer((f.target as any).result);
           };
           fileReader.readAsArrayBuffer(action.data);
@@ -213,11 +217,11 @@ export class ViewerEffects {
           takeUntil(
             this.store.pipe(
               select(isEnded),
-              filter(x => x),
+              filter((x) => x),
             ),
           ),
           take(periods),
-          map(i =>
+          map((i) =>
             i < periods - 1
               ? ViewerActions.setWaiting({timeS: periods - 1 - i})
               : ViewerActions.play(),
@@ -288,7 +292,7 @@ export class ViewerEffects {
     () =>
       this.actions$.pipe(
         ofType(ViewerActions.goTo),
-        tap(action => {
+        tap((action) => {
           this.videoService.liveVideo!.pause();
           this.videoService.video!.currentTime = action.timeS;
           this.videoService.video!.play();

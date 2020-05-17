@@ -3,7 +3,7 @@ import {SwUpdate} from '@angular/service-worker';
 import {SubSink} from 'subsink';
 import {environment} from '../../environments/environment';
 import {BrowserParamsService} from '../browser-params.service';
-import { Router } from '@angular/router';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -12,10 +12,10 @@ import { Router } from '@angular/router';
 })
 export class HomeComponent implements OnDestroy {
   isUnsupportedBrowser = false;
+  videoQuality: string;
+  videoCamera: string;
   private subsink = new SubSink();
   private router: Router;
-  private videoQualitySelect?: HTMLSelectElement;
-  private videoCameraSelect?: HTMLSelectElement;
 
   constructor(
     @Inject(BrowserParamsService) browserParams: BrowserParamsService,
@@ -27,20 +27,13 @@ export class HomeComponent implements OnDestroy {
 
     if (environment.production) {
       this.subsink.add(
-        updates.available.subscribe(_ => {
+        updates.available.subscribe((_) => {
           updates.activateUpdate().then(() => document.location.reload());
         }),
       );
     }
-  }
-
-  ngOnInit() {
-    this.videoQualitySelect = document.querySelector('#video-quality')! as HTMLSelectElement;
-    this.videoCameraSelect = document.querySelector('#video-camera')! as HTMLSelectElement;
-    this.videoQualitySelect.value =
-      localStorage.getItem('defaultQuality') || '480';
-    this.videoCameraSelect.value =
-      localStorage.getItem('defaultCamera') || 'user';
+    this.videoQuality = localStorage.getItem('videoQuality') || '480';
+    this.videoCamera = localStorage.getItem('videoCamera') || 'user';
   }
 
   ngOnDestroy() {
@@ -48,15 +41,8 @@ export class HomeComponent implements OnDestroy {
   }
 
   onClick() {
-    let quality = this.videoQualitySelect!.options[this.videoQualitySelect!.selectedIndex].value;
-    let camera = this.videoCameraSelect!.options[this.videoCameraSelect!.selectedIndex].value;
-    localStorage.setItem('defaultQuality', quality);
-    localStorage.setItem('defaultCamera', camera);
-    this.router.navigate(['/run'], {
-      queryParams: {
-        h: quality,
-        cam: camera,
-      }
-    });
+    localStorage.setItem('videoQuality', this.videoQuality);
+    localStorage.setItem('videoCamera', this.videoCamera);
+    this.router.navigate(['/run']);
   }
 }
