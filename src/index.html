@@ -127,7 +127,7 @@
 
       function getMimeType() {
         try {
-          return ['video/webm;codecs=vp9', 'video/webm;codecs=vp8'].find(mimeType =>
+          return ['video/webm;codecs=vp9', 'video/webm;codecs=vp8'].find((mimeType) =>
             MediaRecorder.isTypeSupported(mimeType),
           );
         } catch (e) {
@@ -136,7 +136,7 @@
       }
     </script>
     <div id="page">
-      <div style="flex: 2 0 auto"></div>
+      <div style="flex: 2 0 auto;"></div>
       <div id="info">
         <h1>ReplayMirror</h1>
         <p>This is a simple web app that displays video from your webcam with a delay.</p>
@@ -145,7 +145,7 @@
             <p>
               On the next screen make sure you give it permission to access your webcam.
             </p>
-            <app-root>
+            <app-root class="zest-app-theme">
               <p class="action"><a class="loading-button" id="loading">Loading...</a></p>
             </app-root>
           </div>
@@ -156,7 +156,7 @@
           </div>
         </div>
       </div>
-      <div style="flex: 3 0 auto"></div>
+      <div style="flex: 3 0 auto;"></div>
       <div id="footer">
         <p>Made by Kevin Wu Won &middot; <a href="privacy.html">Privacy Policy</a></p>
       </div>
@@ -166,7 +166,7 @@
     <script>
       window.ga =
         window.ga ||
-        function() {
+        function () {
           (ga.q = ga.q || []).push(arguments);
         };
       ga.l = +new Date();

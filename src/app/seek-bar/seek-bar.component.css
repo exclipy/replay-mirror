@@ -76,7 +76,7 @@
 
 #fade {
   position: absolute;
-  background: linear-gradient(to right, #333333ff 0%, #333333cc 40%, #33333333 80%, #33333300 100%);
+  background: linear-gradient(to right, #212121ff 0%, #212121cc 40%, #21212133 80%, #21212100 100%);
   left: -1px; /* cover the 1px outline as well */
   top: 0;
   height: 48px;
