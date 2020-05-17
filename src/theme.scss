@@ -9,7 +9,7 @@
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
-$zest-app-primary: mat-palette($mat-gray);
+$zest-app-primary: mat-palette($mat-orange);
 $zest-app-accent: mat-palette($mat-orange);
 
 // The warn palette is optional (defaults to red).
@@ -21,4 +21,7 @@ $zest-app-theme: mat-dark-theme($zest-app-primary, $zest-app-accent, $zest-app-w
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
-@include angular-material-theme($zest-app-theme);
+
+.zest-app-theme {
+  @include angular-material-theme($zest-app-theme);
+}

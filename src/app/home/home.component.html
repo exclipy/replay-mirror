@@ -1,19 +1,19 @@
 <div class="setting">
   <mat-form-field>
-    <mat-label>Preferred video quality:</mat-label>
-    <mat-select [(value)]="videoQuality">
-      <mat-option value="480">480p</mat-option>
-      <mat-option value="720">720p</mat-option>
-      <mat-option value="1080">1080p</mat-option>
+    <mat-label>Preferred camera:</mat-label>
+    <mat-select [(value)]="videoCamera">
+      <mat-option value="user">Front</mat-option>
+      <mat-option value="environment">Back</mat-option>
     </mat-select>
   </mat-form-field>
 </div>
 <div class="setting">
   <mat-form-field>
-    <mat-label>Preferred camera:</mat-label>
-    <mat-select [(value)]="videoCamera">
-      <mat-option value="user">Front</mat-option>
-      <mat-option value="environment">Back</mat-option>
+    <mat-label>Preferred video quality:</mat-label>
+    <mat-select [(value)]="videoQuality">
+      <mat-option value="480">480p</mat-option>
+      <mat-option value="720">720p</mat-option>
+      <mat-option value="1080">1080p</mat-option>
     </mat-select>
   </mat-form-field>
 </div>

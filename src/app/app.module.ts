@@ -20,6 +20,7 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {FormsModule} from '@angular/forms';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
+import {OverlayContainer} from '@angular/cdk/overlay';
 
 const appRoutes: Routes = [
   {path: '', component: HomeComponent},
@@ -56,4 +57,8 @@ const appRoutes: Routes = [
   providers: [BrowserParamsService],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(overlayContainer: OverlayContainer) {
+    overlayContainer.getContainerElement().classList.add('zest-app-theme');
+  }
+}
