@@ -33,7 +33,7 @@ const appRoutes: Routes = [
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    RouterModule.forRoot(appRoutes),
+    RouterModule.forRoot(appRoutes, { relativeLinkResolution: 'legacy' }),
     ServiceWorkerModule.register('/ngsw-worker.js'),
     StoreModule.forRoot(reducers, {
       metaReducers,
