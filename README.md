@@ -1,7 +1,7 @@
 # ReplayMirror
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli). It is
-deployed at https://replaymirror.com/.
+deployed at https://replay-mirror.web.app/.
 
 ## Development
 
